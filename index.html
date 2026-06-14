@@ -870,79 +870,43 @@
         document.getElementById('cancelPublishBtn').onclick = () => { document.getElementById('publishDetailsModal').classList.remove('active'); startVideoObserver(); };
 
         // --- 🌐 دالة الرفع السحابية لحفظ الفيديو في Firebase 🌐 ---
-        document.getElementById('submitVideoBtn').onclick = async function() {
-            document.getElementById('publishDetailsModal').classList.remove('active');
-            const progressPopup = document.getElementById('uploadPopupProgress');
-            const progressPercent = document.getElementById('uploadProgressPercent');
-            document.getElementById('uploadPopupTitle').innerText = "جاري الرفع السحابي النقي للمقطع...";
-            progressPopup.style.display = 'flex';
-            progressPercent.innerText = `15%... جاري التجهيز`;
+       document.getElementById('submitVideoBtn').onclick = async function() {
+    document.getElementById('publishDetailsModal').classList.remove('active');
+    const fileInput = document.getElementById('galleryFileInput');
+    const videoFile = fileInput.files[0];
+    
+    if (!videoFile) return alert("اختر فيديو أولاً");
 
-            let videoFile;
-            const fileInput = document.getElementById('galleryFileInput');
-            
-            if (fileInput.files && fileInput.files[0]) {
-                videoFile = fileInput.files[0];
-            } else if (recordedChunks && recordedChunks.length > 0) {
-                videoFile = new Blob(recordedChunks, { type: mediaRecorder.mimeType });
-            }
+    const CLOUD_NAME = "dxqiv9sxc"; 
+    const UPLOAD_PRESET = "zan_videos"; 
 
-            if (!videoFile) {
-                alert("لم يتم العثور على ملف الفيديو المعالج!");
-                progressPopup.style.display = 'none';
-                return;
-            }
+    const formData = new FormData();
+    formData.append('file', videoFile);
+    formData.append('upload_preset', UPLOAD_PRESET);
+    formData.append('resource_type', 'video');
 
-            const formData = new FormData();
-            formData.append('file', videoFile, `zan_video_${Date.now()}.mp4`);
-
-            try {
-                progressPercent.innerText = `50%... جاري الرفع السحابي`;
-                
-                const uploadResponse = await fetch('https://tmpfiles.org/api/v1/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const uploadResult = await uploadResponse.json();
-                
-                if (uploadResponse.ok && uploadResult.data && uploadResult.data.url) {
-                    progressPercent.innerText = `85%... ربط البيانات بـ Firebase`;
-                    
-                    const directVideoUrl = uploadResult.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
-                    const nowStr = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-                    
-                    const newVid = {
-                        id: Date.now(),
-                        src: directVideoUrl, 
-                        user: profileData.username,
-                        userAvatar: profileData.avatar || "",
-                        isUserVerified: profileData.isVerified || false,
-                        desc: document.getElementById('finalDescInput').value || "مقطع جديد 🔥",
-                        likes: 0,
-                        time: nowStr,
-                        audioTrack: document.getElementById('videoAudioTrackSelect').value,
-                        comments: []
-                    };
-                    
-                    await setDoc(doc(db, "videos", newVid.id.toString()), newVid);
-                    
-                    progressPercent.innerText = `100%! اكتمل`;
-                    setTimeout(() => { progressPopup.style.display = 'none'; }, 500);
-                    
-                    fileInput.value = '';
-                    document.getElementById('finalDescInput').value = '';
-                    await syncVideosList();
-                    alert("تم نشر مقطعك بنجاح وارتفع سحابياً! بيشتغل الحين عند كل أخوياك والمنصة كاملة 🎉");
-                } else {
-                    throw new Error("فشل الرفع السحابي الخارجي");
-                }
-            } catch (error) {
-                console.error(error);
-                progressPopup.style.display = 'none';
-                alert("حدث خطأ في الرفع السحابي للملف! تأكد من اتصال الإنترنت وحاول مجدداً.");
-            }
-        };
+    try {
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`, {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        
+        if (data.secure_url) {
+            await setDoc(doc(db, "videos", Date.now().toString()), {
+                src: data.secure_url,
+                desc: document.getElementById('finalDescInput').value || "مقطع جديد من ZAN",
+                user: profileData.username,
+                createdAt: new Date().toISOString()
+            });
+            alert("تم الرفع بنجاح على Cloudinary! 🎉");
+            location.reload();
+        }
+    } catch (error) {
+        alert("فشل الرفع: " + error.message);
+    }
+};
+};
 
         // --- 📸 معالجة تغيير صورة البروفايل مباشرة من الاستوديو سحابياً 📸 ---
         document.getElementById('avatarFileInputHidden').onchange = async function(e) {
