@@ -870,79 +870,86 @@
         document.getElementById('cancelPublishBtn').onclick = () => { document.getElementById('publishDetailsModal').classList.remove('active'); startVideoObserver(); };
 
         // --- 🌐 دالة الرفع السحابية لحفظ الفيديو في Firebase 🌐 ---
-        document.getElementById('submitVideoBtn').onclick = async function() {
-            document.getElementById('publishDetailsModal').classList.remove('active');
-            const progressPopup = document.getElementById('uploadPopupProgress');
-            const progressPercent = document.getElementById('uploadProgressPercent');
-            document.getElementById('uploadPopupTitle').innerText = "جاري الرفع السحابي النقي للمقطع...";
-            progressPopup.style.display = 'flex';
-            progressPercent.innerText = `15%... جاري التجهيز`;
+  // --- 🌐 رفع الفيديو على Firebase Storage (دائم - ما ينحذف) 🌐 ---
+document.getElementById('submitVideoBtn').onclick = async function() {
+    document.getElementById('publishDetailsModal').classList.remove('active');
+    
+    const progressPopup = document.getElementById('uploadPopupProgress');
+    const progressPercent = document.getElementById('uploadProgressPercent');
+    progressPopup.style.display = 'flex';
+    progressPercent.innerText = `جاري التجهيز...`;
 
-            let videoFile;
-            const fileInput = document.getElementById('galleryFileInput');
-            
-            if (fileInput.files && fileInput.files[0]) {
-                videoFile = fileInput.files[0];
-            } else if (recordedChunks && recordedChunks.length > 0) {
-                videoFile = new Blob(recordedChunks, { type: mediaRecorder.mimeType });
-            }
+    let videoFile;
+    const fileInput = document.getElementById('galleryFileInput');
+    
+    if (fileInput.files && fileInput.files[0]) {
+        videoFile = fileInput.files[0];
+    } else if (recordedChunks && recordedChunks.length > 0) {
+        videoFile = new Blob(recordedChunks, { type: 'video/mp4' });
+    }
 
-            if (!videoFile) {
-                alert("لم يتم العثور على ملف الفيديو المعالج!");
-                progressPopup.style.display = 'none';
-                return;
-            }
+    if (!videoFile) {
+        alert("لم يتم العثور على الفيديو!");
+        progressPopup.style.display = 'none';
+        return;
+    }
 
-            const formData = new FormData();
-            formData.append('file', videoFile, `zan_video_${Date.now()}.mp4`);
+    try {
+        const { getStorage, ref, uploadBytesResumable, getDownloadURL } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js");
 
-            try {
-                progressPercent.innerText = `50%... جاري الرفع السحابي`;
-                
-                const uploadResponse = await fetch('https://tmpfiles.org/api/v1/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const uploadResult = await uploadResponse.json();
-                
-                if (uploadResponse.ok && uploadResult.data && uploadResult.data.url) {
-                    progressPercent.innerText = `85%... ربط البيانات بـ Firebase`;
-                    
-                    const directVideoUrl = uploadResult.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
-                    const nowStr = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-                    
-                    const newVid = {
-                        id: Date.now(),
-                        src: directVideoUrl, 
-                        user: profileData.username,
-                        userAvatar: profileData.avatar || "",
-                        isUserVerified: profileData.isVerified || false,
-                        desc: document.getElementById('finalDescInput').value || "مقطع جديد 🔥",
-                        likes: 0,
-                        time: nowStr,
-                        audioTrack: document.getElementById('videoAudioTrackSelect').value,
-                        comments: []
-                    };
-                    
-                    await setDoc(doc(db, "videos", newVid.id.toString()), newVid);
-                    
-                    progressPercent.innerText = `100%! اكتمل`;
-                    setTimeout(() => { progressPopup.style.display = 'none'; }, 500);
-                    
-                    fileInput.value = '';
-                    document.getElementById('finalDescInput').value = '';
-                    await syncVideosList();
-                    alert("تم نشر مقطعك بنجاح وارتفع سحابياً! بيشتغل الحين عند كل أخوياك والمنصة كاملة 🎉");
-                } else {
-                    throw new Error("فشل الرفع السحابي الخارجي");
-                }
-            } catch (error) {
+        const storage = getStorage(app);
+        const storageRef = ref(storage, `videos/${profileData.username}_${Date.now()}.mp4`);
+
+        const uploadTask = uploadBytesResumable(storageRef, videoFile);
+
+        uploadTask.on('state_changed', 
+            (snapshot) => {
+                const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                progressPercent.innerText = `${progress}% جاري الرفع...`;
+            },
+            (error) => {
                 console.error(error);
                 progressPopup.style.display = 'none';
-                alert("حدث خطأ في الرفع السحابي للملف! تأكد من اتصال الإنترنت وحاول مجدداً.");
+                alert("خطأ في رفع الفيديو: " + error.message);
+            },
+            async () => {
+                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                
+                const nowStr = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+                
+                const newVid = {
+                    id: Date.now(),
+                    src: downloadURL,
+                    user: profileData.username,
+                    userAvatar: profileData.avatar || "",
+                    isUserVerified: profileData.isVerified || false,
+                    desc: document.getElementById('finalDescInput').value.trim() || "مقطع جديد 🔥",
+                    likes: 0,
+                    time: nowStr,
+                    audioTrack: document.getElementById('videoAudioTrackSelect').value,
+                    comments: []
+                };
+                
+                await setDoc(doc(db, "videos", newVid.id.toString()), newVid);
+                
+                progressPercent.innerText = `100% ✅ تم النشر!`;
+                setTimeout(() => { progressPopup.style.display = 'none'; }, 800);
+
+                fileInput.value = '';
+                document.getElementById('finalDescInput').value = '';
+                recordedChunks = [];
+                
+                await syncVideosList();
+                alert("✅ تم رفع المقطع بنجاح على Firebase وهو باقي دائم!");
             }
-        };
+        );
+
+    } catch (error) {
+        console.error(error);
+        progressPopup.style.display = 'none';
+        alert("حدث خطأ: " + error.message);
+    }
+};};
 
         // --- 📸 معالجة تغيير صورة البروفايل مباشرة من الاستوديو سحابياً 📸 ---
         document.getElementById('avatarFileInputHidden').onchange = async function(e) {
