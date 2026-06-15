@@ -302,6 +302,7 @@
         }
         .modal.active { opacity: 1; pointer-events: auto; }
         
+        /* 1. حل مشكلة عدم القدرة على النزول تحت بالبروفايل (السكرول) */
         .modal-card { 
             background: var(--card-bg); 
             width: 100%; 
@@ -311,7 +312,7 @@
             border-top-right-radius: 24px; 
             border: 1px solid rgba(255, 255, 255, 0.05); 
             max-height: 90vh; 
-            overflow-y: auto;
+            overflow-y: auto; /* تم تفعيل التمرير العمودي للمحتوى الطويل */
             pointer-events: auto; 
             transform: translateY(100%);
             transition: transform 0.25s ease;
@@ -322,6 +323,7 @@
         .full-camera-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 600; display: flex; flex-direction: column; justify-content: space-between; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .full-camera-screen.active { opacity: 1; pointer-events: auto; }
         
+        /* 📸 الفلاش الأمامي المطور 📸 */
         .front-flash-overlay { 
             position: absolute; 
             top: 0; 
@@ -393,7 +395,7 @@
             font-size: 0.9rem;
             color: #ddd;
             margin: 12px 10px;
-            white-space: pre-wrap;
+            white-space: pre-wrap; /* يدعم النزول لسطر جديد للترتيب */
             text-align: center;
             line-height: 1.4;
         }
@@ -445,72 +447,32 @@
 </head>
 <body>
 
-    <!-- إدخالات مخفية للملفات -->
     <input type="file" id="galleryFileInput" accept="video/*" style="display: none;">
     <input type="file" id="avatarFileInputHidden" accept="image/*" style="display: none;">
 
-    <!-- شريط رفع الفيديو -->
     <div class="upload-popup-progress" id="uploadPopupProgress">
         <div class="spinner-mini"></div>
         <div>
-            <span style="font-size: 0.85rem; font-weight: bold; display: block;" id="uploadPopupTitle">جاري الرفع...</span>
+            <span style="font-size: 0.85rem; font-weight: bold; display: block;" id="uploadPopupTitle">جاري الرفع السحابي النقي للمقطع...</span>
             <span style="font-size: 0.75rem; color: #aaa;" id="uploadProgressPercent">0%</span>
         </div>
     </div>
 
-    <!-- 🔐 شاشة تسجيل الدخول (تم إصلاحها) -->
     <div class="auth-screen" id="authScreen">
         <div class="auth-card">
             <div class="auth-logo">ZAN</div>
-            <p style="color:#666; font-size:0.9rem; margin-bottom:25px;">تطبيق المقاطع القصيرة الأسود الملكي</p>
-
-            <!-- Google (حقيقي) -->
+            <p style="color:#666; font-size:0.9rem; margin-bottom:25px;">تطبيق المقاطع القصيرة الأسود الملكي فائق الدقة والسلاسة</p>
             <button class="google-btn" id="googleAuthBtn">
                 <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/web-24dp/copy_of_googleg_24dp.png" width="18" alt="google">
                 تسجيل الدخول عبر Google
             </button>
-
-            <!-- Apple -->
-            <button class="google-btn" id="appleAuthBtn" style="background:#000; color:#fff; margin-bottom:20px;">
-                <span style="font-size:1.2rem;"></span> تسجيل الدخول عبر Apple
-            </button>
-
-            <div class="divider">أو</div>
-
-            <!-- تسجيل دخول -->
-            <button class="action-btn submit" id="showLoginBtn" style="margin-bottom:12px;">تسجيل الدخول</button>
-            
-            <!-- إنشاء حساب -->
-            <button class="action-btn submit" id="showSignupBtn">إنشاء حساب جديد</button>
+            <div class="divider">أو حساب محلي سريع</div>
+            <input type="text" id="authUsernameInput" class="form-control" placeholder="اسم المستخدم (مثال: fares_zan)">
+            <input type="text" id="authFullNameInput" class="form-control" placeholder="الاسم الكامل">
+            <button class="action-btn submit" id="manualAuthBtn">ابدأ التصفح الحين</button>
         </div>
     </div>
 
-    <!-- Modal تسجيل الدخول -->
-    <div class="modal" id="loginModal">
-        <div class="modal-card">
-            <h2>تسجيل الدخول</h2>
-            <input type="text" id="loginUsername" class="form-control" placeholder="اسم المستخدم أو البريد">
-            <input type="password" id="loginPassword" class="form-control" placeholder="كلمة المرور">
-            <button class="action-btn submit" id="loginBtn">دخول</button>
-            <button class="action-btn cancel" onclick="hideModals()">إلغاء</button>
-        </div>
-    </div>
-
-    <!-- Modal إنشاء حساب -->
-    <div class="modal" id="signupModal">
-        <div class="modal-card">
-            <h2>إنشاء حساب جديد</h2>
-            <input type="text" id="signupFullName" class="form-control" placeholder="الاسم الكامل">
-            <input type="text" id="signupUsername" class="form-control" placeholder="اسم المستخدم (مثال: fares_zan)">
-            <input type="email" id="signupEmail" class="form-control" placeholder="البريد الإلكتروني">
-            <input type="password" id="signupPassword" class="form-control" placeholder="كلمة المرور">
-            <input type="date" id="signupBirthDate" class="form-control">
-            <button class="action-btn submit" id="signupBtn">إنشاء الحساب</button>
-            <button class="action-btn cancel" onclick="hideModals()">إلغاء</button>
-        </div>
-    </div>
-
-    <!-- الشريط العلوي -->
     <div class="top-navbar" id="topNavbar">
         <div class="nav-tabs-row">
             <div class="feed-tab active" id="tabFeedForYou">لك</div>
@@ -534,17 +496,14 @@
         </div>
     </div>
 
-    <!-- حاوية الفيديوهات -->
     <div class="video-container" id="videoContainer"></div>
 
-    <!-- شريط التنقل السفلي -->
     <div class="bottom-nav" id="bottomNav">
         <button class="upload-trigger-btn" id="openCameraBtn">
             <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
         </button>
     </div>
 
-    <!-- شاشة الكاميرا -->
     <div class="full-camera-screen" id="fullCameraScreen">
         <div class="front-flash-overlay" id="frontFlashOverlay"></div>
         <video id="cameraStreamView" class="mirror" autoplay playsinline muted></video>
@@ -568,7 +527,6 @@
         </div>
     </div>
 
-    <!-- Modal نشر المقطع -->
     <div class="modal" id="publishDetailsModal">
         <div class="modal-card">
             <h2>نشر مقطع سينمائي حديث 🚀</h2>
@@ -583,20 +541,19 @@
                 <option value="chill">صوت هادئ ومريح للمقاطع Chill Vibes 🎧</option>
             </select>
 
-            <textarea id="finalDescInput" class="form-control" rows="3" placeholder="اكتب وصف الفيديو هنا... #ZAN"></textarea>
+            <textarea id="finalDescInput" class="form-control" rows="3" placeholder="اكتب وصف الفيديو هنا الحين على كيفك... #ZAN"></textarea>
             <button class="action-btn submit" id="submitVideoBtn">نشر الحين للمنصة</button>
             <button class="action-btn cancel" id="cancelPublishBtn">إلغاء</button>
         </div>
     </div>
 
-    <!-- Modal التعليقات -->
     <div class="modal" id="commentsModal">
         <div class="modal-card">
             <h2>التعليقات 💬</h2>
             <div class="comments-box" style="margin-top:15px;">
                 <div class="comments-list" id="commentsListContainer" style="max-height:250px; overflow-y:auto; margin-bottom:15px;"></div>
                 <div style="display:flex; gap:8px;">
-                    <input type="text" id="newCommentInput" class="form-control" style="margin:0;" placeholder="اكتب تعليقك...">
+                    <input type="text" id="newCommentInput" class="form-control" style="margin:0;" placeholder="اكتب تعليقك الحين...">
                     <button class="action-btn submit" style="width:80px; margin:0;" id="sendCommentBtn">نشر</button>
                 </div>
             </div>
@@ -604,7 +561,6 @@
         </div>
     </div>
 
-    <!-- Modal الرسائل -->
     <div class="modal" id="inboxModal">
         <div class="modal-card">
             <h2>الرسائل الخاصة 📨</h2>
@@ -613,7 +569,6 @@
         </div>
     </div>
 
-    <!-- Modal المحادثة -->
     <div class="modal" id="activeChatModal">
         <div class="modal-card">
             <h2 id="activeChatTitle">المحادثة</h2>
@@ -628,16 +583,14 @@
         </div>
     </div>
 
-    <!-- Modal التنبيهات -->
     <div class="modal" id="notificationsModal">
         <div class="modal-card">
-            <h2>التنبيهات الأخيرة 🔔</h2>
+            <h2>التنببهات الأخيرة 🔔</h2>
             <div id="notificationsListContainer" style="max-height:350px; overflow-y:auto; margin-top:15px;"></div>
             <button class="action-btn cancel" style="margin-top:15px;" onclick="document.getElementById('notificationsModal').classList.remove('active')">إغلاق</button>
         </div>
     </div>
 
-    <!-- Modal المشاركة -->
     <div class="modal" id="shareModal">
         <div class="modal-card">
             <h2>إرسال المقطع إلى الأصدقاء 🏹</h2>
@@ -646,7 +599,6 @@
         </div>
     </div>
 
-    <!-- Modal قائمة المستخدمين -->
     <div class="modal" id="usersListModal">
         <div class="modal-card">
             <h2 id="usersListModalTitle">القائمة</h2>
@@ -655,7 +607,6 @@
         </div>
     </div>
 
-    <!-- Modal تعديل الملف الشخصي -->
     <div class="modal" id="editProfileModal">
         <div class="modal-card">
             <h2>تعديل ملفك الشخصي ⚙️</h2>
@@ -683,7 +634,6 @@
         </div>
     </div>
 
-    <!-- Modal الملف الشخصي -->
     <div class="modal" id="profileModal">
         <div class="modal-card">
             <div class="profile-card-top" style="text-align:center; padding-bottom:15px;">
@@ -719,51 +669,6 @@
         </div>
     </div>
 
-    <script>
-        // ===== الإصلاح المباشر لأزرار المصادقة =====
-        function hideModals() {
-            document.getElementById('loginModal').classList.remove('active');
-            document.getElementById('signupModal').classList.remove('active');
-        }
-
-        document.getElementById('showLoginBtn').onclick = function() {
-            document.getElementById('loginModal').classList.add('active');
-        };
-
-        document.getElementById('showSignupBtn').onclick = function() {
-            document.getElementById('signupModal').classList.add('active');
-        };
-
-        document.getElementById('loginBtn').onclick = function() {
-            const username = document.getElementById('loginUsername').value.trim();
-            if (username) {
-                alert('تم تسجيل الدخول باسم: ' + username);
-                hideModals();
-            } else {
-                alert('الرجاء إدخال اسم المستخدم');
-            }
-        };
-
-        document.getElementById('signupBtn').onclick = function() {
-            const fullName = document.getElementById('signupFullName').value.trim();
-            const username = document.getElementById('signupUsername').value.trim();
-            if (fullName && username) {
-                alert('تم إنشاء الحساب بنجاح!');
-                hideModals();
-            } else {
-                alert('الرجاء تعبئة جميع الحقول');
-            }
-        };
-
-        document.getElementById('googleAuthBtn').onclick = function() {
-            alert('سيتم تفعيل تسجيل Google قريباً');
-        };
-
-        document.getElementById('appleAuthBtn').onclick = function() {
-            alert('تسجيل Apple قيد التطوير');
-        };
-    </script>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, deleteDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -783,7 +688,10 @@
         const auth = getAuth(app);
         const googleProvider = new GoogleAuthProvider();
 
-        // متغيرات عامة
+        // إعدادات الرفع السحابي لصور الملف الشخصي عبر الـ Cloudinary
+        const CLOUD_NAME = "fit-app-storage"; 
+        const UPLOAD_PRESET = "zan_avatars"; 
+
         let MY_USERNAME = localStorage.getItem('fit_my_user_cached') || "";
         let profileData = { username: "", fullName: "", avatar: "", bio: "", youtube: "", following: [], followers: [], favorites: [], notifications: [], chats: {}, isVerified: false, lastUsernameChange: 0 };
         let videos = [];
@@ -801,10 +709,7 @@
         let finalRecordedBlobUrl = null;
         let activeChatUser = null;
 
-        // ===== دوال المساعدة =====
-        function pauseActiveVideos() {
-            document.querySelectorAll('.video-card video').forEach(v => v.pause());
-        }
+        document.addEventListener('touchstart', (e) => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 
         async function checkAuthStatus() {
             if (MY_USERNAME) {
@@ -814,6 +719,55 @@
                 document.getElementById('authScreen').style.display = 'flex';
             }
         }
+
+        // إيقاف الفيديوهات فوراً لمنع تداخل الأصوات بالخلفية
+        function pauseActiveVideos() {
+            document.querySelectorAll('.video-card video').forEach(v => v.pause());
+        }
+
+        // تفعيل الإيقاف التلقائي الذكي فور خروج اليوزر من الصفحة أو قفل الشاشة
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden) { pauseActiveVideos(); }
+        });
+
+        document.getElementById('googleAuthBtn').onclick = async function() {
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+                const user = result.user;
+                const generatedUser = "@" + user.email.split('@')[0].replace(/[^a-zA-Z0-9]/g, "");
+                MY_USERNAME = generatedUser;
+                localStorage.setItem('fit_my_user_cached', generatedUser);
+
+                const userSnap = await getDoc(doc(db, "users", generatedUser));
+                if (!userSnap.exists()) {
+                    profileData = { username: generatedUser, fullName: user.displayName || "صانع محتوى", avatar: user.photoURL || "", bio: "", youtube: "", following: [], followers: [], favorites: [], notifications: [], chats: {}, isVerified: false, lastUsernameChange: 0 };
+                    await setDoc(doc(db, "users", generatedUser), profileData);
+                }
+                document.getElementById('authScreen').style.display = 'none';
+                await initAppFromServer();
+            } catch (e) { alert("حدث خطأ في التسجيل التلقائي"); }
+        };
+
+        document.getElementById('manualAuthBtn').onclick = async function() {
+            let uInput = document.getElementById('authUsernameInput').value.trim();
+            const fInput = document.getElementById('authFullNameInput').value.trim();
+            if (!uInput || !fInput) return;
+            if (!uInput.startsWith('@')) uInput = '@' + uInput;
+
+            // التحقق من صحة صياغة اليوزر المدخل يدويًا
+            const usernameRegex = /^[a-zA-Z0-9._-]+$/;
+            if (!usernameRegex.test(uInput.replace('@', ''))) {
+                alert("خطأ: اسم المستخدم يجب أن يحتوي على حروف إنجليزية، أرقام، وعلامات (_ . -) فقط وبدون مسافات!");
+                return;
+            }
+
+            MY_USERNAME = uInput;
+            localStorage.setItem('fit_my_user_cached', uInput);
+            profileData = { username: uInput, fullName: fInput, avatar: "", bio: "", youtube: "", following: [], followers: [], favorites: [], notifications: [], chats: {}, isVerified: false, lastUsernameChange: 0 };
+            await setDoc(doc(db, "users", uInput), profileData);
+            document.getElementById('authScreen').style.display = 'none';
+            await initAppFromServer();
+        };
 
         async function initAppFromServer() {
             const docSnap = await getDoc(doc(db, "users", MY_USERNAME));
@@ -841,7 +795,6 @@
             renderVideos();
         }
 
-        // ===== دوال الكاميرا =====
         async function startCamera() {
             if (cameraStreamObj) { cameraStreamObj.getTracks().forEach(t => t.stop()); }
             const videoView = document.getElementById('cameraStreamView');
@@ -859,17 +812,8 @@
             } catch (e) { alert("يرجى إعطاء صلاحية الكاميرا والميكروفون"); }
         }
 
-        // ===== أزرار الكاميرا =====
-        document.getElementById('openCameraBtn').onclick = async () => { 
-            pauseActiveVideos(); 
-            document.getElementById('fullCameraScreen').classList.add('active'); 
-            await startCamera(); 
-        };
-
-        document.getElementById('cameraToggleFacingBtn').onclick = async () => { 
-            currentFacingMode = (currentFacingMode === "user") ? "environment" : "user"; 
-            await startCamera(); 
-        };
+        document.getElementById('openCameraBtn').onclick = async () => { pauseActiveVideos(); document.getElementById('fullCameraScreen').classList.add('active'); await startCamera(); };
+        document.getElementById('cameraToggleFacingBtn').onclick = async () => { currentFacingMode = (currentFacingMode === "user") ? "environment" : "user"; await startCamera(); };
         
         document.getElementById('flashToggleBtn').onclick = function() {
             isFlashOn = !isFlashOn;
@@ -896,7 +840,6 @@
             }
         };
 
-        // ===== زر التسجيل =====
         document.getElementById('captureBtnOuter').onclick = function() {
             if (!isRecording) {
                 isRecording = true; recordedChunks = [];
@@ -923,25 +866,17 @@
             }
         };
 
-        document.getElementById('closeCameraBtn').onclick = () => { 
-            if(cameraStreamObj) cameraStreamObj.getTracks().forEach(t => t.stop()); 
-            document.getElementById('fullCameraScreen').classList.remove('active'); 
-            startVideoObserver(); 
-        };
+        document.getElementById('closeCameraBtn').onclick = () => { if(cameraStreamObj) cameraStreamObj.getTracks().forEach(t => t.stop()); document.getElementById('fullCameraScreen').classList.remove('active'); startVideoObserver(); };
+        document.getElementById('cancelPublishBtn').onclick = () => { document.getElementById('publishDetailsModal').classList.remove('active'); startVideoObserver(); };
 
-        document.getElementById('cancelPublishBtn').onclick = () => { 
-            document.getElementById('publishDetailsModal').classList.remove('active'); 
-            startVideoObserver(); 
-        };
-
-        // ===== نشر الفيديو =====
+        // --- 🌐 دالة الرفع السحابية لحفظ الفيديو في Firebase 🌐 ---
         document.getElementById('submitVideoBtn').onclick = async function() {
             document.getElementById('publishDetailsModal').classList.remove('active');
-            
             const progressPopup = document.getElementById('uploadPopupProgress');
             const progressPercent = document.getElementById('uploadProgressPercent');
+            document.getElementById('uploadPopupTitle').innerText = "جاري الرفع السحابي النقي للمقطع...";
             progressPopup.style.display = 'flex';
-            progressPercent.innerText = `جاري التجهيز...`;
+            progressPercent.innerText = `15%... جاري التجهيز`;
 
             let videoFile;
             const fileInput = document.getElementById('galleryFileInput');
@@ -949,83 +884,74 @@
             if (fileInput.files && fileInput.files[0]) {
                 videoFile = fileInput.files[0];
             } else if (recordedChunks && recordedChunks.length > 0) {
-                videoFile = new Blob(recordedChunks, { type: 'video/mp4' });
+                videoFile = new Blob(recordedChunks, { type: mediaRecorder.mimeType });
             }
 
             if (!videoFile) {
-                alert("لم يتم العثور على الفيديو!");
+                alert("لم يتم العثور على ملف الفيديو المعالج!");
                 progressPopup.style.display = 'none';
                 return;
             }
 
+            const formData = new FormData();
+            formData.append('file', videoFile, `zan_video_${Date.now()}.mp4`);
+
             try {
-                const { getStorage, ref, uploadBytesResumable, getDownloadURL } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js");
-
-                const storage = getStorage(app);
-                const storageRef = ref(storage, `videos/${profileData.username}_${Date.now()}.mp4`);
-
-                const uploadTask = uploadBytesResumable(storageRef, videoFile);
-
-                uploadTask.on('state_changed', 
-                    (snapshot) => {
-                        const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                        progressPercent.innerText = `${progress}% جاري الرفع...`;
-                    },
-                    (error) => {
-                        console.error(error);
-                        progressPopup.style.display = 'none';
-                        alert("خطأ في رفع الفيديو: " + error.message);
-                    },
-                    async () => {
-                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                        
-                        const nowStr = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-                        
-                        const newVid = {
-                            id: Date.now(),
-                            src: downloadURL,
-                            user: profileData.username,
-                            userAvatar: profileData.avatar || "",
-                            isUserVerified: profileData.isVerified || false,
-                            desc: document.getElementById('finalDescInput').value.trim() || "مقطع جديد 🔥",
-                            likes: 0,
-                            time: nowStr,
-                            audioTrack: document.getElementById('videoAudioTrackSelect').value,
-                            comments: []
-                        };
-                        
-                        await setDoc(doc(db, "videos", newVid.id.toString()), newVid);
-                        
-                        progressPercent.innerText = `100% ✅ تم النشر!`;
-                        setTimeout(() => { progressPopup.style.display = 'none'; }, 800);
-
-                        fileInput.value = '';
-                        document.getElementById('finalDescInput').value = '';
-                        recordedChunks = [];
-                        
-                        await syncVideosList();
-                        alert("✅ تم رفع المقطع بنجاح على Firebase!");
-                    }
-                );
-
+                progressPercent.innerText = `50%... جاري الرفع السحابي`;
+                
+                const uploadResponse = await fetch('https://tmpfiles.org/api/v1/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const uploadResult = await uploadResponse.json();
+                
+                if (uploadResponse.ok && uploadResult.data && uploadResult.data.url) {
+                    progressPercent.innerText = `85%... ربط البيانات بـ Firebase`;
+                    
+                    const directVideoUrl = uploadResult.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
+                    const nowStr = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+                    
+                    const newVid = {
+                        id: Date.now(),
+                        src: directVideoUrl, 
+                        user: profileData.username,
+                        userAvatar: profileData.avatar || "",
+                        isUserVerified: profileData.isVerified || false,
+                        desc: document.getElementById('finalDescInput').value || "مقطع جديد 🔥",
+                        likes: 0,
+                        time: nowStr,
+                        audioTrack: document.getElementById('videoAudioTrackSelect').value,
+                        comments: []
+                    };
+                    
+                    await setDoc(doc(db, "videos", newVid.id.toString()), newVid);
+                    
+                    progressPercent.innerText = `100%! اكتمل`;
+                    setTimeout(() => { progressPopup.style.display = 'none'; }, 500);
+                    
+                    fileInput.value = '';
+                    document.getElementById('finalDescInput').value = '';
+                    await syncVideosList();
+                    alert("تم نشر مقطعك بنجاح وارتفع سحابياً! بيشتغل الحين عند كل أخوياك والمنصة كاملة 🎉");
+                } else {
+                    throw new Error("فشل الرفع السحابي الخارجي");
+                }
             } catch (error) {
                 console.error(error);
                 progressPopup.style.display = 'none';
-                alert("حدث خطأ: " + error.message);
+                alert("حدث خطأ في الرفع السحابي للملف! تأكد من اتصال الإنترنت وحاول مجدداً.");
             }
         };
 
-        // ===== رفع الصورة الشخصية =====
-        const CLOUD_NAME = "fit-app-storage"; 
-        const UPLOAD_PRESET = "zan_avatars"; 
-
+        // --- 📸 معالجة تغيير صورة البروفايل مباشرة من الاستوديو سحابياً 📸 ---
         document.getElementById('avatarFileInputHidden').onchange = async function(e) {
             const file = e.target.files[0];
             if (!file) return;
 
             const progressPopup = document.getElementById('uploadPopupProgress');
             const progressPercent = document.getElementById('uploadProgressPercent');
-            document.getElementById('uploadPopupTitle').innerText = "جاري رفع الصورة الشخصية...";
+            document.getElementById('uploadPopupTitle').innerText = "جاري رفع الصورة الشخصية سحابياً...";
             progressPopup.style.display = 'flex';
             progressPercent.innerText = "جاري المعالجة والرفع... ⏳";
 
@@ -1043,7 +969,10 @@
                 if (uploadResult.secure_url) {
                     const onlineUrl = uploadResult.secure_url;
                     document.getElementById('editAvatarPreviewImg').src = onlineUrl;
+                    
+                    // الاحتفاظ بالرابط في ذاكرة الواجهة لحين الضغط على حفظ
                     document.getElementById('editAvatarPreviewImg').dataset.pendingUrl = onlineUrl;
+                    
                     progressPercent.innerText = "اكتمل الرفع بنجاح! 🎉";
                     setTimeout(() => { progressPopup.style.display = 'none'; }, 600);
                 } else {
@@ -1055,11 +984,10 @@
             } catch (err) {
                 console.error(err);
                 progressPopup.style.display = 'none';
-                alert("حدث خطأ أثناء الرفع السحابي للصورة.");
+                alert("حدث خطأ أثناء الرفع السحابي للصورة. تم استخدام العرض المؤقت.");
             }
         };
 
-        // ===== عرض الفيديوهات =====
         function renderVideos() {
             const container = document.getElementById('videoContainer');
             container.innerHTML = '';
@@ -1186,19 +1114,12 @@
                     await updateDoc(doc(db, "users", profileData.username), { favorites: profileData.favorites });
                 };
 
-                card.querySelector('.comment-btn').onclick = (e) => { 
-                    e.stopPropagation(); 
-                    pauseActiveVideos(); 
-                    activeVideoId = vid.id; 
-                    document.getElementById('commentsModal').classList.add('active'); 
-                    renderCommentsList(); 
-                };
+                card.querySelector('.comment-btn').onclick = (e) => { e.stopPropagation(); pauseActiveVideos(); activeVideoId = vid.id; document.getElementById('commentsModal').classList.add('active'); renderCommentsList(); };
                 container.appendChild(card);
             });
             startVideoObserver();
         }
 
-        // ===== دوال مساعدة =====
         window.deleteCurrentVideo = async function(id) {
             if(confirm("هل أنت متأكد تماماً أنك تبي تحذف هذا المقطع نهائياً من المنصة؟")) {
                 await deleteDoc(doc(db, "videos", id.toString()));
@@ -1220,19 +1141,54 @@
             setTimeout(() => heart.remove(), 550);
         }
 
-        function setupModalOutsideClick(modalId) {
+        const setupModalOutsideClick = (modalId) => {
             const modalEl = document.getElementById(modalId);
-            modalEl.onclick = function(e) { 
-                if (e.target === modalEl) { 
-                    modalEl.classList.remove('active'); 
-                    startVideoObserver(); 
-                } 
-            };
-        }
-
+            modalEl.onclick = function(e) { if (e.target === modalEl) { modalEl.classList.remove('active'); startVideoObserver(); } };
+        };
         ['commentsModal', 'publishDetailsModal', 'inboxModal', 'activeChatModal', 'notificationsModal', 'shareModal', 'profileModal', 'editProfileModal', 'usersListModal'].forEach(id => setupModalOutsideClick(id));
 
-        // ===== الملف الشخصي =====
+        // --- 👑 لوحة تحكم الأدمن للفحص والتوثيق الحصري لحسابك الإداري _v32 👑 ---
+        function renderAdminVerifyButton(profileOwnerUsername, isOwnerAlreadyVerified) {
+            const currentLoggedInUser = profileData.username;
+            const verifyBtnContainer = document.getElementById('adminSecretVerifyContainer');
+            
+            if (!verifyBtnContainer) return;
+
+            // تظهر اللوحة الإدارية والأزرار فقط إذا كان اليوزر الحالي المسجل هو الأدمن @_v32 ويتصفح شخصاً آخر
+            if (currentLoggedInUser === "@_v32" && currentLoggedInUser !== profileOwnerUsername) {
+                verifyBtnContainer.innerHTML = `
+                    <div style="background: rgba(29, 161, 242, 0.05); padding: 10px; border-radius: 12px; margin: 10px auto; border: 1px dashed var(--verify-color); max-width: 90%;">
+                        <p style="font-size: 0.75rem; color: var(--verify-color); font-weight: bold; margin-bottom: 6px;">لوحة الإدارة الإشرافية ⚙️</p>
+                        <div style="display:flex; gap: 8px; justify-content: center;">
+                            <button id="adminVerifyBtnAction" style="background: var(--verify-color); color:#fff; border:none; padding:6px 12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.75rem;">
+                                ${isOwnerAlreadyVerified ? 'تم التوثيق ☑️' : 'توثيق الحساب'}
+                            </button>
+                            <button id="adminUnverifyBtnAction" style="background: #ff2b55; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.75rem;">
+                                إلغاء التوثيق
+                            </button>
+                        </div>
+                    </div>`;
+                    
+                document.getElementById('adminVerifyBtnAction').onclick = async function() {
+                    const userRef = doc(db, "users", profileOwnerUsername);
+                    await updateDoc(userRef, { isVerified: true });
+                    alert(`تم توثيق حساب ${profileOwnerUsername} رسميًا بالشارة الزرقاء ☑️`);
+                    document.getElementById('profileModal').classList.remove('active');
+                    openUserProfile(profileOwnerUsername);
+                };
+
+                document.getElementById('adminUnverifyBtnAction').onclick = async function() {
+                    const userRef = doc(db, "users", profileOwnerUsername);
+                    await updateDoc(userRef, { isVerified: false });
+                    alert(`تم إلغاء التوثيق عن حساب ${profileOwnerUsername}.`);
+                    document.getElementById('profileModal').classList.remove('active');
+                    openUserProfile(profileOwnerUsername);
+                };
+            } else {
+                verifyBtnContainer.innerHTML = ""; 
+            }
+        }
+
         window.openUserProfile = async function(username) {
             pauseActiveVideos();
             targetProfileUsername = username;
@@ -1246,6 +1202,8 @@
             }
 
             document.getElementById('profDisplayFullName').innerText = scopeData.fullName || "عضو في ZAN";
+            
+            // عرض النبذة التعريفية (البايو) ورابط اليوتيوب بالبروفايل
             document.getElementById('profDisplayBio').innerText = scopeData.bio || "لا توجد نبذة تعريفية.";
             
             const ytBtn = document.getElementById('profDisplayYoutube');
@@ -1259,6 +1217,9 @@
             if (scopeData.isVerified) {
                 document.getElementById('profDisplayUsername').innerHTML = `${username} <span class="verify-badge">✔️</span>`;
             }
+
+            // استدعاء لوحة تحكم الأدمن الحصرية لفحص يوزر @_v32
+            renderAdminVerifyButton(username, scopeData.isVerified);
 
             const avatarContainer = document.getElementById('profAvatarContainer');
             if(scopeData.avatar) {
@@ -1310,7 +1271,7 @@
             renderProfileGrid();
         };
 
-        // ===== حفظ التعديلات =====
+        // --- 🛡️ حفظ تعديلات الملف الشخصي بشروط اليوزر والمؤقت الصارم 🛡️ ---
         document.getElementById('saveProfileEditsBtn').onclick = async function() {
             let newUsername = document.getElementById('editUsernameInput').value.trim();
             const newName = document.getElementById('editFullNameInput').value.trim();
@@ -1373,7 +1334,6 @@
             openUserProfile(profileData.username);
         };
 
-        // ===== عرض قوائم المتابعين =====
         document.getElementById('statBtnFollowing').onclick = () => showUsersListModal("الحسابات التي يتابعها", "following");
         document.getElementById('statBtnFollowers').onclick = () => showUsersListModal("المتابِعون للحساب", "followers");
 
@@ -1421,34 +1381,15 @@
             displayList.forEach(v => { grid.innerHTML += `<div class="grid-video-thumb"><video src="${v.src}" muted></video></div>`; });
         }
 
-        document.getElementById('pTabMyVideos').onclick = function() { 
-            currentProfileTab = "videos"; 
-            this.classList.add('active'); 
-            document.getElementById('pTabFavorites').classList.remove('active'); 
-            renderProfileGrid(); 
-        };
+        document.getElementById('pTabMyVideos').onclick = function() { currentProfileTab = "videos"; this.classList.add('active'); document.getElementById('pTabFavorites').classList.remove('active'); renderProfileGrid(); };
+        document.getElementById('pTabFavorites').onclick = function() { currentProfileTab = "favorites"; this.classList.add('active'); document.getElementById('pTabMyVideos').classList.remove('active'); renderProfileGrid(); };
+        document.getElementById('myProfileBtn').onclick = () => { currentProfileTab = "videos"; openUserProfile(profileData.username); };
 
-        document.getElementById('pTabFavorites').onclick = function() { 
-            currentProfileTab = "favorites"; 
-            this.classList.add('active'); 
-            document.getElementById('pTabMyVideos').classList.remove('active'); 
-            renderProfileGrid(); 
-        };
-
-        document.getElementById('myProfileBtn').onclick = () => { 
-            currentProfileTab = "videos"; 
-            openUserProfile(profileData.username); 
-        };
-
-        // ===== المشاركة =====
         window.openShareScreen = function(id) {
             pauseActiveVideos();
-            activeVideoId = id; 
-            document.getElementById('shareModal').classList.add('active');
+            activeVideoId = id; document.getElementById('shareModal').classList.add('active');
             const container = document.getElementById('shareFriendsList'); container.innerHTML = '';
-            if(profileData.following.length === 0) { 
-                container.innerHTML = `<p style="color:#555; text-align:center; padding:10px;">تابع الأصدقاء أولاً لتتمكن من إرسال المقطع لهم!</p>`; return; 
-            }
+            if(profileData.following.length === 0) { container.innerHTML = `<p style="color:#555; text-align:center; padding:10px;">تابع الأصدقاء أولاً لتتمكن من إرسال المقطع لهم!</p>`; return; }
             profileData.following.forEach(friend => {
                 container.innerHTML += `
                     <div class="friend-select-item" onclick="sendVideoToFriend('${friend}')">
@@ -1478,18 +1419,14 @@
             startVideoObserver();
         };
 
-        // ===== الرسائل =====
         document.getElementById('openInboxBtn').onclick = function() {
             pauseActiveVideos();
             document.getElementById('inboxModal').classList.add('active');
             const listContainer = document.getElementById('inboxFriendsList'); listContainer.innerHTML = '';
             const activeChatPartners = Object.keys(profileData.chats || {});
-            if(activeChatPartners.length === 0) { 
-                listContainer.innerHTML = `<p style="color:#555; text-align:center; padding:20px;">لا توجد رسائل حالياً</p>`; return; 
-            }
+            if(activeChatPartners.length === 0) { listContainer.innerHTML = `<p style="color:#555; text-align:center; padding:20px;">لا توجد رسائل حالياً</p>`; return; }
             activeChatPartners.forEach(partner => {
-                const lastMsgArray = profileData.chats[partner]; 
-                const lastMsg = lastMsgArray[lastMsgArray.length - 1];
+                const lastMsgArray = profileData.chats[partner]; const lastMsg = lastMsgArray[lastMsgArray.length - 1];
                 listContainer.innerHTML += `
                     <div class="friend-select-item" onclick="openDirectChat('${partner}')">
                         <div class="comment-avatar"><svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:#fff;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4z"/></svg></div>
@@ -1499,8 +1436,7 @@
         };
 
         window.openDirectChat = function(username) {
-            activeChatUser = username; 
-            document.getElementById('inboxModal').classList.remove('active');
+            activeChatUser = username; document.getElementById('inboxModal').classList.remove('active');
             document.getElementById('activeChatModal').classList.add('active');
             document.getElementById('activeChatTitle').innerText = `المحادثة مع ${username}`;
             renderChatMessages();
@@ -1517,8 +1453,7 @@
         }
 
         document.getElementById('sendChatMessageBtn').onclick = async function() {
-            const input = document.getElementById('chatMessageInput'); 
-            if(!input.value.trim()) return;
+            const input = document.getElementById('chatMessageInput'); if(!input.value.trim()) return;
             const timeStr = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
             const payload = { id: Date.now(), sender: profileData.username, text: input.value.trim(), time: timeStr };
             profileData.chats[activeChatUser].push(payload);
@@ -1531,31 +1466,24 @@
                 fData.chats[profileData.username].push(payload);
                 await updateDoc(doc(db, "users", activeChatUser), { chats: fData.chats });
             }
-            input.value = ''; 
-            renderChatMessages();
+            input.value = ''; renderChatMessages();
         };
 
-        // ===== التنبيهات =====
         document.getElementById('openNotificationsBtn').onclick = function() {
             pauseActiveVideos();
             document.getElementById('notiBadge').style.display = 'none';
             document.getElementById('notificationsModal').classList.add('active');
             const container = document.getElementById('notificationsListContainer'); container.innerHTML = '';
-            if(profileData.notifications.length === 0) { 
-                container.innerHTML = `<p style="color:#555; text-align:center; padding:20px;">لا توجد تنبيهات جديدة</p>`; return; 
-            }
+            if(profileData.notifications.length === 0) { container.innerHTML = `<p style="color:#555; text-align:center; padding:20px;">لا توجد تنبيهات جديدة</p>`; return; }
             profileData.notifications.forEach(n => {
                 container.innerHTML += `<div class="comment-wrapper"><div class="comment-avatar"><svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:#fff;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4z"/></svg></div><div><span><b>${n.from}</b> ${n.text}</span></div></div>`;
             });
         };
 
-        // ===== التعليقات =====
         function renderCommentsList() {
             const container = document.getElementById('commentsListContainer'); container.innerHTML = '';
             const vid = videos.find(v => v.id === activeVideoId);
-            if (!vid.comments || vid.comments.length === 0) { 
-                container.innerHTML = `<p style="color:#555; text-align:center; padding:10px;">لا توجد تعليقات بعد</p>`; return; 
-            }
+            if (!vid.comments || vid.comments.length === 0) { container.innerHTML = `<p style="color:#555; text-align:center; padding:10px;">لا توجد تعليقات بعد</p>`; return; }
             vid.comments.forEach(c => {
                 container.innerHTML += `
                     <div class="comment-wrapper">
@@ -1571,8 +1499,7 @@
         }
 
         document.getElementById('sendCommentBtn').onclick = async function() {
-            const input = document.getElementById('newCommentInput'); 
-            if (!input.value.trim()) return;
+            const input = document.getElementById('newCommentInput'); if (!input.value.trim()) return;
             const vid = videos.find(v => v.id === activeVideoId);
             if(!vid.comments) vid.comments = [];
             
@@ -1594,26 +1521,12 @@
                 }
             }
 
-            input.value = ''; 
-            renderCommentsList(); 
-            syncVideosList();
+            input.value = ''; renderCommentsList(); syncVideosList();
         };
 
-        // ===== التبويبات =====
-        document.getElementById('tabFeedForYou').onclick = function() { 
-            currentFeedTab = "foryou"; 
-            this.classList.add('active'); 
-            document.getElementById('tabFeedFollowing').classList.remove('active'); 
-            renderVideos(); 
-        };
-        document.getElementById('tabFeedFollowing').onclick = function() { 
-            currentFeedTab = "following"; 
-            this.classList.add('active'); 
-            document.getElementById('tabFeedForYou').classList.remove('active'); 
-            renderVideos(); 
-        };
+        document.getElementById('tabFeedForYou').onclick = function() { currentFeedTab = "foryou"; this.classList.add('active'); document.getElementById('tabFeedFollowing').classList.remove('active'); renderVideos(); };
+        document.getElementById('tabFeedFollowing').onclick = function() { currentFeedTab = "following"; this.classList.add('active'); document.getElementById('tabFeedForYou').classList.remove('active'); renderVideos(); };
 
-        // ===== مراقب الفيديو =====
         let observer;
         function startVideoObserver() {
             if(observer) observer.disconnect();
@@ -1623,21 +1536,14 @@
                     const progressBar = entry.target.querySelector('.progress-bar');
                     const anyActiveModal = document.querySelector('.modal.active');
                     if (entry.isIntersecting && video && !anyActiveModal) {
-                        video.currentTime = 0; 
-                        video.muted = false; 
-                        video.play().catch(() => {});
-                        video.ontimeupdate = () => { 
-                            progressBar.style.width = `${(video.currentTime / video.duration) * 100}%`; 
-                        };
-                    } else { 
-                        if(video) video.pause(); 
-                    }
+                        video.currentTime = 0; video.muted = false; video.play().catch(() => {});
+                        video.ontimeupdate = () => { progressBar.style.width = `${(video.currentTime / video.duration) * 100}%`; };
+                    } else { if(video) video.pause(); }
                 });
             }, { root: null, threshold: 0.6 });
             document.querySelectorAll('.video-card').forEach(card => observer.observe(card));
         }
 
-        // ===== بدء التشغيل =====
         checkAuthStatus();
     </script>
 </body>
