@@ -302,7 +302,6 @@
         }
         .modal.active { opacity: 1; pointer-events: auto; }
         
-        /* 1. حل مشكلة عدم القدرة على النزول تحت بالبروفايل (السكرول) */
         .modal-card { 
             background: var(--card-bg); 
             width: 100%; 
@@ -312,7 +311,7 @@
             border-top-right-radius: 24px; 
             border: 1px solid rgba(255, 255, 255, 0.05); 
             max-height: 90vh; 
-            overflow-y: auto; /* تم تفعيل التمرير العمودي للمحتوى الطويل */
+            overflow-y: auto;
             pointer-events: auto; 
             transform: translateY(100%);
             transition: transform 0.25s ease;
@@ -323,7 +322,6 @@
         .full-camera-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 600; display: flex; flex-direction: column; justify-content: space-between; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .full-camera-screen.active { opacity: 1; pointer-events: auto; }
         
-        /* 📸 الفلاش الأمامي المطور 📸 */
         .front-flash-overlay { 
             position: absolute; 
             top: 0; 
@@ -384,18 +382,16 @@
         .action-btn.submit { background: #fff; color: #000; }
         .action-btn.cancel { background: #16161a; color: #fff; }
 
-        /* إحصائيات وقوائم الأصدقاء */
         .profile-stats-row { display: flex; justify-content: center; gap: 30px; margin: 15px 0; }
         .stat-item { text-align: center; cursor: pointer; }
         .stat-num { font-size: 1.2rem; font-weight: bold; display: block; color: #fff; }
         .stat-label { font-size: 0.8rem; color: #aaa; }
 
-        /* ستايل مخصص لعرض البايو وروابط اليوتيوب بالبروفايل */
         .profile-bio-display {
             font-size: 0.9rem;
             color: #ddd;
             margin: 12px 10px;
-            white-space: pre-wrap; /* يدعم النزول لسطر جديد للترتيب */
+            white-space: pre-wrap; 
             text-align: center;
             line-height: 1.4;
         }
@@ -437,14 +433,12 @@
         .chat-bubble.me { background: #fff; color: #000; align-self: flex-start; font-weight: 500; }
         .chat-bubble.other { background: #151515; color: #fff; align-self: flex-end; border: 1px solid #222; }
 
-        /* ستايل أفاتار تعديل الحساب المطور */
         .avatar-edit-box { position: relative; width: 90px; height: 90px; margin: 10px auto 20px; cursor: pointer; }
         .avatar-edit-box img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #fff; }
         .avatar-edit-box .overlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; opacity:0; transition:0.2s; color:#fff; }
         .avatar-edit-box:hover .overlay { opacity: 1; }
         .verify-badge { color: var(--verify-color); font-size: 14px; display: inline-block; }
         
-        /* زر تسجيل الخروج الفخم */
         .logout-btn-zan {
             width: 100%;
             padding: 14px;
@@ -714,24 +708,23 @@
         const auth = getAuth(app);
         const googleProvider = new GoogleAuthProvider();
 
-        // إعدادات الرفع السحابي لصور الملف الشخصي عبر الـ Cloudinary
         const CLOUD_NAME = "fit-app-storage";
         const UPLOAD_PRESET = "zan_avatars";
 
         let MY_USERNAME = localStorage.getItem('fit_my_user_cached') || "";
+        
+        // 1. تفريغ وتنظيف الحسابات السابقة والمصفوفات بشكل كامل على واجهة التطبيق الحالية
         let profileData = { username: "", fullName: "", avatar: "", bio: "", youtube: [], following: [], followers: [], favorites: [], notifications: [], chats: {}, isVerified: false, lastUsernameChange: 0 };
         let videos = [];
         let currentFeedTab = "foryou"; 
         let activeChatWith = "";
         let activeChatInterval = null;
 
-        // تشغيل زر تسجيل الخروج
         document.getElementById('zanLogoutBtn').onclick = function() {
             localStorage.removeItem('fit_my_user_cached');
             window.location.reload();
         };
 
-        // دالة التحقق من تسجيل الدخول وحالة الحساب
         async function checkAuthStatus() {
             if (MY_USERNAME) {
                 document.getElementById('authScreen').style.display = 'none';
@@ -750,7 +743,6 @@
             }
         }
 
-        // تسجيل الدخول العادي المحلي
         document.getElementById('manualAuthBtn').onclick = async function() {
             let uInput = document.getElementById('authUsernameInput').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, "");
             let fInput = document.getElementById('authFullNameInput').value.trim();
@@ -772,7 +764,6 @@
             }
         };
 
-        // تسجيل الدخول عبر Google
         document.getElementById('googleAuthBtn').onclick = async function() {
             try {
                 const result = await signInWithPopup(auth, googleProvider);
@@ -797,7 +788,6 @@
             }
         };
 
-        // تحميل الفيديوهات من السيرفر
         async function loadVideos() {
             try {
                 const querySnapshot = await getDocs(collection(db, "videos"));
@@ -810,7 +800,6 @@
             } catch(e) { console.error(e); }
         }
 
-        // عرض الفيديوهات داخل الحاوية الرئيسية وسرعة الاستجابة
         function renderVideos() {
             const container = document.getElementById('videoContainer');
             container.innerHTML = "";
@@ -879,14 +868,12 @@
                     </div>
                 `;
 
-                // دعم نقرة مرتين للإعجاب المطور والفاخر
                 let lastTap = 0;
                 card.addEventListener('click', function(e) {
                     if (e.target.tagName === 'BUTTON' || e.target.closest('button') || e.target.closest('.user-avatar-main') || e.target.tagName === 'H3') return;
                     
                     const now = Date.now();
                     if((now - lastTap) < 300) {
-                        // ضغطة مزدوجة
                         const heart = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
                         heart.setAttribute('viewBox', '0 0 24 24');
                         heart.setAttribute('class', 'floating-heart');
@@ -901,7 +888,6 @@
                             window.toggleLikeVideo(vid.id, btnLike);
                         }
                     } else {
-                        // ضغطة واحدة: كتم وتشغيل الصوت النقي التلقائي
                         const video = card.querySelector('video');
                         if(video) {
                             video.muted = !video.muted;
@@ -916,7 +902,6 @@
             startVideoObserver();
         }
 
-        // إشعار الوقت وتنسيقه ذكياً
         window.formatZanTime = function(timestamp) {
             if(!timestamp) return "";
             const diff = Date.now() - timestamp;
@@ -929,7 +914,6 @@
             return new Date(timestamp).toLocaleDateString('ar-SA');
         };
 
-        // تفعيل الإعجاب السريع والربط المتين بالسيرفر
         window.toggleLikeVideo = async function(id, btnElement) {
             const videoRef = doc(db, "videos", id);
             const vIndex = videos.findIndex(v => v.id === id);
@@ -942,7 +926,6 @@
             } else {
                 currentLikes.push(MY_USERNAME);
                 btnElement.classList.add('liked');
-                // إرسال تنبيه لصاحب المقطع الأصلي
                 if(videos[vIndex].username !== MY_USERNAME) {
                     window.sendZanNotification(videos[vIndex].username, "like", `أعجب بمقطعك السينمائي الجديد.`);
                 }
@@ -952,7 +935,6 @@
             await updateDoc(videoRef, { likes: currentLikes });
         };
 
-        // حفظ وتفضيل المقطع
         window.toggleFavoriteVideo = async function(id, btnElement) {
             const userRef = doc(db, "users", MY_USERNAME);
             if(!profileData.favorites) profileData.favorites = [];
@@ -967,7 +949,6 @@
             await updateDoc(userRef, { favorites: profileData.favorites });
         };
 
-        // حذف مقطع فيديو نهائياً فوراً
         window.deleteZanVideo = async function(id) {
             if(confirm("هل أنت متأكد من حذف هذا المقطع نهائياً من سيرفر زان؟")) {
                 await deleteDoc(doc(db, "videos", id));
@@ -976,7 +957,6 @@
             }
         };
 
-        // فتح التعليقات المباشرة
         let activeCommentVideoId = "";
         window.openComments = async function(id) {
             activeCommentVideoId = id;
@@ -1032,7 +1012,6 @@
             await updateDoc(videoRef, { comments: arrayUnion(newComment) });
             input.value = "";
             
-            // إرسال تنبيه لصاحب المقطع
             const vIndex = videos.findIndex(v => v.id === activeCommentVideoId);
             if(vIndex !== -1 && videos[vIndex].username !== MY_USERNAME) {
                 window.sendZanNotification(videos[vIndex].username, "comment", `علق على مقطعك: "${txt.substring(0, 20)}..."`);
@@ -1041,7 +1020,6 @@
             loadCommentsList(activeCommentVideoId);
         };
 
-        // نظام تنبيهات وإشعارات منصة زان الفورية والذكية
         window.sendZanNotification = async function(targetUser, type, text) {
             try {
                 const targetRef = doc(db, "users", targetUser);
@@ -1085,7 +1063,6 @@
                 return;
             }
 
-            // الترتيب من الأحدث للأقدم
             const sortedNotis = [...list].sort((a,b) => b.createdAt - a.createdAt);
 
             sortedNotis.forEach(n => {
@@ -1104,7 +1081,6 @@
             });
         };
 
-        // صندوق الرسائل الواردة والمحادثات
         document.getElementById('openInboxBtn').onclick = async function() {
             document.getElementById('inboxModal').classList.add('active');
             const listContainer = document.getElementById('inboxFriendsList');
@@ -1142,7 +1118,6 @@
             }
         };
 
-        // فتح محادثة مباشرة خاصة سريعة وفائقة النقاء
         window.openDirectChatZan = function(targetUser) {
             activeChatWith = targetUser;
             document.getElementById('activeChatTitle').innerText = `المحادثة مع @${targetUser}`;
@@ -1153,7 +1128,6 @@
             activeChatInterval = setInterval(loadChatMessages, 3500); 
         };
 
-        // إغلاق المحادثة لإيقاف التحديث المستمر تفادياً للاستهلاك
         document.getElementById('activeChatModal').addEventListener('click', function(e) {
             if(e.target.classList.contains('cancel')) {
                 if(activeChatInterval) { clearInterval(activeChatInterval); activeChatInterval = null; }
@@ -1210,7 +1184,6 @@
             loadChatMessages();
         };
 
-        // نافذة مشاركة المقطع وإرساله سريعا لجروب الأصدقاء
         let activeShareVideoId = "";
         window.openShareZan = async function(vidId) {
             activeShareVideoId = vidId;
@@ -1263,7 +1236,6 @@
             document.getElementById('shareModal').classList.remove('active');
         };
 
-        // فتح البروفايل الفاخر لـ زان وتنسيق الجريد ثلاثي الأبعاد
         window.openUserProfile = async function(username) {
             document.getElementById('profileModal').classList.add('active');
             
@@ -1279,11 +1251,9 @@
             
             const uData = uDoc.data();
             
-            // وضع الفلاش المطور للأفاتار
             document.getElementById('profAvatarContainer').innerHTML = uData.avatar ? `<img src="${uData.avatar}" style="width:100%; height:100%; object-fit:cover;">` : `<svg viewBox="0 0 24 24" style="width:34px; height:34px; fill:#fff;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4z"/></svg>`;
             document.getElementById('profDisplayFullName').innerText = uData.fullName || username;
             
-            // تفعيل عرض البايو واليوتيوب
             if(uData.bio) {
                 document.getElementById('profDisplayBio').innerText = uData.bio;
             } else {
@@ -1296,18 +1266,15 @@
                 ytBtn.style.display = 'inline-flex';
             }
 
-            // علامة التوثيق الفخمة لـ فارس ولمن يستحقها
             if(username === "fares_zan" || username === "v3223v" || uData.isVerified) {
                 document.getElementById('adminSecretVerifyContainer').innerHTML = `<span class="verify-badge" style="background:rgba(29,161,242,0.1); padding:4px 12px; border-radius:20px; font-weight:bold; font-size:0.8rem;">✓ حساب توثيق نقي معتمد ملكي</span>`;
             }
 
-            // الإحصائيات
             const followingCount = uData.following ? uData.following.length : 0;
             const followersCount = uData.followers ? uData.followers.length : 0;
             document.getElementById('profStatFollowing').innerText = followingCount;
             document.getElementById('profStatFollowers').innerText = followersCount;
 
-            // أزرار التحكم بالبروفايل
             const actionContainer = document.getElementById('profileActionContainer');
             actionContainer.innerHTML = "";
 
@@ -1319,9 +1286,8 @@
                 editBtn.onclick = () => {
                     document.getElementById('profileModal').classList.remove('active');
                     document.getElementById('editProfileModal').classList.add('active');
-                    // ملء البيانات الحالية بالإنبوكس تلقائياً لسرعة العمل
                     document.getElementById('editUsernameInput').value = profileData.username || "";
-                    document.getElementById('editUsernameInput').disabled = true; // نمنع تعديل اليوزر الأساسي لمنع مشاكل Firebase الحذف والإنشاء القديمة
+                    document.getElementById('editUsernameInput').disabled = true; 
                     document.getElementById('editFullNameInput').value = profileData.fullName || "";
                     document.getElementById('editBioInput').value = profileData.bio || "";
                     document.getElementById('editYoutubeInput').value = profileData.youtube || "";
@@ -1329,7 +1295,6 @@
                 };
                 actionContainer.appendChild(editBtn);
             } else {
-                // زر متابعة وإلغاء متابعة فوري قوي
                 const followBtn = document.createElement('button');
                 const isFollowing = profileData.following && profileData.following.includes(username);
                 followBtn.className = isFollowing ? "action-btn cancel" : "action-btn submit";
@@ -1351,11 +1316,10 @@
                         profileData.following.push(username);
                         window.sendZanNotification(username, "follow", `بدأ في متابعة حسابك المتميز الحين الحين!`);
                     }
-                    window.openUserProfile(username); // إعادة تحديث فوري لعرض الأرقام
+                    window.openUserProfile(username); 
                 };
                 actionContainer.appendChild(followBtn);
 
-                // إضافة زر رسالة خاصة سريع تحت المتابعة مباشرة لزيادة الفخامة والربط
                 const msgBtn = document.createElement('button');
                 msgBtn.className = "action-btn cancel";
                 msgBtn.style.marginTop = "8px";
@@ -1367,10 +1331,8 @@
                 actionContainer.appendChild(msgBtn);
             }
 
-            // عرض مقاطع الفيديو الخاصة بهذا المستخدم داخل الجريد الفاخر
             window.loadProfileGridZan(username, "myvideos");
 
-            // تفعيل التنقل داخل البروفايل (مقاطعي / المفضلة)
             document.getElementById('pTabMyVideos').onclick = function() {
                 document.querySelectorAll('.p-tab').forEach(t => t.classList.remove('active'));
                 this.classList.add('active');
@@ -1383,7 +1345,6 @@
             };
         };
 
-        // جلب المقاطع لجريد البروفايل بدقة 4K
         window.loadProfileGridZan = function(username, type) {
             const gridContainer = document.getElementById('profileGridContainer');
             gridContainer.innerHTML = "";
@@ -1392,7 +1353,6 @@
             if(type === "myvideos") {
                 itemsToDisplay = videos.filter(v => v.username === username);
             } else {
-                // المفضلة
                 let favList = (username === MY_USERNAME) ? (profileData.favorites || []) : [];
                 itemsToDisplay = videos.filter(v => favList.includes(v.id));
             }
@@ -1407,7 +1367,6 @@
                 item.className = 'grid-video-thumb';
                 item.onclick = () => {
                     document.getElementById('profileModal').classList.remove('active');
-                    // سكرول مباشر للفيديو المختار وعرضه بنقاء
                     const container = document.getElementById('videoContainer');
                     const targetCard = container.querySelector(`[data-id="${v.id}"]`);
                     if(targetCard) {
@@ -1419,7 +1378,6 @@
             });
         };
 
-        // فتح وعرض قوائم المتابعين والمتابعين من فوق الإحصائيات الفخمة
         document.getElementById('statBtnFollowing').onclick = () => window.openZanUsersListModal("following");
         document.getElementById('statBtnFollowers').onclick = () => window.openZanUsersListModal("followers");
 
@@ -1433,7 +1391,6 @@
             title.innerText = type === "following" ? "قائمة من يتابعهم ⚡" : "قائمة المتابِعون له 👥";
             content.innerHTML = `<p style="color:#666; text-align:center;">جاري مراجعة السيرفر النقي وقراءة الحسابات...</p>`;
 
-            // نحتاج معرفة اسم المستخدم المعروض حالياً في البروفايل من التكست
             let currentProfUser = document.getElementById('profDisplayUsername').innerText.replace("@", "");
             const uDoc = await getDoc(doc(db, "users", currentProfUser));
             if(!uDoc.exists()) return;
@@ -1470,7 +1427,6 @@
             }
         };
 
-        // الرفع المطور والمشفر لصور الأفاتار إلى خدمة Cloudinary الفخمة والنقية
         let avatarFileSelectedData = null;
         document.getElementById('avatarFileInputHidden').onchange = function(e) {
             const file = e.target.files[0];
@@ -1484,7 +1440,6 @@
             reader.readAsDataURL(file);
         };
 
-        // حل مشكلة تعديل البروفايل وحفظ التغييرات باستخدام updateDoc لضمان بقاء نفس الوثيقة واليوزر
         document.getElementById('saveProfileEditsBtn').onclick = async function() {
             const btn = this;
             const newFullName = document.getElementById('editFullNameInput').value.trim();
@@ -1499,7 +1454,6 @@
             try {
                 let finalAvatarUrl = profileData.avatar || "";
 
-                // إذا قام المستخدم باختيار صورة جديدة للأفاتار نقوم برفعها فوراً لـ Cloudinary
                 if(avatarFileSelectedData) {
                     const formData = new FormData();
                     formData.append("file", avatarFileSelectedData);
@@ -1515,7 +1469,6 @@
                     }
                 }
 
-                // الحفظ الذكي باستخدام updateDoc لضمان تعديل نفس ملف المستخدم الحالي
                 const userRef = doc(db, "users", MY_USERNAME);
                 await updateDoc(userRef, {
                     fullName: newFullName,
@@ -1524,7 +1477,6 @@
                     avatar: finalAvatarUrl
                 });
 
-                // تحديث الكاش المحلي المتين فوراً لسرعة الأداء
                 profileData.fullName = newFullName;
                 profileData.bio = newBio;
                 profileData.youtube = newYoutube;
@@ -1534,7 +1486,7 @@
                 avatarFileSelectedData = null; 
                 
                 document.getElementById('editProfileModal').classList.remove('active');
-                window.openUserProfile(MY_USERNAME); // عودة وعرض للملف الشخصي المحدث فوراً
+                window.openUserProfile(MY_USERNAME); 
 
             } catch(err) {
                 console.error(err);
@@ -1545,7 +1497,6 @@
             }
         };
 
-        // زر تفعيل الكاميرا المتقدمة والمصممة خصيصاً للهواتف النقالة
         let mediaRecorder;
         let recordedChunks = [];
         let cameraStreamObj = null;
@@ -1588,13 +1539,11 @@
             }
         };
 
-        // قلب الكاميرا (أمامية / خلفية) بنقاء تام وسرعة استجابة
         document.getElementById('cameraToggleFacingBtn').onclick = function() {
             activeFacingMode = (activeFacingMode === "user") ? "environment" : "user";
             window.startZanCameraStream();
         };
 
-        // 📸 تشغيل وإطفاء فلاش شاشة السيلفي الذكي 📸
         let isFrontFlashOn = false;
         document.getElementById('flashToggleBtn').onclick = function() {
             isFrontFlashOn = !isFrontFlashOn;
@@ -1608,13 +1557,11 @@
             }
         };
 
-        // زر التسجيل والتقاط اللحظات السينمائية المتميزة
         const captureBtnOuter = document.getElementById('captureBtnOuter');
         captureBtnOuter.onclick = function() {
             if(!cameraStreamObj) return;
             
             if(!isRecordingZan) {
-                // بدء التسجيل النقي
                 recordedChunks = [];
                 let options = { mimeType: 'video/webm;codecs=vp9,opus' };
                 if (!MediaRecorder.isTypeSupported(options.mimeType)) {
@@ -1633,7 +1580,6 @@
                 captureBtnOuter.classList.add('recording');
                 document.getElementById('recordingStatus').style.display = 'block';
             } else {
-                // إيقاف التسجيل
                 mediaRecorder.stop();
                 isRecordingZan = false;
                 captureBtnOuter.classList.remove('recording');
@@ -1641,7 +1587,6 @@
             }
         };
 
-        // اختيار فيديو جاهز من الاستوديو/المعرض بالهاتف فوراً
         document.getElementById('galleryTriggerBtn').onclick = () => document.getElementById('galleryFileInput').click();
         document.getElementById('galleryFileInput').onchange = function(e) {
             const file = e.target.files[0];
@@ -1649,10 +1594,8 @@
             window.openPublishDetailsZanModal(file);
         };
 
-        // فتح شاشة وتفاصيل نشر المقطع
         let currentZanVideoBlobToUpload = null;
         window.openPublishDetailsZanModal = function(videoBlobOrFile) {
-            // نغلق الكاميرا أولاً لتوفير المعالج والبطارية بالهاتف
             window.stopZanCameraStream();
             document.getElementById('fullCameraScreen').classList.remove('active');
             
@@ -1669,7 +1612,6 @@
             currentZanVideoBlobToUpload = null;
         };
 
-        // رفع المقطع للمنصة وربطه بالـ Cloudinary والـ Firebase الدقيق
         document.getElementById('submitVideoBtn').onclick = async function() {
             if(!currentZanVideoBlobToUpload) return;
             
@@ -1680,20 +1622,16 @@
             btnSubmit.disabled = true;
             btnSubmit.innerText = "جاري النشر وتجهيز الصوت النقي...";
 
-            // إظهار البوب أب المطور للرفع والنسبة المئوية
             const popup = document.getElementById('uploadPopupProgress');
             const percentText = document.getElementById('uploadProgressPercent');
             popup.style.display = 'flex';
             percentText.innerText = "0%";
 
             try {
-                // 🚀 الرفع السحابي النقي لـ Cloudinary 🚀
                 const formData = new FormData();
                 formData.append("file", currentZanVideoBlobToUpload);
-                // نستخدم نفس إعدادات الرفع المهيئة للفيديو
                 formData.append("upload_preset", "zan_avatars"); 
 
-                // محاكاة سريعة وذكية لنسبة الرفع لإعطاء مظهر احترافي فائق للمستخدم بالهاتف
                 let p = 0;
                 let progressInterval = setInterval(() => {
                     p += Math.floor(Math.random() * 12) + 5;
@@ -1715,7 +1653,6 @@
                     throw new Error("فشل الحصول على رابط رفع الفيديو السحابي السلس.");
                 }
 
-                // حفظ مستند المقطع بالكامل في وثائق Firebase
                 const videoId = "vid_" + Math.random().toString(36).substring(2, 11);
                 const videoDataObj = {
                     username: MY_USERNAME,
@@ -1751,15 +1688,12 @@
             }
         };
 
-        // زر فتح الملف الشخصي الرئيسي الخاص بي من الـ Navbar العلوي
         document.getElementById('myProfileBtn').onclick = () => window.openUserProfile(MY_USERNAME);
 
-        // نظام البحث المتطور عن الحسابات والمقاطع على السيرفر
         document.getElementById('searchBox').oninput = async function() {
             const txt = this.value.trim().toLowerCase();
             if(!txt) { loadVideos(); return; } 
 
-            // بحث ذكي في الفيديوهات المحلية المحملة أولاً لتسريع الأداء
             let matchedVids = videos.filter(v => v.description.toLowerCase().includes(txt) || v.username.toLowerCase().includes(txt));
             
             const container = document.getElementById('videoContainer');
@@ -1770,9 +1704,7 @@
                 return;
             }
 
-            // نقوم بعرض المقاطع المطابقة فوراً
             matchedVids.forEach(vid => {
-                // يعاد تدوير كاردات العرض لتوحيد الواجهة
                 const card = document.createElement('div');
                 card.className = 'video-card';
                 card.dataset.id = vid.id;
@@ -1808,7 +1740,6 @@
             startVideoObserver();
         };
 
-        // التنقل والتبديل المريح بين أقسام (لك / أتابعه) بالفيد الرئيسي
         document.getElementById('tabFeedForYou').onclick = function() {
             currentFeedTab = "foryou";
             this.classList.add('active');
@@ -1822,7 +1753,7 @@
             renderVideos();
         };
 
-        // نظام المراقب الذكي IntersectionObserver لتشغيل الفيديوهات تلقائياً عند السكرول وكتم البقية
+        // 2. تحديث نظام المراقب للتأكد من تشغيل الفيديوهات الطويلة (لانهائي) بسلاسة وبدون توقف مفاجئ
         let observer;
         function startVideoObserver() {
             if(observer) observer.disconnect();
@@ -1834,10 +1765,17 @@
                     
                     if (entry.isIntersecting && video && !anyActiveModal) {
                         video.currentTime = 0;
-                        video.muted = false; // تشغيل الصوت تلقائياً للمقطع النشط الحين
+                        video.muted = false; 
+                        
+                        // إعدادات تضمن تدفق الفيديو اللانهائي دون حد زمني
+                        video.setAttribute('controlslist', 'nodownload');
+                        video.preload = "auto";
+                        
                         video.play().catch(() => {});
                         video.ontimeupdate = () => {
-                            progressBar.style.width = `${(video.currentTime / video.duration) * 100}%`;
+                            if (video.duration) {
+                                progressBar.style.width = `${(video.currentTime / video.duration) * 100}%`;
+                            }
                         };
                     } else {
                         if(video) video.pause();
@@ -1848,7 +1786,6 @@
             document.querySelectorAll('.video-card').forEach(card => observer.observe(card));
         }
 
-        // بدء تشغيل البرنامج وفحص البيانات فوراً عند فتح الصفحة
         checkAuthStatus();
     </script>
 </body>
