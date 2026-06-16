@@ -260,7 +260,7 @@
             background: linear-gradient(to top, rgba(0,0,0,0.98) 70%, transparent);
             z-index: 100;
             display: flex;
-            justify-content: space-around;
+            justify-around: space-around;
             align-items: center;
             padding-bottom: 10px;
         }
@@ -1600,6 +1600,7 @@
             document.getElementById('fullCameraScreen').classList.remove('active');
             
             currentZanVideoBlobToUpload = videoBlobOrFile;
+            document.getElementById('publishDetailsModal').add('active');
             document.getElementById('publishDetailsModal').classList.add('active');
             
             const previewView = document.getElementById('previewRecordedVideo');
