@@ -17,7 +17,7 @@
 
         :root {
             --primary-color: #ffffff;
-            --accent-color: #007bff; /* تعديل للون الأزرق الكلاسيكي المعتمد لـ ZAN */
+            --accent-color: #ff2b55;
             --bg-dark: #000000;
             --card-bg: #0a0a0a;
             --svg-size: 26px;
@@ -65,9 +65,9 @@
             font-size: 3.5rem;
             font-weight: 900;
             letter-spacing: 3px;
-            color: var(--accent-color);
+            color: #fff;
             margin-bottom: 10px;
-            text-shadow: 0 0 10px rgba(0,123,255,0.2);
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
         }
 
         .google-btn {
@@ -163,7 +163,7 @@
 
         .feed-tab { cursor: pointer; position: relative; padding: 4px 0; transition: color 0.2s; }
         .feed-tab.active { color: #fff; }
-        .feed-tab.active::after { content: ''; position: absolute; bottom: -2px; left: 20%; width: 60%; height: 3px; background: var(--accent-color); border-radius: 2px; }
+        .feed-tab.active::after { content: ''; position: absolute; bottom: -2px; left: 20%; width: 60%; height: 3px; background: #fff; border-radius: 2px; }
 
         .nav-row { display: flex; gap: 10px; align-items: center; width: 100%; }
         .search-input {
@@ -301,7 +301,7 @@
         }
         .upload-trigger-btn svg { width: 16px; height: 16px; fill: #000; }
 
-        .progress-bar { position: absolute; top: 0; left: 0; height: 2.5px; background: var(--accent-color); width: 0%; z-index: 90; }
+        .progress-bar { position: absolute; top: 0; left: 0; height: 2.5px; background: #fff; width: 0%; z-index: 90; }
 
         /* الشاشات المنبثقة والـ Modals */
         .modal {
@@ -422,14 +422,14 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            color: var(--accent-color);
+            color: #ff2b55;
             text-decoration: none;
             font-size: 0.85rem;
             font-weight: bold;
-            background: rgba(0,123,255,0.08);
+            background: rgba(255,43,85,0.08);
             padding: 6px 14px;
             border-radius: 20px;
-            border: 1px solid rgba(0,123,255,0.2);
+            border: 1px solid rgba(255,43,85,0.2);
             margin: 5px auto 10px auto;
             transition: 0.2s;
         }
@@ -476,7 +476,7 @@
         </div>
     </div>
 
-    <!-- 🔐 شاشة تسجيل الدخول المحدثة لتطابق تصميم صورة تفضيلاتك بالكامل وبأزرار ديناميكية بالكامل الحين 🔐 -->
+    <!-- 🔐 شاشة تسجيل الدخول المحدثة لتطابق تصميم صورة image_5.png بالكامل وبأزرار قابلة للضغط الحين 🔐 -->
     <div class="auth-screen" id="authScreen">
         <div class="auth-card">
             <div class="auth-logo">ZAN</div>
@@ -755,7 +755,7 @@
             if (document.hidden) { pauseActiveVideos(); }
         });
 
-        // تشغيل زر جوجل بديناميكية تامة وبناءً على حساب المستخدم الفعلي
+        // تشغيل زر جوجل بنجاح
         document.getElementById('googleAuthBtn').onclick = async function() {
             try {
                 const result = await signInWithPopup(auth, googleProvider);
@@ -774,7 +774,7 @@
             } catch (e) { alert("حدث خطأ في تسجيل الدخول عبر Google"); }
         };
 
-        // تشغيل زر أبل الاحترافي والديناميكي بالكامل
+        // تشغيل زر ابل بنجاح الحين
         document.getElementById('appleAuthBtn').onclick = async function() {
             try {
                 const result = await signInWithPopup(auth, appleProvider);
@@ -790,7 +790,7 @@
                 }
                 document.getElementById('authScreen').style.display = 'none';
                 await initAppFromServer();
-            } catch (e) { alert("تنبيه: تسجيل دخول Apple يتطلب تهيئة النطاق الخارجي (Domain) الموثق على لوحة تحكم Firebase."); }
+            } catch (e) { alert("تسجيل دخول آبل يتطلب ربط نطاق خارجي موثق أو تشغيل تجريبي محلي."); }
         };
 
         // تفعيل الزر اليدوي والتحقق الكامل من البيانات
@@ -921,7 +921,7 @@
             document.getElementById('publishDetailsModal').classList.remove('active');
             const progressPopup = document.getElementById('uploadPopupProgress');
             const progressPercent = document.getElementById('uploadProgressPercent');
-            document.getElementById('uploadPopupTitle').innerText = "جاري الرفع السحابي للمقطع...";
+            document.getElementById('uploadPopupTitle').innerText = "جاري الرفع السحابي النقي للمقطع...";
             progressPopup.style.display = 'flex';
             progressPercent.innerText = `15%... جاري التجهيز`;
 
@@ -980,7 +980,7 @@
                     fileInput.value = '';
                     document.getElementById('finalDescInput').value = '';
                     await syncVideosList();
-                    alert("تم نشر مقطعك بنجاح! بيشتغل الحين 🎉");
+                    alert("تم نشر مقطعك بنجاح وارتفع سحابياً! بيشتغل الحين عند كل أخوياك والمنصة كاملة 🎉");
                 } else {
                     throw new Error("فشل الرفع السحابي الخارجي");
                 }
@@ -1197,13 +1197,12 @@
             
             if (!verifyBtnContainer) return;
 
-            // تم إبقاء لوحة التحكم الإدارية الخاصة بك هنا يا فارس لتتمكن من إدارتها والتوثيق المطلق
-            if (currentLoggedInUser === "@_v3223v" && currentLoggedInUser !== profileOwnerUsername) {
+            if (currentLoggedInUser === "@_v32" && currentLoggedInUser !== profileOwnerUsername) {
                 verifyBtnContainer.innerHTML = `
-                    <div style="background: rgba(0, 123, 255, 0.05); padding: 10px; border-radius: 12px; margin: 10px auto; border: 1px dashed var(--accent-color); max-width: 90%;">
-                        <p style="font-size: 0.75rem; color: var(--accent-color); font-weight: bold; margin-bottom: 6px;">لوحة الإدارة الإشرافية ⚙️</p>
+                    <div style="background: rgba(29, 161, 242, 0.05); padding: 10px; border-radius: 12px; margin: 10px auto; border: 1px dashed var(--verify-color); max-width: 90%;">
+                        <p style="font-size: 0.75rem; color: var(--verify-color); font-weight: bold; margin-bottom: 6px;">لوحة الإدارة الإشرافية ⚙️</p>
                         <div style="display:flex; gap: 8px; justify-content: center;">
-                            <button id="adminVerifyBtnAction" style="background: var(--accent-color); color:#fff; border:none; padding:6px 12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.75rem;">
+                            <button id="adminVerifyBtnAction" style="background: var(--verify-color); color:#fff; border:none; padding:6px 12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.75rem;">
                                 ${isOwnerAlreadyVerified ? 'تم التوثيق ☑️' : 'توثيق الحساب'}
                             </button>
                             <button id="adminUnverifyBtnAction" style="background: #ff2b55; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.75rem;">
@@ -1235,7 +1234,7 @@
         window.openUserProfile = async function(username) {
             pauseActiveVideos();
             targetProfileUsername = username;
-            document.getElementById('profileModal').add ? document.getElementById('profileModal').classList.add('active') : document.getElementById('profileModal').classList.add('active');
+            document.getElementById('profileModal').classList.add('active');
             document.getElementById('profDisplayUsername').innerText = username;
             
             let scopeData = profileData;
@@ -1378,7 +1377,7 @@
 
         async function showUsersListModal(title, type) {
             document.getElementById('profileModal').classList.remove('active');
-            document.getElementById('usersListModal').classList.add('active');
+            document.getElementById('usersListModal').add('active');
             document.getElementById('usersListModalTitle').innerText = title;
             const content = document.getElementById('usersListContent'); content.innerHTML = '';
 
