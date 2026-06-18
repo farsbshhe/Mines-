@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تطبيق زان - ZAN Pro</title>
+    <title>تطبيق زان - ZAN Pro (مُصلح)</title>
     <style>
         /* --- التصميم العام العصري والسلس (أسود ملكي فخم لـ ZAN) --- */
         * {
@@ -27,7 +27,6 @@
             --input-bg: rgba(255, 255, 255, 0.06);
         }
 
-        /* ⚪ ستايل النظام الأبيض المطور ⚪ */
         body.light-mode {
             --primary-color: #000000;
             --bg-dark: #f5f5f7;
@@ -51,11 +50,10 @@
         body.light-mode .video-info h3, 
         body.light-mode .video-info p,
         body.light-mode .side-buttons .btn-text {
-            color: #fff !important; /* الاحتفاظ باللون الأبيض للنصوص فوق الفيديوهات */
+            color: #fff !important;
             text-shadow: 0 1px 4px rgba(0,0,0,0.8);
         }
 
-        /* 🔐 شاشة تسجيل الدخول 🔐 */
         .auth-screen {
             position: fixed;
             top: 0;
@@ -90,7 +88,6 @@
             margin-bottom: 10px;
         }
 
-        /* أزرار تسجيل الدخول الاجتماعي المحدثة بأيقونات SVG داخلية */
         .auth-social-btns {
             display: flex;
             flex-direction: column;
@@ -98,7 +95,7 @@
             margin-bottom: 20px;
         }
 
-        .google-btn {
+        .google-btn, .apple-btn {
             background: #fff;
             color: #000;
             border: none;
@@ -114,22 +111,6 @@
             gap: 10px;
         }
 
-        .apple-btn {
-            background: #fff;
-            color: #000;
-            border: none;
-            padding: 14px;
-            border-radius: 14px;
-            width: 100%;
-            font-weight: bold;
-            font-size: 0.95rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        /* لتناسب المظهر الملكي الأسود إذا كان النظام داكن */
         body:not(.light-mode) .apple-btn {
             background: #111;
             color: #fff;
@@ -139,7 +120,6 @@
         .divider { display: flex; align-items: center; color: #444; margin: 15px 0; font-size: 0.85rem; }
         .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #151515; margin: 0 10px; }
 
-        /* 📡 إشعار الرفع المنبثق 📡 */
         .upload-popup-progress {
             position: fixed;
             top: 20px;
@@ -167,7 +147,6 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* شريط التصفح العلوي */
         .top-navbar {
             position: absolute;
             top: 0;
@@ -209,7 +188,6 @@
             border: 1px solid var(--border-color);
             background: var(--input-bg);
             backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
             color: var(--text-color);
             outline: none;
             font-size: 0.9rem;
@@ -234,7 +212,6 @@
         body.light-mode .nav-icon-btn svg { fill: #000; }
         .badge-dot { position: absolute; top: 2px; right: 2px; width: 8px; height: 8px; background: var(--accent-color); border-radius: 50%; }
 
-        /* حاوية الفيديوهات */
         .video-container {
             width: 100vw;
             height: 100vh;
@@ -250,7 +227,6 @@
         .video-card { position: relative; width: 100%; height: 100vh; scroll-snap-align: start; background-color: #000; }
         video { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 
-        /* تأثير قلب الضغط المزدوج */
         .floating-heart {
             position: absolute;
             width: 90px;
@@ -267,13 +243,11 @@
             100% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
         }
 
-        /* معلومات المقاطع */
         .video-info { position: absolute; bottom: 95px; right: 20px; left: 95px; z-index: 80; pointer-events: none; }
         .video-info h3 { font-size: 1.1rem; margin-bottom: 6px; color: #fff; pointer-events: auto; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-weight: 700; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
         .video-info p { font-size: 0.95rem; color: rgba(255,255,255,0.95); line-height: 1.4; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
         .video-time-tag { font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-top: 5px; display: block; }
 
-        /* الأزرار الجانبية */
         .side-buttons {
             position: absolute;
             bottom: 115px;
@@ -309,7 +283,6 @@
         .btn.favorited svg { fill: #ffcc00; }
         .btn-text { font-size: 0.75rem; color: #fff; font-weight: bold; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
 
-        /* شريط التنقل السفلي */
         .bottom-nav {
             position: absolute;
             bottom: 0;
@@ -342,7 +315,6 @@
 
         .progress-bar { position: absolute; top: 0; left: 0; height: 2.5px; background: #fff; width: 0%; z-index: 90; }
 
-        /* الشاشات المنبثقة والـ Modals */
         .modal {
             position: fixed;
             top: 0;
@@ -351,7 +323,6 @@
             height: 100vh;
             background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
             z-index: 500;
             display: flex;
             justify-content: center;
@@ -379,7 +350,6 @@
         }
         .modal.active .modal-card { transform: translateY(0); }
 
-        /* الكاميرا المتقدمة */
         .full-camera-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 600; display: flex; flex-direction: column; justify-content: space-between; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .full-camera-screen.active { opacity: 1; pointer-events: auto; }
         
@@ -444,7 +414,6 @@
         .action-btn.cancel { background: #16161a; color: #fff; }
         body.light-mode .action-btn.cancel { background: #e5e5ea; color: #000; }
 
-        /* إحصائيات وقوائم الأصدقاء */
         .profile-stats-row { display: flex; justify-content: center; gap: 30px; margin: 15px 0; }
         .stat-item { text-align: center; cursor: pointer; }
         .stat-num { font-size: 1.2rem; font-weight: bold; display: block; color: var(--primary-color); }
@@ -729,10 +698,9 @@
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
-        // --- 1. إعدادات الفايربيس و Cloudinary الذكية لحسابك ---
+        // === إعدادات Firebase و Cloudinary ===
         const firebaseConfig = {
             databaseURL: "https://v3223v-default-rtdb.firebaseio.com/"
         };
@@ -740,90 +708,115 @@
             firebase.initializeApp(firebaseConfig);
         }
         const database = firebase.database();
-        const auth = firebase.auth();
 
         const CLOUD_NAME = "dyzez3oqc";
         const UPLOAD_PRESET = "zan_videos";
 
         let currentUser = null;
         let allVideos = [];
-        let currentFeedTab = "foryou"; 
+        let allUsers = {};
+        let currentFeedTab = "foryou";
 
         // تبديل الوضع الليلي والنهاري
-        const themeToggleBtn = document.getElementById('themeToggleBtn');
-        themeToggleBtn.onclick = function() {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            document.getElementById('themeIcon').innerHTML = isLight 
-                ? '<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-12.37c-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.38.39-1.02 0-1.41zM7.05 18.01c-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41z"/>'
-                : '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>';
-        };
+        function setupThemeToggle() {
+            const themeToggleBtn = document.getElementById('themeToggleBtn');
+            if (!themeToggleBtn) return;
 
-        // فحص حالة التسجيل المحلي التلقائي الفوري السريع لمنع مشاكل التحميل
+            themeToggleBtn.onclick = function() {
+                document.body.classList.toggle('light-mode');
+                const isLight = document.body.classList.contains('light-mode');
+                const icon = document.getElementById('themeIcon');
+                if (icon) {
+                    icon.innerHTML = isLight 
+                        ? '<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-12.37c-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.38.39-1.02 0-1.41zM7.05 18.01c-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06c.39-.39.39-1.03 0-1.41z"/>'
+                        : '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>';
+                }
+            };
+        }
+
+        // فحص حالة التسجيل
         function checkAuthStatus() {
             const cached = localStorage.getItem('zan_local_user');
             if (cached) {
-                currentUser = JSON.parse(cached);
-                document.getElementById('authScreen').style.display = 'none';
-                initApplicationLogic();
+                try {
+                    currentUser = JSON.parse(cached);
+                    document.getElementById('authScreen').style.display = 'none';
+                    initApplicationLogic();
+                } catch(e) {
+                    localStorage.removeItem('zan_local_user');
+                }
             }
         }
 
-        // تسجيل الدخول الاجتماعي أو اليدوي المحلي
+        // تسجيل الدخول / إنشاء حساب (مُصلح مع معالجة أخطاء)
         document.getElementById('manualAuthBtn').onclick = function() {
             const userN = document.getElementById('authUsernameInput').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
             const fullN = document.getElementById('authFullNameInput').value.trim();
             if(!userN || !fullN) {
-                alert("لاهنت أدخل معلومات حسابك عشان نفتح لك المنصة الحين! ✨");
+                alert("لاهنت أدخل اسم المستخدم والاسم الكامل عشان نفتح لك المنصة الحين! ✨");
                 return;
             }
             loginOrCreateUser(userN + "_uid", userN, fullN, "");
         };
 
         document.getElementById('googleAuthBtn').onclick = function() {
-            loginOrCreateUser("google_mock_uid_" + Math.floor(Math.random()*10000), "google_user", "مستخدم جوجل الفخم", "");
+            loginOrCreateUser("google_mock_uid_" + Date.now(), "google_user", "مستخدم جوجل الفخم", "");
         };
+        
         document.getElementById('appleAuthBtn').onclick = function() {
-            loginOrCreateUser("apple_mock_uid_" + Math.floor(Math.random()*10000), "apple_user", "عضو آبل المميز", "");
+            loginOrCreateUser("apple_mock_uid_" + Date.now(), "apple_user", "عضو آبل المميز", "");
         };
 
         function loginOrCreateUser(uid, username, fullName, avatar) {
+            if (!uid || !username || !fullName) {
+                alert("بيانات الحساب غير كاملة!");
+                return;
+            }
+
             const userRef = database.ref(`users/${uid}`);
-            userRef.once('value', snapshot => {
-                if (snapshot.exists()) {
-                    currentUser = snapshot.val();
-                } else {
-                    currentUser = {
-                        uid: uid,
-                        username: username,
-                        fullName: fullName,
-                        bio: "صانع محتوى فخم في تطبيق زان الملكي.. 🔥",
-                        avatar: avatar || "",
-                        youtube: "",
-                        followers: {},
-                        following: {},
-                        likesCount: 0,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP
-                    };
-                    userRef.set(currentUser);
-                }
-                // تخزين محلي في حال وجود مشاكل بالشبكة لمنع أي تعليق بشاشة الدخول
-                localStorage.setItem('zan_local_user', JSON.stringify(currentUser));
-                document.getElementById('authScreen').style.display = 'none';
-                initApplicationLogic();
-            });
+            userRef.once('value')
+                .then(snapshot => {
+                    if (snapshot.exists()) {
+                        currentUser = snapshot.val();
+                    } else {
+                        currentUser = {
+                            uid: uid,
+                            username: username,
+                            fullName: fullName,
+                            bio: "صانع محتوى فخم في تطبيق زان الملكي.. 🔥",
+                            avatar: avatar || "",
+                            youtube: "",
+                            followers: {},
+                            following: {},
+                            likesCount: 0,
+                            timestamp: firebase.database.ServerValue.TIMESTAMP
+                        };
+                        return userRef.set(currentUser);
+                    }
+                })
+                .then(() => {
+                    localStorage.setItem('zan_local_user', JSON.stringify(currentUser));
+                    document.getElementById('authScreen').style.display = 'none';
+                    initApplicationLogic();
+                })
+                .catch(err => {
+                    console.error("خطأ في تسجيل الدخول:", err);
+                    alert("حدث خطأ أثناء إنشاء الحساب. تأكد من اتصال الإنترنت وحاول مرة أخرى.");
+                });
         }
 
         function initApplicationLogic() {
+            if (!currentUser) return;
             listenToVideos();
             listenToUsers();
-            setupProfileActions();
             setupCameraAndGallery();
             setupInboxAndChat();
             setupSearchAndNotifications();
+            setupThemeToggle();
+            document.getElementById('myProfileBtn').onclick = () => viewUserProfile(currentUser.uid);
         }
 
-        // --- 2. دالة الرفع السحابي الذكية والمستقرة لـ Cloudinary ---
+        // === باقي الدوال (مُصلحة مع safeguards) ===
         async function uploadVideoCloudinary(fileBlob) {
             const popup = document.getElementById('uploadPopupProgress');
             const percentText = document.getElementById('uploadProgressPercent');
@@ -839,21 +832,18 @@
                     method: "POST",
                     body: formData
                 });
-                if (!response.ok) {
-                    throw new Error("فشل الرفع السحابي.");
-                }
+                if (!response.ok) throw new Error("فشل الرفع");
                 const data = await response.json();
                 popup.style.display = 'none';
                 return data.secure_url;
             } catch (err) {
                 console.error(err);
-                alert("حدث خطأ أثناء الرفع السحابي، تأكد من إعدادات الـ Preset في حسابك.");
+                alert("خطأ في الرفع السحابي. تأكد من إعدادات Cloudinary.");
                 popup.style.display = 'none';
                 return null;
             }
         }
 
-        // إعداد الكاميرا والاستديو للتشغيل الفوري
         let mediaRecorder;
         let recordedChunks = [];
         let cameraStream;
@@ -867,59 +857,52 @@
             const galleryTriggerBtn = document.getElementById('galleryTriggerBtn');
             const galleryFileInput = document.getElementById('galleryFileInput');
 
-            openCamBtn.onclick = async function() {
+            if (openCamBtn) openCamBtn.onclick = async () => {
                 fullCameraScreen.classList.add('active');
                 await startCamera();
             };
 
-            closeCamBtn.onclick = function() {
+            if (closeCamBtn) closeCamBtn.onclick = () => {
                 stopCamera();
                 fullCameraScreen.classList.remove('active');
             };
 
-            document.getElementById('cameraToggleFacingBtn').onclick = async function() {
+            const toggleBtn = document.getElementById('cameraToggleFacingBtn');
+            if (toggleBtn) toggleBtn.onclick = async () => {
                 currentFacingMode = (currentFacingMode === "user") ? "environment" : "user";
                 const view = document.getElementById('cameraStreamView');
-                if(currentFacingMode === "user") {
-                    view.classList.add('mirror');
-                } else {
-                    view.classList.remove('mirror');
-                }
+                if (view) view.classList.toggle('mirror', currentFacingMode === "user");
                 await startCamera();
             };
 
-            document.getElementById('flashToggleBtn').onclick = function() {
+            const flashBtn = document.getElementById('flashToggleBtn');
+            if (flashBtn) flashBtn.onclick = function() {
                 this.classList.toggle('active');
                 if(currentFacingMode === "user") {
-                    document.getElementById('fullCameraScreen').classList.toggle('front-flash-active');
-                } else {
-                    if(cameraStream) {
-                        const track = cameraStream.getVideoTracks()[0];
-                        const caps = track.getCapabilities();
-                        if(caps.torch) {
-                            const settings = track.getSettings();
-                            track.applyConstraints({ advanced: [{ torch: !settings.torch }] }).catch(()=>{});
-                        }
-                    }
+                    fullCameraScreen.classList.toggle('front-flash-active');
                 }
             };
 
             let isRecording = false;
-            captureBtnOuter.onclick = function() {
+            if (captureBtnOuter) captureBtnOuter.onclick = function() {
                 if(!isRecording) {
                     recordedChunks = [];
-                    mediaRecorder = new MediaRecorder(cameraStream, { mimeType: 'video/webm;codecs=vp9' });
-                    mediaRecorder.ondataavailable = (e) => { if(e.data.size > 0) recordedChunks.push(e.data); };
-                    mediaRecorder.onstop = () => {
-                        const blob = new Blob(recordedChunks, { type: 'video/webm' });
-                        showPublishModal(blob);
-                    };
-                    mediaRecorder.start();
-                    isRecording = true;
-                    captureBtnOuter.classList.add('recording');
-                    document.getElementById('recordingStatus').style.display = 'block';
+                    try {
+                        mediaRecorder = new MediaRecorder(cameraStream, { mimeType: 'video/webm;codecs=vp9' });
+                        mediaRecorder.ondataavailable = (e) => { if(e.data.size > 0) recordedChunks.push(e.data); };
+                        mediaRecorder.onstop = () => {
+                            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                            showPublishModal(blob);
+                        };
+                        mediaRecorder.start();
+                        isRecording = true;
+                        captureBtnOuter.classList.add('recording');
+                        document.getElementById('recordingStatus').style.display = 'block';
+                    } catch(e) {
+                        alert("خطأ في بدء التسجيل");
+                    }
                 } else {
-                    mediaRecorder.stop();
+                    if (mediaRecorder) mediaRecorder.stop();
                     isRecording = false;
                     captureBtnOuter.classList.remove('recording');
                     document.getElementById('recordingStatus').style.display = 'none';
@@ -928,8 +911,8 @@
                 }
             };
 
-            galleryTriggerBtn.onclick = () => galleryFileInput.click();
-            galleryFileInput.onchange = function(e) {
+            if (galleryTriggerBtn) galleryTriggerBtn.onclick = () => galleryFileInput.click();
+            if (galleryFileInput) galleryFileInput.onchange = function(e) {
                 const file = e.target.files[0];
                 if(file) {
                     fullCameraScreen.classList.remove('active');
@@ -946,9 +929,10 @@
                     video: { facingMode: currentFacingMode, width: { ideal: 1920 }, height: { ideal: 1080 } },
                     audio: true
                 });
-                document.getElementById('cameraStreamView').srcObject = cameraStream;
+                const view = document.getElementById('cameraStreamView');
+                if (view) view.srcObject = cameraStream;
             } catch(e) {
-                alert("لم نستطع تشغيل كاميرا الـ 4K، تحقق من الصلاحيات لاهنت!");
+                alert("لم نستطع تشغيل الكاميرا. تأكد من الصلاحيات.");
             }
         }
 
@@ -962,24 +946,29 @@
         let currentUploadBlob = null;
         function showPublishModal(blobOrFile) {
             currentUploadBlob = blobOrFile;
-            document.getElementById('publishDetailsModal').add('active');
-            document.getElementById('previewRecordedVideo').src = URL.createObjectURL(blobOrFile);
+            const modal = document.getElementById('publishDetailsModal');
+            if (modal) modal.classList.add('active');
+            const preview = document.getElementById('previewRecordedVideo');
+            if (preview) preview.src = URL.createObjectURL(blobOrFile);
         }
 
-        document.getElementById('cancelPublishBtn').onclick = function() {
-            document.getElementById('publishDetailsModal').classList.remove('active');
+        const cancelPublishBtn = document.getElementById('cancelPublishBtn');
+        if (cancelPublishBtn) cancelPublishBtn.onclick = function() {
+            const modal = document.getElementById('publishDetailsModal');
+            if (modal) modal.classList.remove('active');
             currentUploadBlob = null;
         };
 
-        // النشر والرفع النهائي السحابي للمنصة
-        document.getElementById('submitVideoBtn').onclick = async function() {
+        const submitVideoBtn = document.getElementById('submitVideoBtn');
+        if (submitVideoBtn) submitVideoBtn.onclick = async function() {
             const desc = document.getElementById('finalDescInput').value.trim();
             if(!currentUploadBlob) return;
 
-            document.getElementById('publishDetailsModal').classList.remove('active');
+            const modal = document.getElementById('publishDetailsModal');
+            if (modal) modal.classList.remove('active');
             const permanentUrl = await uploadVideoCloudinary(currentUploadBlob);
 
-            if(permanentUrl) {
+            if(permanentUrl && currentUser) {
                 const newPostRef = database.ref('posts').push();
                 const videoData = {
                     id: newPostRef.key,
@@ -996,37 +985,35 @@
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 };
                 await newPostRef.set(videoData);
-                alert("تم نشر مقطعك بنجاح وبأعلى كفاءة لـ ZAN! ✨");
+                alert("تم نشر مقطعك بنجاح! ✨");
                 document.getElementById('finalDescInput').value = "";
             }
             currentUploadBlob = null;
         };
 
-        // الاستماع وجلب الفيديوهات للتايملاين
         function listenToVideos() {
             database.ref('posts').on('value', snapshot => {
                 allVideos = [];
                 if(snapshot.exists()) {
-                    snapshot.forEach(child => {
-                        allVideos.push(child.val());
-                    });
+                    snapshot.forEach(child => allVideos.push(child.val()));
                 }
-                allVideos.sort((a,b) => b.timestamp - a.timestamp);
+                allVideos.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
                 renderVideos();
             });
         }
 
         function renderVideos() {
             const container = document.getElementById('videoContainer');
+            if (!container) return;
             container.innerHTML = "";
             let filtered = allVideos;
 
-            if(currentFeedTab === "following") {
+            if(currentFeedTab === "following" && currentUser) {
                 filtered = allVideos.filter(v => currentUser.following && currentUser.following[v.uid]);
             }
 
             if(filtered.length === 0) {
-                container.innerHTML = `<div style="display:flex; height:100vh; align-items:center; justify-content:center; color:#555; text-align:center; padding:30px;">ما فيه أي مقاطع الحين هنا، تابع صُنّاع محتوى أو انشر مقطعك الأول! ✨</div>`;
+                container.innerHTML = `<div style="display:flex; height:100vh; align-items:center; justify-content:center; color:#555; text-align:center; padding:30px;">ما فيه أي مقاطع الحين هنا، انشر مقطعك الأول! ✨</div>`;
                 return;
             }
 
@@ -1034,8 +1021,8 @@
                 const likeCount = vid.likes ? Object.keys(vid.likes).length : 0;
                 const commCount = vid.comments ? Object.keys(vid.comments).length : 0;
                 const favCount = vid.favorites ? Object.keys(vid.favorites).length : 0;
-                const isLiked = vid.likes && vid.likes[currentUser.uid];
-                const isFav = vid.favorites && vid.favorites[currentUser.uid];
+                const isLiked = currentUser && vid.likes && vid.likes[currentUser.uid];
+                const isFav = currentUser && vid.favorites && vid.favorites[currentUser.uid];
 
                 const card = document.createElement('div');
                 card.className = 'video-card';
@@ -1082,18 +1069,19 @@
                     </div>
                 `;
 
-                // النقر المزدوج لعمل لايك فخم مع قلب طائر
                 let lastTap = 0;
                 card.onclick = function(e) {
                     if (e.target.tagName === 'BUTTON' || e.target.closest('button') || e.target.classList.contains('user-avatar-main') || e.target.closest('.user-avatar-main') || e.target.tagName === 'H3') return;
                     const now = Date.now();
                     if((now - lastTap) < 300) {
                         const heart = card.querySelector('.floating-heart');
-                        heart.style.left = `${e.clientX}px`;
-                        heart.style.top = `${e.clientY - card.getBoundingClientRect().top}px`;
-                        heart.style.transform = `translate(-50%, -50%) scale(0)`;
-                        setTimeout(() => { heart.style.transform = ''; }, 10);
-                        if(!isLiked) toggleLike(vid.id);
+                        if (heart) {
+                            heart.style.left = `${e.clientX}px`;
+                            heart.style.top = `${e.clientY - card.getBoundingClientRect().top}px`;
+                            heart.style.transform = `translate(-50%, -50%) scale(0)`;
+                            setTimeout(() => { if(heart) heart.style.transform = ''; }, 10);
+                        }
+                        if(!isLiked && currentUser) toggleLike(vid.id);
                     }
                     lastTap = now;
                 };
@@ -1105,12 +1093,12 @@
         }
 
         function toggleLike(id) {
+            if (!currentUser) return;
             const ref = database.ref(`posts/${id}/likes/${currentUser.uid}`);
             ref.once('value', snap => {
                 if(snap.exists()) ref.remove();
                 else {
                     ref.set(true);
-                    // إرسال تنبيه سحابي لصاحب المقطع تلقائياً
                     const targetVid = allVideos.find(v => v.id === id);
                     if(targetVid && targetVid.uid !== currentUser.uid) {
                         database.ref(`notifications/${targetVid.uid}`).push().set({
@@ -1123,6 +1111,7 @@
         }
 
         function toggleFavorite(id) {
+            if (!currentUser) return;
             const ref = database.ref(`posts/${id}/favorites/${currentUser.uid}`);
             ref.once('value', snap => {
                 if(snap.exists()) ref.remove();
@@ -1133,8 +1122,10 @@
         let activeCommentsVideoId = null;
         function openCommentsModal(id) {
             activeCommentsVideoId = id;
-            document.getElementById('commentsModal').classList.add('active');
+            const modal = document.getElementById('commentsModal');
+            if (modal) modal.classList.add('active');
             const listC = document.getElementById('commentsListContainer');
+            if (!listC) return;
             listC.innerHTML = "";
 
             database.ref(`posts/${id}/comments`).on('value', snap => {
@@ -1157,14 +1148,15 @@
                     });
                     listC.scrollTop = listC.scrollHeight;
                 } else {
-                    listC.innerHTML = `<p style="text-align:center; color:#555; padding:20px;">لا توجد تعليقات، كن أول المعلقين الحين! ✨</p>`;
+                    listC.innerHTML = `<p style="text-align:center; color:#555; padding:20px;">لا توجد تعليقات، كن أول المعلقين! ✨</p>`;
                 }
             });
         }
 
-        document.getElementById('sendCommentBtn').onclick = function() {
+        const sendCommentBtn = document.getElementById('sendCommentBtn');
+        if (sendCommentBtn) sendCommentBtn.onclick = function() {
             const text = document.getElementById('newCommentInput').value.trim();
-            if(!text || !activeCommentsVideoId) return;
+            if(!text || !activeCommentsVideoId || !currentUser) return;
 
             const ref = database.ref(`posts/${activeCommentsVideoId}/comments`).push();
             ref.set({
@@ -1178,86 +1170,93 @@
             document.getElementById('newCommentInput').value = "";
         };
 
-        // إدارة المستخدمين والملفات والمتابعة
-        let allUsers = {};
         function listenToUsers() {
             database.ref('users').on('value', snap => {
-                if(snap.exists()) allUsers = snap.val();
+                if(snap.exists()) allUsers = snap.val() || {};
             });
         }
 
-        function setupProfileActions() {}
-        document.getElementById('myProfileBtn').onclick = () => viewUserProfile(currentUser.uid);
-
         function viewUserProfile(uid) {
+            if (!currentUser) return;
             const user = allUsers[uid] || currentUser;
             const modal = document.getElementById('profileModal');
+            if (!modal) return;
             modal.classList.add('active');
 
-            document.getElementById('profDisplayUsername').innerText = `@${user.username}`;
-            document.getElementById('profDisplayFullName').innerText = user.fullName;
-            document.getElementById('profDisplayBio').innerText = user.bio || "لا توجد نبذة حالياً.";
-            
+            document.getElementById('profDisplayUsername').innerText = `@${user.username || 'مستخدم'}`;
+            document.getElementById('profDisplayFullName').innerText = user.fullName || '';
+            document.getElementById('profDisplayBio').innerText = user.bio || "لا توجد نبذة.";
+
             const ytBtn = document.getElementById('profDisplayYoutube');
-            if(user.youtube) {
-                ytBtn.href = user.youtube;
-                ytBtn.style.display = 'inline-flex';
-            } else {
-                ytBtn.style.display = 'none';
+            if (ytBtn) {
+                if(user.youtube) {
+                    ytBtn.href = user.youtube;
+                    ytBtn.style.display = 'inline-flex';
+                } else {
+                    ytBtn.style.display = 'none';
+                }
             }
 
             const avatarContainer = document.getElementById('profAvatarContainer');
-            avatarContainer.innerHTML = user.avatar ? `<img src="${user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : `<svg viewBox="0 0 24 24" style="width:40px; height:40px; fill:#fff;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4z"/></svg>`;
+            if (avatarContainer) {
+                avatarContainer.innerHTML = user.avatar ? `<img src="${user.avatar}" style="width:100%; height:100%; object-fit:cover;">` : `<svg viewBox="0 0 24 24" style="width:40px; height:40px; fill:#fff;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4z"/></svg>`;
+            }
 
             const followerCount = user.followers ? Object.keys(user.followers).length : 0;
             const followingCount = user.following ? Object.keys(user.following).length : 0;
-            document.getElementById('profStatFollowers').innerText = followerCount;
-            document.getElementById('profStatFollowing').innerText = followingCount;
-
-            let totalLikes = 0;
-            allVideos.forEach(v => {
-                if(v.uid === uid && v.likes) totalLikes += Object.keys(v.likes).length;
-            });
-            document.getElementById('profStatLikes').innerText = totalLikes;
+            const likesEl = document.getElementById('profStatLikes');
+            if (likesEl) likesEl.innerText = user.likesCount || 0;
+            
+            const followersEl = document.getElementById('profStatFollowers');
+            if (followersEl) followersEl.innerText = followerCount;
+            const followingEl = document.getElementById('profStatFollowing');
+            if (followingEl) followingEl.innerText = followingCount;
 
             const grid = document.getElementById('profileVideosGrid');
-            grid.innerHTML = "";
-            const myVids = allVideos.filter(v => v.uid === uid);
-
-            myVids.forEach(v => {
-                const item = document.createElement('div');
-                item.className = 'grid-video-thumb';
-                item.innerHTML = `<video src="${v.videoUrl}" muted playsinline></video>`;
-                item.onclick = function() {
-                    modal.classList.remove('active');
-                    document.getElementById(`video_card_${v.id}`).scrollIntoView({ behavior: 'smooth' });
-                };
-                grid.appendChild(item);
-            });
+            if (grid) {
+                grid.innerHTML = "";
+                const myVids = allVideos.filter(v => v.uid === uid);
+                myVids.forEach(v => {
+                    const item = document.createElement('div');
+                    item.className = 'grid-video-thumb';
+                    item.innerHTML = `<video src="${v.videoUrl}" muted playsinline></video>`;
+                    item.onclick = () => {
+                        modal.classList.remove('active');
+                        const targetCard = document.getElementById(`video_card_${v.id}`);
+                        if (targetCard) targetCard.scrollIntoView({ behavior: 'smooth' });
+                    };
+                    grid.appendChild(item);
+                });
+            }
 
             const actionBox = document.getElementById('profileActionButtonsContainer');
             const mainBtn = document.getElementById('profileMainActionBtn');
             const msgBtn = document.getElementById('profileMessageBtn');
 
-            if(uid === currentUser.uid) {
-                mainBtn.innerText = "تعديل الملف الشخصي";
-                msgBtn.style.display = 'none';
-                mainBtn.onclick = openEditProfileModal;
-                document.getElementById('adminSecretVerifyContainer').innerHTML = (currentUser.uid==='fares_zan_uid'||currentUser.username==='fares_zan') ? `<span style="background:linear-gradient(45deg,#ff2b55,#ffcc00); padding:4px 12px; border-radius:12px; font-size:0.75rem; font-weight:bold; color:#fff;">المالك والمطور للمنصة 👑</span>` : '';
+            if (uid === currentUser.uid) {
+                if (mainBtn) {
+                    mainBtn.innerText = "تعديل الملف الشخصي";
+                    mainBtn.onclick = openEditProfileModal;
+                }
+                if (msgBtn) msgBtn.style.display = 'none';
             } else {
-                msgBtn.style.display = 'block';
-                msgBtn.onclick = function() {
-                    modal.classList.remove('active');
-                    openDirectChatWithUser(uid);
-                };
+                if (msgBtn) {
+                    msgBtn.style.display = 'block';
+                    msgBtn.onclick = () => {
+                        modal.classList.remove('active');
+                        openDirectChatWithUser(uid);
+                    };
+                }
                 const isFollowing = currentUser.following && currentUser.following[uid];
-                mainBtn.innerText = isFollowing ? "إلغاء المتابعة" : "متابعة الحين";
-                mainBtn.onclick = () => toggleFollowUser(uid);
-                document.getElementById('adminSecretVerifyContainer').innerHTML = (uid==='fares_zan_uid'||user.username==='fares_zan') ? `<span style="background:linear-gradient(45deg,#ff2b55,#ffcc00); padding:4px 12px; border-radius:12px; font-size:0.75rem; font-weight:bold; color:#fff;">المالك والمطور للمنصة 👑</span>` : '';
+                if (mainBtn) {
+                    mainBtn.innerText = isFollowing ? "إلغاء المتابعة" : "متابعة الحين";
+                    mainBtn.onclick = () => toggleFollowUser(uid);
+                }
             }
         }
 
         function toggleFollowUser(targetUid) {
+            if (!currentUser) return;
             const myFollowingRef = database.ref(`users/${currentUser.uid}/following/${targetUid}`);
             const targetFollowersRef = database.ref(`users/${targetUid}/followers/${currentUser.uid}`);
 
@@ -1281,27 +1280,35 @@
         }
 
         function openEditProfileModal() {
-            document.getElementById('profileModal').classList.remove('active');
-            document.getElementById('editProfileModal').classList.add('active');
-            document.getElementById('editUsernameInput').value = currentUser.username;
-            document.getElementById('editFullNameInput').value = currentUser.fullName;
-            document.getElementById('editBioInput').value = currentUser.bio || "";
-            document.getElementById('editYoutubeInput').value = currentUser.youtube || "";
+            const profileModal = document.getElementById('profileModal');
+            const editModal = document.getElementById('editProfileModal');
+            if (profileModal) profileModal.classList.remove('active');
+            if (editModal) editModal.classList.add('active');
+
+            if (!currentUser) return;
+            document.getElementById('editUsernameInput').value = currentUser.username || '';
+            document.getElementById('editFullNameInput').value = currentUser.fullName || '';
+            document.getElementById('editBioInput').value = currentUser.bio || '';
+            document.getElementById('editYoutubeInput').value = currentUser.youtube || '';
             document.getElementById('editAvatarPreviewImg').src = currentUser.avatar || "https://placehold.co/150x150/000/fff?text=ZAN";
         }
 
-        document.getElementById('avatarFileInputHidden').onchange = function(e) {
+        const avatarInput = document.getElementById('avatarFileInputHidden');
+        if (avatarInput) avatarInput.onchange = function(e) {
             const file = e.target.files[0];
             if(file) {
                 const reader = new FileReader();
                 reader.onload = function(evt) {
-                    document.getElementById('editAvatarPreviewImg').src = evt.target.result;
+                    const preview = document.getElementById('editAvatarPreviewImg');
+                    if (preview) preview.src = evt.target.result;
                 };
                 reader.readAsDataURL(file);
             }
         };
 
-        document.getElementById('saveProfileEditsBtn').onclick = async function() {
+        const saveProfileBtn = document.getElementById('saveProfileEditsBtn');
+        if (saveProfileBtn) saveProfileBtn.onclick = async function() {
+            if (!currentUser) return;
             const userN = document.getElementById('editUsernameInput').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
             const fullN = document.getElementById('editFullNameInput').value.trim();
             const bio = document.getElementById('editBioInput').value.trim();
@@ -1309,12 +1316,12 @@
             const fileInput = document.getElementById('avatarFileInputHidden');
 
             if(!userN || !fullN) {
-                alert("الرجاء إكمال الحقول الأساسية لاهنت!");
+                alert("الرجاء إكمال الحقول الأساسية!");
                 return;
             }
 
             let avatarUrl = currentUser.avatar || "";
-            if(fileInput.files[0]) {
+            if(fileInput && fileInput.files[0]) {
                 avatarUrl = await uploadVideoCloudinary(fileInput.files[0]);
             }
 
@@ -1326,50 +1333,57 @@
 
             await database.ref(`users/${currentUser.uid}`).set(currentUser);
             localStorage.setItem('zan_local_user', JSON.stringify(currentUser));
-            document.getElementById('editProfileModal').classList.remove('active');
+            const editModal = document.getElementById('editProfileModal');
+            if (editModal) editModal.classList.remove('active');
             viewUserProfile(currentUser.uid);
-            alert("تم تحديث معلومات الحساب بالكامل وبنجاح! 🔥");
+            alert("تم تحديث معلومات الحساب بنجاح! 🔥");
         };
 
-        // المحادثات والرسائل الفورية
         function setupInboxAndChat() {
-            document.getElementById('openInboxBtn').onclick = function() {
-                document.getElementById('inboxModal').classList.add('active');
+            const inboxBtn = document.getElementById('openInboxBtn');
+            if (inboxBtn) inboxBtn.onclick = function() {
+                const modal = document.getElementById('inboxModal');
+                if (modal) modal.classList.add('active');
                 renderInboxFriends();
             };
+        }
 
-            function renderInboxFriends() {
-                const box = document.getElementById('inboxFriendsList');
-                box.innerHTML = "";
-                const list = Object.values(allUsers).filter(u => u.uid !== currentUser.uid);
+        function renderInboxFriends() {
+            const box = document.getElementById('inboxFriendsList');
+            if (!box) return;
+            box.innerHTML = "";
+            const list = Object.values(allUsers).filter(u => u.uid !== currentUser.uid);
 
-                if(list.length === 0) {
-                    box.innerHTML = `<p style="text-align:center; padding:20px; color:#555;">لا يوجد مستخدمون آخرون في الشبكة حالياً.</p>`;
-                    return;
-                }
-
-                list.forEach(u => {
-                    const row = document.createElement('div');
-                    row.className = 'friend-select-item';
-                    row.innerHTML = `<strong>@${u.username}</strong><span style="font-size:0.8rem; color:#666;"> (${u.fullName})</span>`;
-                    row.onclick = function() {
-                        document.getElementById('inboxModal').classList.remove('active');
-                        openDirectChatWithUser(u.uid);
-                    };
-                    box.appendChild(row);
-                });
+            if(list.length === 0) {
+                box.innerHTML = `<p style="text-align:center; padding:20px; color:#555;">لا يوجد مستخدمون آخرون حالياً.</p>`;
+                return;
             }
+
+            list.forEach(u => {
+                const row = document.createElement('div');
+                row.className = 'friend-select-item';
+                row.innerHTML = `<strong>@${u.username}</strong><span style="font-size:0.8rem; color:#666;"> (${u.fullName})</span>`;
+                row.onclick = function() {
+                    const inboxModal = document.getElementById('inboxModal');
+                    if (inboxModal) inboxModal.classList.remove('active');
+                    openDirectChatWithUser(u.uid);
+                };
+                box.appendChild(row);
+            });
         }
 
         let activeChatUserId = null;
         function openDirectChatWithUser(uid) {
             activeChatUserId = uid;
             const targetUser = allUsers[uid] || { username: 'مستخدم' };
-            document.getElementById('activeChatTitle').innerText = `محادثة @${targetUser.username}`;
-            document.getElementById('activeChatModal').classList.add('active');
+            const titleEl = document.getElementById('activeChatTitle');
+            if (titleEl) titleEl.innerText = `محادثة @${targetUser.username}`;
+            const chatModal = document.getElementById('activeChatModal');
+            if (chatModal) chatModal.classList.add('active');
 
             const chatId = currentUser.uid < uid ? `${currentUser.uid}_${uid}` : `${uid}_${currentUser.uid}`;
             const msgListContainer = document.getElementById('chatMessagesList');
+            if (!msgListContainer) return;
 
             database.ref(`chats/${chatId}`).off();
             database.ref(`chats/${chatId}`).on('value', snap => {
@@ -1384,14 +1398,15 @@
                     });
                     msgListContainer.scrollTop = msgListContainer.scrollHeight;
                 } else {
-                    msgListContainer.innerHTML = `<p style="text-align:center; color:#444; padding:20px;">ابدأ المحادثة الفورية الآمنة الحين.. 🔐</p>`;
+                    msgListContainer.innerHTML = `<p style="text-align:center; color:#444; padding:20px;">ابدأ المحادثة الفورية الآمنة.. 🔐</p>`;
                 }
             });
         }
 
-        document.getElementById('sendChatMessageBtn').onclick = function() {
+        const sendChatBtn = document.getElementById('sendChatMessageBtn');
+        if (sendChatBtn) sendChatBtn.onclick = function() {
             const text = document.getElementById('chatMessageInput').value.trim();
-            if(!text || !activeChatUserId) return;
+            if(!text || !activeChatUserId || !currentUser) return;
 
             const chatId = currentUser.uid < activeChatUserId ? `${currentUser.uid}_${activeChatUserId}` : `${activeChatUserId}_${currentUser.uid}`;
             const ref = database.ref(`chats/${chatId}`).push();
@@ -1404,19 +1419,21 @@
             document.getElementById('chatMessageInput').value = "";
         };
 
-        // مشاركة المقاطع للأصدقاء
         let activeShareVideoId = null;
         function openShareModal(vidId) {
             activeShareVideoId = vidId;
-            document.getElementById('shareModal').classList.add('active');
+            const modal = document.getElementById('shareModal');
+            if (modal) modal.classList.add('active');
             const box = document.getElementById('shareFriendsList');
+            if (!box) return;
             box.innerHTML = "";
 
             Object.values(allUsers).filter(u => u.uid !== currentUser.uid).forEach(u => {
                 const item = document.createElement('div');
                 item.className = 'friend-select-item';
                 item.innerHTML = `<span>@${u.username} (${u.fullName})</span><button class="action-btn submit" style="width:70px; margin:0; padding:6px; font-size:0.8rem;">إرسال</button>`;
-                item.querySelector('button').onclick = function() {
+                const btn = item.querySelector('button');
+                if (btn) btn.onclick = function() {
                     const chatId = currentUser.uid < u.uid ? `${currentUser.uid}_${u.uid}` : `${u.uid}_${currentUser.uid}`;
                     const targetVid = allVideos.find(v => v.id === activeShareVideoId);
                     database.ref(`chats/${chatId}`).push().set({
@@ -1426,59 +1443,71 @@
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     });
                     alert("تمت المشاركة بنجاح! ✨");
-                    document.getElementById('shareModal').classList.remove('active');
+                    if (modal) modal.classList.remove('active');
                 };
                 box.appendChild(item);
             });
         }
 
-        // الإشعارات والبحث السحابي الفوري السريع
         function setupSearchAndNotifications() {
-            document.getElementById('openNotificationsBtn').onclick = function() {
-                document.getElementById('notificationsModal').classList.add('active');
-                document.getElementById('notiBadge').style.display = 'none';
+            const notiBtn = document.getElementById('openNotificationsBtn');
+            if (notiBtn) notiBtn.onclick = function() {
+                const modal = document.getElementById('notificationsModal');
+                if (modal) modal.classList.add('active');
+                const badge = document.getElementById('notiBadge');
+                if (badge) badge.style.display = 'none';
             };
 
-            // الاستماع للإشعارات الفورية حقتي
-            database.ref(`notifications/${currentUser.uid}`).on('value', snap => {
-                const listC = document.getElementById('notificationsListContainer');
-                listC.innerHTML = "";
-                if(snap.exists()) {
-                    document.getElementById('notiBadge').style.display = 'block';
-                    let notis = [];
-                    snap.forEach(c => { notis.push(c.val()); });
-                    notis.sort((a,b)=>b.timestamp - a.timestamp);
-                    notis.forEach(n => {
-                        const div = document.createElement('div');
-                        div.style.padding = "12px";
-                        div.style.background = "var(--input-bg)";
-                        div.style.borderRadius = "10px";
-                        div.style.marginBottom = "8px";
-                        div.style.fontSize = "0.9rem";
-                        div.style.border = "1px solid var(--border-color)";
-                        div.innerText = n.text;
-                        listC.appendChild(div);
-                    });
-                } else {
-                    listC.innerHTML = `<p style="text-align:center; color:#555; padding:20px;">لا توجد تنبيهات جديدة حالياً.</p>`;
-                }
-            });
+            if (currentUser) {
+                database.ref(`notifications/${currentUser.uid}`).on('value', snap => {
+                    const listC = document.getElementById('notificationsListContainer');
+                    if (!listC) return;
+                    listC.innerHTML = "";
+                    if(snap.exists()) {
+                        const badge = document.getElementById('notiBadge');
+                        if (badge) badge.style.display = 'block';
+                        let notis = [];
+                        snap.forEach(c => notis.push(c.val()));
+                        notis.sort((a,b)=> (b.timestamp || 0) - (a.timestamp || 0));
+                        notis.forEach(n => {
+                            const div = document.createElement('div');
+                            div.style.cssText = "padding:12px; background:var(--input-bg); border-radius:10px; margin-bottom:8px; font-size:0.9rem; border:1px solid var(--border-color);";
+                            div.innerText = n.text;
+                            listC.appendChild(div);
+                        });
+                    } else {
+                        listC.innerHTML = `<p style="text-align:center; color:#555; padding:20px;">لا توجد تنبيهات جديدة.</p>`;
+                    }
+                });
+            }
 
-            // دالة البحث التفاعلية حقت الأصدقاء
-            document.getElementById('searchBox').oninput = function() {
+            const searchBox = document.getElementById('searchBox');
+            if (searchBox) searchBox.oninput = function() {
                 const query = this.value.trim().toLowerCase();
                 if(!query) { listenToVideos(); return; }
-                const foundUser = Object.values(allUsers).find(u => u.username.toLowerCase().includes(query) || u.fullName.toLowerCase().includes(query));
+                const foundUser = Object.values(allUsers).find(u => (u.username || '').toLowerCase().includes(query) || (u.fullName || '').toLowerCase().includes(query));
                 if(foundUser) {
                     const container = document.getElementById('videoContainer');
-                    container.innerHTML = `<div style="display:flex; flex-direction:column; gap:15px; height:100vh; align-items:center; justify-content:center;"><div class="friend-select-item" style="width:280px; text-align:center;" onclick="viewUserProfile('${foundUser.uid}')">🎯 اضغط هنا لزيارة ملف: @${foundUser.username}</div></div>`;
+                    if (container) container.innerHTML = `<div style="display:flex; flex-direction:column; gap:15px; height:100vh; align-items:center; justify-content:center;"><div class="friend-select-item" style="width:280px; text-align:center;" onclick="viewUserProfile('${foundUser.uid}')">🎯 اضغط هنا لزيارة ملف: @${foundUser.username}</div></div>`;
                 }
             };
         }
 
         // التبديل بين الـ Tabs
-        document.getElementById('tabFeedForYou').onclick = function() { currentFeedTab = "foryou"; this.classList.add('active'); document.getElementById('tabFeedFollowing').classList.remove('active'); renderVideos(); };
-        document.getElementById('tabFeedFollowing').onclick = function() { currentFeedTab = "following"; this.classList.add('active'); document.getElementById('tabFeedForYou').classList.remove('active'); renderVideos(); };
+        const tabForYou = document.getElementById('tabFeedForYou');
+        const tabFollowing = document.getElementById('tabFeedFollowing');
+        if (tabForYou) tabForYou.onclick = function() { 
+            currentFeedTab = "foryou"; 
+            this.classList.add('active'); 
+            if (tabFollowing) tabFollowing.classList.remove('active'); 
+            renderVideos(); 
+        };
+        if (tabFollowing) tabFollowing.onclick = function() { 
+            currentFeedTab = "following"; 
+            this.classList.add('active'); 
+            if (tabForYou) tabForYou.classList.remove('active'); 
+            renderVideos(); 
+        };
 
         let observer;
         function startVideoObserver() {
@@ -1492,14 +1521,18 @@
                         video.currentTime = 0; 
                         video.muted = false; 
                         video.play().catch(() => {});
-                        video.ontimeupdate = () => { progressBar.style.width = `${(video.currentTime / video.duration) * 100}%`; };
+                        video.ontimeupdate = () => { if (progressBar) progressBar.style.width = `${(video.currentTime / video.duration) * 100}%`; };
                     } else { if(video) video.pause(); }
                 });
             }, { root: null, threshold: 0.6 });
             document.querySelectorAll('.video-card').forEach(card => observer.observe(card));
         }
 
-        checkAuthStatus();
+        // تشغيل التطبيق
+        window.onload = function() {
+            setupThemeToggle();
+            checkAuthStatus();
+        };
     </script>
 </body>
 </html>
