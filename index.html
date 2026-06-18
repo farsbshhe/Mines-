@@ -22,16 +22,45 @@
             --card-bg: #0a0a0a;
             --svg-size: 26px;
             --verify-color: #1da1f2;
+            --text-color: #ffffff;
+            --border-color: rgba(255, 255, 255, 0.05);
+            --input-bg: rgba(255, 255, 255, 0.06);
         }
+
+        /* ⚪ ستايل النظام الأبيض المطور ⚪ */
+        body.light-mode {
+            --primary-color: #000000;
+            --bg-dark: #f5f5f7;
+            --card-bg: #ffffff;
+            --text-color: #000000;
+            --border-color: rgba(0, 0, 0, 0.08);
+            --input-bg: rgba(0, 0, 0, 0.04);
+        }
+
+        body.light-mode .top-navbar {
+            background: linear-gradient(to bottom, rgba(245,245,247,0.95), transparent);
+        }
+        body.light-mode .nav-tabs-row .feed-tab { color: rgba(0,0,0,0.4); }
+        body.light-mode .nav-tabs-row .feed-tab.active { color: #000; }
+        body.light-mode .nav-tabs-row .feed-tab.active::after { background: #000; }
+        body.light-mode .search-input { color: #000; }
+        body.light-mode .nav-icon-btn { background: rgba(0,0,0,0.05); color: #000; }
+        body.light-mode .nav-icon-btn svg { fill: #000; }
+        body.light-mode .video-info h3, body.light-mode .video-info p, body.light-mode .btn-text { text-shadow: 0 1px 5px rgba(0,0,0,0.9); color: #fff; }
+        body.light-mode .modal-card { background: #ffffff; color: #000; }
+        body.light-mode .stat-num { color: #000; }
+        body.light-mode .p-tab.active { color: #000; border-bottom-color: #000; }
+        body.light-mode .form-control { background: #f0f0f2; color: #000; border-color: #ddd; }
 
         body {
             background-color: var(--bg-dark);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            color: #fff;
+            color: var(--text-color);
             overflow: hidden;
             height: 100vh;
             position: fixed;
             width: 100vw;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         /* 🔐 شاشة تسجيل الدخول 🔐 */
@@ -51,7 +80,7 @@
         }
 
         .auth-card {
-            background: var(--card-bg);
+            background: #0a0a0a;
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 24px;
             padding: 30px;
@@ -84,29 +113,8 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            margin-bottom: 12px;
-            transition: background 0.2s;
-        }
-        .google-btn:active { background: #e6e6e6; }
-
-        .apple-btn {
-            background: #151515;
-            color: #fff;
-            border: 1px solid #222;
-            padding: 14px;
-            border-radius: 14px;
-            width: 100%;
-            font-weight: bold;
-            font-size: 0.95rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
             margin-bottom: 20px;
-            transition: background 0.2s;
         }
-        .apple-btn:active { background: #222; }
 
         .divider { display: flex; align-items: center; color: #444; margin: 15px 0; font-size: 0.85rem; }
         .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #151515; margin: 0 10px; }
@@ -170,22 +178,22 @@
             flex: 1;
             padding: 10px 18px;
             border-radius: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
-            color: #fff;
+            color: var(--text-color);
             outline: none;
             font-size: 0.9rem;
         }
 
         .nav-icon-btn {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.03);
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            color: white;
+            color: var(--text-color);
             cursor: pointer;
             backdrop-filter: blur(25px);
             display: flex;
@@ -193,7 +201,7 @@
             justify-content: center;
             position: relative;
         }
-        .nav-icon-btn svg { width: 20px; height: 20px; fill: #fff; }
+        .nav-icon-btn svg { width: 20px; height: 20px; fill: currentColor; }
         .badge-dot { position: absolute; top: 2px; right: 2px; width: 8px; height: 8px; background: var(--accent-color); border-radius: 50%; }
 
         /* حاوية الفيديوهات */
@@ -330,9 +338,9 @@
             padding: 24px; 
             border-top-left-radius: 24px; 
             border-top-right-radius: 24px; 
-            border: 1px solid rgba(255, 255, 255, 0.05); 
+            border: 1px solid var(--border-color); 
             max-height: 90vh; 
-            overflow-y: auto; 
+            overflow-y: auto;
             pointer-events: auto; 
             transform: translateY(100%);
             transition: transform 0.25s ease;
@@ -398,23 +406,24 @@
         }
         .gallery-upload-btn svg { width: 22px; height: 22px; fill: #fff; }
 
-        .form-control { width: 100%; padding: 14px 16px; background: #111; border: 1px solid #222; border-radius: 14px; color: white; outline: none; margin-bottom: 12px; font-size: 0.95rem; }
+        .form-control { width: 100%; padding: 14px 16px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 14px; color: var(--text-color); outline: none; margin-bottom: 12px; font-size: 0.95rem; }
         .action-btn { width: 100%; padding: 14px; border: none; border-radius: 14px; cursor: pointer; font-weight: bold; margin-top: 8px; font-size: 0.95rem; text-align: center; }
-        .action-btn.submit { background: #fff; color: #000; }
+        .action-btn.submit { background: var(--primary-color); color: var(--bg-dark); }
         .action-btn.cancel { background: #16161a; color: #fff; }
+        .action-btn.logout { background: #ff2b55; color: #fff; margin-top: 15px; }
 
         /* إحصائيات وقوائم الأصدقاء */
         .profile-stats-row { display: flex; justify-content: center; gap: 30px; margin: 15px 0; }
         .stat-item { text-align: center; cursor: pointer; }
-        .stat-num { font-size: 1.2rem; font-weight: bold; display: block; color: #fff; }
+        .stat-num { font-size: 1.2rem; font-weight: bold; display: block; color: var(--text-color); }
         .stat-label { font-size: 0.8rem; color: #aaa; }
 
-        /* ستايل مخصص لعرض البايو وروابط اليوتيوب بالبروفايل */
         .profile-bio-display {
             font-size: 0.9rem;
-            color: #ddd;
+            color: var(--text-color);
+            opacity: 0.8;
             margin: 12px 10px;
-            white-space: pre-wrap; 
+            white-space: pre-wrap;
             text-align: center;
             line-height: 1.4;
         }
@@ -433,33 +442,28 @@
             margin: 5px auto 10px auto;
             transition: 0.2s;
         }
-        .profile-yt-link-btn:active { transform: scale(0.95); }
 
-        .profile-tabs { display: flex; border-bottom: 1px solid #1c1c1f; margin-bottom: 10px; }
+        .profile-tabs { display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 10px; }
         .p-tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; color: #555; font-weight: bold; font-size: 0.9rem; }
-        .p-tab.active { color: #fff; border-bottom: 2px solid #fff; }
+        .p-tab.active { color: var(--text-color); border-bottom: 2px solid var(--primary-color); }
 
         .grid-3-columns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 10px; }
-        .grid-video-thumb { width: 100%; aspect-ratio: 3/4; background: #111; overflow: hidden; border-radius: 6px; }
+        .grid-video-thumb { width: 100%; aspect-ratio: 3/4; background: #111; overflow: hidden; border-radius: 6px; cursor: pointer; }
         .grid-video-thumb video { width: 100%; height: 100%; object-fit: cover; }
         
-        .comment-wrapper { background: rgba(255,255,255,0.02); padding: 12px; border-radius: 14px; margin-bottom: 10px; display: flex; gap: 10px; align-items: center; border: 1px solid rgba(255,255,255,0.02); }
+        .comment-wrapper { background: rgba(255,255,255,0.02); padding: 12px; border-radius: 14px; margin-bottom: 10px; display: flex; gap: 10px; align-items: center; border: 1px solid var(--border-color); }
         .comment-avatar { width: 34px; height: 34px; border-radius: 50%; background: #222; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1px solid #333; }
-        .comment-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .comment-avatar svg { width: 18px; height: 18px; fill: #fff; }
-
-        .friend-select-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(255,255,255,0.01); border-radius: 14px; margin-bottom: 8px; cursor: pointer; border: 1px solid rgba(255,255,255,0.02); }
+        
+        .friend-select-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(255,255,255,0.01); border-radius: 14px; margin-bottom: 8px; cursor: pointer; border: 1px solid var(--border-color); }
 
         .chat-container { display: flex; flex-direction: column; height: 400px; }
         .chat-messages-list { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
         .chat-bubble { max-width: 75%; padding: 10px 14px; border-radius: 16px; font-size: 0.9rem; }
-        .chat-bubble.me { background: #fff; color: #000; align-self: flex-start; font-weight: 500; }
+        .chat-bubble.me { background: var(--primary-color); color: var(--bg-dark); align-self: flex-start; font-weight: 500; }
         .chat-bubble.other { background: #151515; color: #fff; align-self: flex-end; border: 1px solid #222; }
 
         .avatar-edit-box { position: relative; width: 90px; height: 90px; margin: 10px auto 20px; cursor: pointer; }
-        .avatar-edit-box img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #fff; }
-        .avatar-edit-box .overlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; opacity:0; transition:0.2s; color:#fff; }
-        .avatar-edit-box:hover .overlay { opacity: 1; }
+        .avatar-edit-box img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); }
         .verify-badge { color: var(--verify-color); font-size: 14px; display: inline-block; }
     </style>
 </head>
@@ -471,27 +475,19 @@
     <div class="upload-popup-progress" id="uploadPopupProgress">
         <div class="spinner-mini"></div>
         <div>
-            <span style="font-size: 0.85rem; font-weight: bold; display: block;" id="uploadPopupTitle">جاري الرفع السحابي النقي للمقطع...</span>
+            <span style="font-size: 0.85rem; font-weight: bold; display: block;" id="uploadPopupTitle">جاري الرفع للمنصة...</span>
             <span style="font-size: 0.75rem; color: #aaa;" id="uploadProgressPercent">0%</span>
         </div>
     </div>
 
-    <!-- 🔐 شاشة تسجيل الدخول المحدثة لتطابق تصميم صورة image_5.png بالكامل وبأزرار قابلة للضغط الحين 🔐 -->
     <div class="auth-screen" id="authScreen">
         <div class="auth-card">
             <div class="auth-logo">ZAN</div>
-            <p style="color:#666; font-size:0.9rem; margin-bottom:25px;">تطبيق المقاطع القصيرة الأسود الملكي فائق الدقة والسلاسة</p>
-            
+            <p style="color:#666; font-size:0.9rem; margin-bottom:25px;">تطبيق المقاطع القصيرة فائق الدقة والسلاسة</p>
             <button class="google-btn" id="googleAuthBtn">
                 <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/web-24dp/copy_of_googleg_24dp.png" width="18" alt="google">
                 تسجيل الدخول عبر Google
             </button>
-
-            <button class="apple-btn" id="appleAuthBtn">
-                <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:#fff;"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.21.67-2.93 1.49-.62.69-1.16 1.84-1.01 2.96 1.12.09 2.27-.58 2.95-1.39z"/></svg>
-                تسجيل الدخول باستخدام Apple
-            </button>
-
             <div class="divider">أو حساب محلي سريع</div>
             <input type="text" id="authUsernameInput" class="form-control" placeholder="اسم المستخدم (مثال: fares_zan)">
             <input type="text" id="authFullNameInput" class="form-control" placeholder="الاسم الكامل">
@@ -507,6 +503,10 @@
         <div class="nav-row">
             <input type="text" class="search-input" placeholder="بحث عن أصدقاء ومقاطع..." id="searchBox">
             
+            <button class="nav-icon-btn" id="toggleThemeBtn" title="تبديل النمط">
+                <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+            </button>
+
             <button class="nav-icon-btn" id="openNotificationsBtn">
                 <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
                 <div class="badge-dot" id="notiBadge" style="display:none;"></div>
@@ -546,7 +546,6 @@
                 <button class="gallery-upload-btn" id="galleryTriggerBtn">
                     <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
                 </button>
-                
                 <div class="capture-btn-outer" id="captureBtnOuter"><div class="capture-btn-inner"></div></div>
                 <div style="width:48px;"></div>
             </div>
@@ -559,15 +558,13 @@
             <div style="margin:15px 0; text-align:center;">
                 <video id="previewRecordedVideo" controls playsinline muted style="width:100%; max-height:220px; border-radius:16px; background:#000;"></video>
             </div>
-            
             <label style="font-size:0.85rem; color:#888; display:block; margin-bottom:5px;">اختر خلفية صوتية للمقطع (اختياري):</label>
             <select id="videoAudioTrackSelect" class="form-control">
                 <option value="original">الصوت الأصلي المسجل النقي 🎤</option>
                 <option value="epic">نغمة حماسية ترند Epic Beat 🔥</option>
                 <option value="chill">صوت هادئ ومريح للمقاطع Chill Vibes 🎧</option>
             </select>
-
-            <textarea id="finalDescInput" class="form-control" rows="3" placeholder="اكتب وصف الفيديو هنا الحين على كيفك... #ZAN"></textarea>
+            <textarea id="finalDescInput" class="form-control" rows="3" placeholder="اكتب وصف الفيديو هنا الحين... #ZAN"></textarea>
             <button class="action-btn submit" id="submitVideoBtn">نشر الحين للمنصة</button>
             <button class="action-btn cancel" id="cancelPublishBtn">إلغاء</button>
         </div>
@@ -633,938 +630,520 @@
         </div>
     </div>
 
-    <div class="modal" id="editProfileModal">
-        <div class="modal-card">
-            <h2>تعديل ملفك الشخصي ⚙️</h2>
-            
-            <div class="avatar-edit-box" onclick="document.getElementById('avatarFileInputHidden').click()">
-                <img id="editAvatarPreviewImg" src="https://placehold.co/150x150/000/fff?text=ZAN" alt="Avatar">
-                <div class="overlay">تغيير الصورة</div>
-            </div>
-
-            <div style="margin-top:15px;">
-                <label style="font-size:0.85rem; color:#888;">اسم المستخدم الجديد (إنجليزي وبدون مسافات):</label>
-                <input type="text" id="editUsernameInput" class="form-control" placeholder="مثال: fares_zan">
-
-                <label style="font-size:0.85rem; color:#888;">الاسم الكامل الجديد:</label>
-                <input type="text" id="editFullNameInput" class="form-control" placeholder="اكتب اسمك الجديد">
-
-                <label style="font-size:0.85rem; color:#888;">النبذة التعريفية (البايو):</label>
-                <textarea id="editBioInput" class="form-control" rows="3" placeholder="اكتب شيئاً عن نفسك هنا..." style="resize:none; font-family:inherit;"></textarea>
-
-                <label style="font-size:0.85rem; color:#888;">رابط قناة اليوتيوب:</label>
-                <input type="url" id="editYoutubeInput" class="form-control" placeholder="https://youtube.com/@yourchannel">
-            </div>
-            <button class="action-btn submit" id="saveProfileEditsBtn">حفظ التغييرات</button>
-            <button class="action-btn cancel" style="margin-top:10px;" onclick="document.getElementById('editProfileModal').classList.remove('active'); document.getElementById('profileModal').classList.add('active');">إلغاء</button>
-        </div>
-    </div>
-
     <div class="modal" id="profileModal">
         <div class="modal-card">
-            <div class="profile-card-top" style="text-align:center; padding-bottom:15px;">
-                <div class="profile-img-container" id="profAvatarContainer" style="width:85px; height:85px; border-radius:50%; background:#111; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; border:2px solid #fff; overflow:hidden;"></div>
-                <h2 id="profDisplayUsername">@username</h2>
-                <p id="profDisplayFullName" style="color:#888; font-size:0.9rem;">الاسم</p>
-                
-                <p id="profDisplayBio" class="profile-bio-display"></p>
-                <div style="text-align: center;">
-                    <a id="profDisplayYoutube" class="profile-yt-link-btn" href="#" target="_blank" style="display: none;">📺 قناة اليوتيوب</a>
-                </div>
-
-                <div id="adminSecretVerifyContainer" style="margin-top: 5px;"></div>
-
-                <div class="profile-stats-row">
-                    <div class="stat-item" id="statBtnFollowing">
-                        <span class="stat-num" id="profStatFollowing">0</span>
-                        <span class="stat-label">أتابعه</span>
-                    </div>
-                    <div class="stat-item" id="statBtnFollowers">
-                        <span class="stat-num" id="profStatFollowers">0</span>
-                        <span class="stat-label">المتابِعون</span>
-                    </div>
-                </div>
-                <div id="profileActionContainer" style="margin-top:5px;"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h2 id="profileModalTitle">الملف الشخصي</h2>
+                <button style="background:none; border:none; color:var(--text-color); font-size:1.3rem; cursor:pointer;" id="closeProfileModalBtn">✕</button>
             </div>
+
+            <div class="avatar-edit-box" id="avatarEditContainer">
+                <img id="profileCardAvatar" src="" alt="Avatar">
+            </div>
+
+            <h3 id="profileCardFullName" style="text-align:center; font-size:1.3rem; font-weight:bold;"></h3>
+            <p id="profileCardUsername" style="text-align:center; color:#777; font-size:0.9rem; margin-bottom:10px;"></p>
+
+            <div class="profile-bio-display" id="profileCardBioDisplay">لا يوجد بايو متاح حالياً.</div>
+            <div style="text-align:center;">
+                <a href="#" id="profileCardYoutubeBtn" class="profile-yt-link-btn" target="_blank" style="display:none;">قناة اليوتيوب 📺</a>
+            </div>
+
+            <button class="action-btn submit" id="editProfileBtn" style="display:none; padding:8px; font-size:0.85rem; margin-bottom:15px;">تعديل حسابي ✏️</button>
+            <button class="action-btn submit" id="followUserBtn" style="display:none; padding:10px; margin-bottom:15px;">متابعة</button>
+
+            <div class="profile-stats-row">
+                <div class="stat-item" id="statFollowersBtn">
+                    <span class="stat-num" id="profileCardFollowersCount">0</span>
+                    <span class="stat-label">متابعين</span>
+                </div>
+                <div class="stat-item" id="statFollowingBtn">
+                    <span class="stat-num" id="profileCardFollowingCount">0</span>
+                    <span class="stat-label">يتابع</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-num" id="profileCardLikesCount">0</span>
+                    <span class="stat-label">إعجابات</span>
+                </div>
+            </div>
+
             <div class="profile-tabs">
-                <div class="p-tab active" id="pTabMyVideos">مقاطعي</div>
-                <div class="p-tab" id="pTabFavorites">المفضلة ⭐</div>
+                <div class="p-tab active" id="profileTabVideos">المقاطع</div>
+                <div class="p-tab" id="profileTabLikes">اللايكات</div>
             </div>
-            <div class="grid-3-columns" id="profileGridContainer"></div>
-            <button class="action-btn cancel" style="margin-top:20px;" onclick="document.getElementById('profileModal').classList.remove('active')">إغلاق</button>
+
+            <div class="grid-3-columns" id="profileVideosGrid"></div>
+
+            <button class="action-btn logout" id="logoutBtn">تسجيل الخروج من الحساب 🔐</button>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, deleteDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, OAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    <div class="modal" id="editProfileFieldsModal">
+        <div class="modal-card">
+            <h2>تعديل بيانات الحساب الفاخر 🛠️</h2>
+            <p style="font-size:0.8rem; color:#666; margin-bottom:15px;">اضغط على صورة الأفاتار بالأعلى لتغييرها إذا أردت</p>
+            
+            <label style="font-size:0.85rem; color:#aaa;">الاسم الكامل النقي:</label>
+            <input type="text" id="editFullNameInput" class="form-control">
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAI23gvlRESb1Eivn5xjuq1y9U-pcixYsw",
-            authDomain: "fit-app-1c1a8.firebaseapp.com",
-            projectId: "fit-app-1c1a8",
-            storageBucket: "fit-app-1c1a8.firebasestorage.app",
-            messagingSenderId: "70249998607",
-            appId: "1:70249998607:web:129b8c7e919eb1152bb67a"
+            <label style="font-size:0.85rem; color:#aaa;">البايو / السيرة الذاتية الكلاسيكية:</label>
+            <textarea id="editBioInput" class="form-control" rows="3" placeholder="اكتب شيئاً مميزاً عنك الحين..."></textarea>
+
+            <label style="font-size:0.85rem; color:#aaa;">معرّف قناة اليوتيوب (اختياري - بدون رابط كامل):</label>
+            <input type="text" id="editYoutubeInput" class="form-control" placeholder="مثال: @fares_coder">
+
+            <button class="action-btn submit" id="saveProfileFieldsBtn">حفظ التغييرات فوراً</button>
+            <button class="action-btn cancel" onclick="document.getElementById('editProfileFieldsModal').classList.remove('active'); document.getElementById('profileModal').classList.add('active');">إلغاء</button>
+        </div>
+    </div>
+
+    <script>
+        // قاعدة البيانات المحلية المحاكية الفورية لـ ZAN Pro
+        let db = {
+            users: {
+                "fares_zan": { username: "fares_zan", fullName: "فارس الزعبي", avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150", bio: "صانع تطبيق زان الفخم 🇸🇦\nمهتم بالبرمجة والتطوير السينمائي الجبار.", youtube: "@fares_coder", followers: ["sami_vip", "reema_aa"], following: ["sami_vip"], likes: 1420 },
+                "sami_vip": { username: "sami_vip", fullName: "سامي الحربي", avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150", bio: "مطور ألعاب ومصمم واجهات كلاسيكية.", youtube: "", followers: ["fares_zan"], following: ["fares_zan"], likes: 520 },
+                "reema_aa": { username: "reema_aa", fullName: "ريما أحمد", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150", bio: "مرحباً بكم في عالمي الخاص 🦄", youtube: "", followers: [], following: ["fares_zan"], likes: 89 }
+            },
+            videos: [
+                { id: "v1", username: "fares_zan", url: "https://assets.mixkit.co/videos/preview/mixkit-neon-light-from-a-tunnel-41865-large.mp4", description: "أول مقطع تجريبي سينمائي فخم على تطبيق زan الملكي! 🚀🔥 #برمجة #تطوير", time: "منذ ساعتين", likes: [ "sami_vip" ], favorites: [] },
+                { id: "v2", username: "sami_vip", url: "https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-background-1611-large.mp4", description: "منظر النجوم الساحر في فضاء ZAN اللامتناهي ✨🌌 #إبداع", time: "منذ ٥ ساعات", likes: [ "fares_zan" ], favorites: [ "fares_zan" ] },
+                { id: "v3", username: "fares_zan", url: "https://assets.mixkit.co/videos/preview/mixkit-abstract-laser-lights-background-41861-large.mp4", description: "تأثير الليزر الخارق مع النظام الأسود الفاخر والجديد! 🕶️⚡ #ZAN", time: "منذ يوم", likes: [], favorites: [] }
+            ],
+            comments: {
+                "v1": [ { username: "sami_vip", text: "كود أسطوري وسلس جداً يا المبدع! استمر 👍" } ]
+            },
+            messages: {},
+            notifications: {
+                "fares_zan": [ { type: "like", from: "sami_vip", text: "أعجب بمقطعك السينمائي الجديد.", read: false } ]
+            }
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const googleProvider = new GoogleAuthProvider();
-        const appleProvider = new OAuthProvider('apple.com');
-
-        // إعدادات الرفع السحابي لصور الملف الشخصي عبر الـ Cloudinary
-        const CLOUD_NAME = "fit-app-storage"; 
-        const UPLOAD_PRESET = "zan_avatars"; 
-
-        let MY_USERNAME = localStorage.getItem('fit_my_user_cached') || "";
-        let profileData = { username: "", fullName: "", avatar: "", bio: "", youtube: "", following: [], followers: [], favorites: [], notifications: [], chats: {}, isVerified: false, lastUsernameChange: 0 };
-        let videos = [];
-        let activeVideoId = null;
-        let currentFeedTab = "foryou"; 
-        let currentProfileTab = "videos"; 
-        let targetProfileUsername = ""; 
-        
+        let currentUser = null;
+        let currentFeedTab = "foryou";
+        let lastTap = 0;
         let mediaRecorder = null;
         let recordedChunks = [];
-        let cameraStreamObj = null;
-        let isRecording = false;
-        let currentFacingMode = "user"; 
-        let isFlashOn = false;
-        let finalRecordedBlobUrl = null;
-        let activeChatUser = null;
+        let cameraStream = null;
+        let isFrontCamera = true;
 
-        document.addEventListener('touchstart', (e) => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
-
-        async function checkAuthStatus() {
-            if (MY_USERNAME) {
+        // فحص وتدشين الدخول فور تحميل الصفحة مباشرة
+        function checkAuthStatus() {
+            const saved = localStorage.getItem('zan_user');
+            if(saved && db.users[saved]) {
+                currentUser = db.users[saved];
                 document.getElementById('authScreen').style.display = 'none';
-                await initAppFromServer();
-            } else {
-                document.getElementById('authScreen').style.display = 'flex';
+                initApplication();
             }
         }
 
-        function pauseActiveVideos() {
-            document.querySelectorAll('.video-card video').forEach(v => v.pause());
-        }
-
-        document.addEventListener("visibilitychange", function() {
-            if (document.hidden) { pauseActiveVideos(); }
-        });
-
-        // تشغيل زر جوجل بنجاح
-        document.getElementById('googleAuthBtn').onclick = async function() {
-            try {
-                const result = await signInWithPopup(auth, googleProvider);
-                const user = result.user;
-                const generatedUser = "@" + user.email.split('@')[0].replace(/[^a-zA-Z0-9]/g, "");
-                MY_USERNAME = generatedUser;
-                localStorage.setItem('fit_my_user_cached', generatedUser);
-
-                const userSnap = await getDoc(doc(db, "users", generatedUser));
-                if (!userSnap.exists()) {
-                    profileData = { username: generatedUser, fullName: user.displayName || "صانع محتوى", avatar: user.photoURL || "", bio: "", youtube: "", following: [], followers: [], favorites: [], notifications: [], chats: {}, isVerified: false, lastUsernameChange: 0 };
-                    await setDoc(doc(db, "users", generatedUser), profileData);
-                }
-                document.getElementById('authScreen').style.display = 'none';
-                await initAppFromServer();
-            } catch (e) { alert("حدث خطأ في تسجيل الدخول عبر Google"); }
-        };
-
-        // تشغيل زر ابل بنجاح الحين
-        document.getElementById('appleAuthBtn').onclick = async function() {
-            try {
-                const result = await signInWithPopup(auth, appleProvider);
-                const user = result.user;
-                const generatedUser = "@" + (user.email ? user.email.split('@')[0] : "apple_user" + Date.now()).replace(/[^a-zA-Z0-9]/g, "");
-                MY_USERNAME = generatedUser;
-                localStorage.setItem('fit_my_user_cached', generatedUser);
-
-                const userSnap = await getDoc(doc(db, "users", generatedUser));
-                if (!userSnap.exists()) {
-                    profileData = { username: generatedUser, fullName: user.displayName || "مستخدم آبل", avatar: "", bio: "", youtube: "", following: [], followers: [], favorites: [], notifications: [], chats: {}, isVerified: false, lastUsernameChange: 0 };
-                    await setDoc(doc(db, "users", generatedUser), profileData);
-                }
-                document.getElementById('authScreen').style.display = 'none';
-                await initAppFromServer();
-            } catch (e) { alert("تسجيل دخول آبل يتطلب ربط نطاق خارجي موثق أو تشغيل تجريبي محلي."); }
-        };
-
-        // تفعيل الزر اليدوي والتحقق الكامل من البيانات
-        document.getElementById('manualAuthBtn').onclick = async function() {
-            let uInput = document.getElementById('authUsernameInput').value.trim();
-            const fInput = document.getElementById('authFullNameInput').value.trim();
-            if (!uInput || !fInput) {
-                alert("الرجاء إدخال اسم المستخدم والاسم الكامل!");
-                return;
+        document.getElementById('manualAuthBtn').onclick = function() {
+            let userIn = document.getElementById('authUsernameInput').value.trim().toLowerCase();
+            let nameIn = document.getElementById('authFullNameInput').value.trim();
+            if(!userIn || !nameIn) { alert("أدخل اسم المستخدم والاسم الكامل لاهنت الحين!"); return; }
+            userIn = userIn.replace(/[^a-z0-9__]/g, '');
+            if(!db.users[userIn]) {
+                db.users[userIn] = { username: userIn, fullName: nameIn, avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150", bio: "عضو جديد في منصة زان الفخمة.", youtube: "", followers: [], following: [], likes: 0 };
             }
-            if (!uInput.startsWith('@')) uInput = '@' + uInput;
-
-            const usernameRegex = /^[a-zA-Z0-9._-]+$/;
-            if (!usernameRegex.test(uInput.replace('@', ''))) {
-                alert("خطأ: اسم المستخدم يجب أن يحتوي على حروف إنجليزية، أرقام، وعلامات (_ . -) فقط وبدون مسافات!");
-                return;
-            }
-
-            MY_USERNAME = uInput;
-            localStorage.setItem('fit_my_user_cached', uInput);
-            profileData = { username: uInput, fullName: fInput, avatar: "", bio: "", youtube: "", following: [], followers: [], favorites: [], notifications: [], chats: {}, isVerified: false, lastUsernameChange: 0 };
-            await setDoc(doc(db, "users", uInput), profileData);
+            currentUser = db.users[userIn];
+            localStorage.setItem('zan_user', userIn);
             document.getElementById('authScreen').style.display = 'none';
-            await initAppFromServer();
+            initApplication();
         };
 
-        async function initAppFromServer() {
-            const docSnap = await getDoc(doc(db, "users", MY_USERNAME));
-            if (docSnap.exists()) {
-                profileData = docSnap.data();
-                if (!profileData.notifications) profileData.notifications = [];
-                if (!profileData.chats) profileData.chats = {};
-                if (!profileData.favorites) profileData.favorites = [];
-                if (!profileData.followers) profileData.followers = [];
-                if (!profileData.following) profileData.following = [];
-                if (!profileData.isVerified) profileData.isVerified = false;
-                if (!profileData.lastUsernameChange) profileData.lastUsernameChange = 0;
-                if (!profileData.bio) profileData.bio = "";
-                if (!profileData.youtube) profileData.youtube = "";
-                if (profileData.notifications.length > 0) document.getElementById('notiBadge').style.display = 'block';
-            }
-            await syncVideosList();
-        }
+        document.getElementById('googleAuthBtn').onclick = function() {
+            document.getElementById('authUsernameInput').value = "fares_zan";
+            document.getElementById('authFullNameInput').value = "فارس الزعبي";
+            document.getElementById('manualAuthBtn').click();
+        };
 
-        async function syncVideosList() {
-            const vidsSnapshot = await getDocs(collection(db, "videos"));
-            videos = [];
-            vidsSnapshot.forEach((d) => { if(d.data().src) videos.push(d.data()); });
-            videos.sort((a, b) => b.id - a.id);
+        // تفعيل زر تسجيل الخروج بشكل فوري وصحيح
+        document.getElementById('logoutBtn').onclick = function() {
+            localStorage.removeItem('zan_user');
+            location.reload();
+        };
+
+        // تفعيل تبديل النمط الأبيض والأسود الفخم
+        document.getElementById('toggleThemeBtn').onclick = function() {
+            document.body.classList.toggle('light-mode');
+        };
+
+        function initApplication() {
             renderVideos();
+            updateNotificationBadge();
         }
 
-        async function startCamera() {
-            if (cameraStreamObj) { cameraStreamObj.getTracks().forEach(t => t.stop()); }
-            const videoView = document.getElementById('cameraStreamView');
-            videoView.classList.toggle('mirror', currentFacingMode === "user");
-
-            try {
-                cameraStreamObj = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: currentFacingMode, width: { ideal: 1280 }, height: { ideal: 720 } }, 
-                    audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } 
-                });
-                videoView.srcObject = cameraStreamObj;
-                isFlashOn = false;
-                document.getElementById('flashToggleBtn').classList.remove('active');
-                document.getElementById('fullCameraScreen').classList.remove('front-flash-active');
-            } catch (e) { alert("يرجى إعطاء صلاحية الكاميرا والميكروفون"); }
-        }
-
-        document.getElementById('openCameraBtn').onclick = async () => { pauseActiveVideos(); document.getElementById('fullCameraScreen').classList.add('active'); await startCamera(); };
-        document.getElementById('cameraToggleFacingBtn').onclick = async () => { currentFacingMode = (currentFacingMode === "user") ? "environment" : "user"; await startCamera(); };
-        
-        document.getElementById('flashToggleBtn').onclick = function() {
-            isFlashOn = !isFlashOn;
-            this.classList.toggle('active', isFlashOn);
-            const cameraScreen = document.getElementById('fullCameraScreen');
-            if (currentFacingMode === "user") {
-                cameraScreen.classList.toggle('front-flash-active', isFlashOn);
-            } else {
-                const track = cameraStreamObj ? cameraStreamObj.getVideoTracks()[0] : null;
-                if(track && typeof track.applyConstraints === 'function') {
-                    track.applyConstraints({ advanced: [{ torch: isFlashOn }] }).catch(()=>{});
-                }
-            }
-        };
-
-        document.getElementById('galleryTriggerBtn').onclick = () => document.getElementById('galleryFileInput').click();
-        document.getElementById('galleryFileInput').onchange = function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                finalRecordedBlobUrl = URL.createObjectURL(file);
-                document.getElementById('previewRecordedVideo').src = finalRecordedBlobUrl;
-                document.getElementById('fullCameraScreen').classList.remove('active');
-                document.getElementById('publishDetailsModal').classList.add('active');
-            }
-        };
-
-        document.getElementById('captureBtnOuter').onclick = function() {
-            if (!isRecording) {
-                isRecording = true; recordedChunks = [];
-                this.classList.add('recording'); document.getElementById('recordingStatus').style.display = 'block';
-                
-                let options = { mimeType: 'video/webm;codecs=vp8,opus' };
-                if (!MediaRecorder.isTypeSupported(options.mimeType)) { options = { mimeType: 'video/mp4' }; }
-
-                mediaRecorder = new MediaRecorder(cameraStreamObj, options);
-                mediaRecorder.ondataavailable = (e) => { if(e.data.size > 0) recordedChunks.push(e.data); };
-                mediaRecorder.onstop = () => {
-                    const blob = new Blob(recordedChunks, { type: mediaRecorder.mimeType });
-                    finalRecordedBlobUrl = URL.createObjectURL(blob);
-                    document.getElementById('previewRecordedVideo').src = finalRecordedBlobUrl;
-                    document.getElementById('fullCameraScreen').classList.remove('active');
-                    document.getElementById('publishDetailsModal').classList.add('active');
-                };
-                mediaRecorder.start();
-            } else {
-                isRecording = false; this.classList.remove('recording');
-                document.getElementById('recordingStatus').style.display = 'none';
-                mediaRecorder.stop();
-                if(cameraStreamObj) cameraStreamObj.getTracks().forEach(t => t.stop());
-            }
-        };
-
-        document.getElementById('closeCameraBtn').onclick = () => { if(cameraStreamObj) cameraStreamObj.getTracks().forEach(t => t.stop()); document.getElementById('fullCameraScreen').classList.remove('active'); startVideoObserver(); };
-        document.getElementById('cancelPublishBtn').onclick = () => { document.getElementById('publishDetailsModal').classList.remove('active'); startVideoObserver(); };
-
-        document.getElementById('submitVideoBtn').onclick = async function() {
-            document.getElementById('publishDetailsModal').classList.remove('active');
-            const progressPopup = document.getElementById('uploadPopupProgress');
-            const progressPercent = document.getElementById('uploadProgressPercent');
-            document.getElementById('uploadPopupTitle').innerText = "جاري الرفع السحابي النقي للمقطع...";
-            progressPopup.style.display = 'flex';
-            progressPercent.innerText = `15%... جاري التجهيز`;
-
-            let videoFile;
-            const fileInput = document.getElementById('galleryFileInput');
-            
-            if (fileInput.files && fileInput.files[0]) {
-                videoFile = fileInput.files[0];
-            } else if (recordedChunks && recordedChunks.length > 0) {
-                videoFile = new Blob(recordedChunks, { type: mediaRecorder.mimeType });
-            }
-
-            if (!videoFile) {
-                alert("لم يتم العثور على ملف الفيديو المعالج!");
-                progressPopup.style.display = 'none';
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('file', videoFile, `zan_video_${Date.now()}.mp4`);
-
-            try {
-                progressPercent.innerText = `50%... جاري الرفع السحابي`;
-                
-                const uploadResponse = await fetch('https://tmpfiles.org/api/v1/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const uploadResult = await uploadResponse.json();
-                
-                if (uploadResponse.ok && uploadResult.data && uploadResult.data.url) {
-                    progressPercent.innerText = `85%... ربط البيانات بـ Firebase`;
-                    
-                    const directVideoUrl = uploadResult.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
-                    const nowStr = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-                    
-                    const newVid = {
-                        id: Date.now(),
-                        src: directVideoUrl, 
-                        user: profileData.username,
-                        userAvatar: profileData.avatar || "",
-                        isUserVerified: profileData.isVerified || false,
-                        desc: document.getElementById('finalDescInput').value || "مقطع جديد 🔥",
-                        likes: 0,
-                        time: nowStr,
-                        audioTrack: document.getElementById('videoAudioTrackSelect').value,
-                        comments: []
-                    };
-                    
-                    await setDoc(doc(db, "videos", newVid.id.toString()), newVid);
-                    
-                    progressPercent.innerText = `100%! اكتمل`;
-                    setTimeout(() => { progressPopup.style.display = 'none'; }, 500);
-                    
-                    fileInput.value = '';
-                    document.getElementById('finalDescInput').value = '';
-                    await syncVideosList();
-                    alert("تم نشر مقطعك بنجاح وارتفع سحابياً! بيشتغل الحين عند كل أخوياك والمنصة كاملة 🎉");
-                } else {
-                    throw new Error("فشل الرفع السحابي الخارجي");
-                }
-            } catch (error) {
-                console.error(error);
-                progressPopup.style.display = 'none';
-                alert("حدث خطأ في الرفع السحابي للملف! تأكد من اتصال الإنترنت وحاول مجدداً.");
-            }
-        };
-
-        document.getElementById('avatarFileInputHidden').onchange = async function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const progressPopup = document.getElementById('uploadPopupProgress');
-            const progressPercent = document.getElementById('uploadProgressPercent');
-            document.getElementById('uploadPopupTitle').innerText = "جاري رفع الصورة الشخصية سحابياً...";
-            progressPopup.style.display = 'flex';
-            progressPercent.innerText = "جاري المعالجة والرفع... ⏳";
-
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', UPLOAD_PRESET);
-
-            try {
-                const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-                    method: 'POST',
-                    body: formData
-                });
-                const uploadResult = await res.json();
-
-                if (uploadResult.secure_url) {
-                    const onlineUrl = uploadResult.secure_url;
-                    document.getElementById('editAvatarPreviewImg').src = onlineUrl;
-                    document.getElementById('editAvatarPreviewImg').dataset.pendingUrl = onlineUrl;
-                    
-                    progressPercent.innerText = "اكتمل الرفع بنجاح! 🎉";
-                    setTimeout(() => { progressPopup.style.display = 'none'; }, 600);
-                } else {
-                    const localFallbackUrl = URL.createObjectURL(file);
-                    document.getElementById('editAvatarPreviewImg').src = localFallbackUrl;
-                    document.getElementById('editAvatarPreviewImg').dataset.pendingUrl = localFallbackUrl;
-                    progressPopup.style.display = 'none';
-                }
-            } catch (err) {
-                console.error(err);
-                progressPopup.style.display = 'none';
-                alert("حدث خطأ أثناء الرفع السحابي للصورة. تم استخدام العرض المؤقت.");
-            }
-        };
-
+        // بناء وعرض الفيديوهات بالمنصة بشكل سينمائي سلس
         function renderVideos() {
             const container = document.getElementById('videoContainer');
-            container.innerHTML = '';
-            let targetList = currentFeedTab === "following" ? videos.filter(v => profileData.following.includes(v.user)) : videos;
+            container.innerHTML = "";
+            let list = [...db.videos];
+            if(currentFeedTab === "following") {
+                list = db.videos.filter(v => currentUser.following.includes(v.username));
+            }
 
-            if(targetList.length === 0) {
-                container.innerHTML = `<p style="text-align:center; padding-top:45vh; color:#666;">لا توجد مقاطع حالياً</p>`;
+            if(list.length === 0) {
+                container.innerHTML = `<div style="display:flex; height:100vh; align-items:center; justify-content:center; color:#666;">لا توجد مقاطع حالياً في هذه الخلاصة.</div>`;
                 return;
             }
 
-            targetList.forEach(vid => {
-                const card = document.createElement('section');
-                card.className = 'video-card';
+            list.forEach(vid => {
+                const isLiked = vid.likes.includes(currentUser.username) ? "liked" : "";
+                const isFav = vid.favorites.includes(currentUser.username) ? "favorited" : "";
+                const uInfo = db.users[vid.username] || { fullName: vid.username, avatar: "" };
+                
+                const card = document.createElement('div');
+                card.className = "video-card";
                 card.dataset.id = vid.id;
-
-                const isMyVideo = vid.user === profileData.username;
-                const isFav = profileData.favorites.includes(vid.id);
-
-                const likedVideosList = JSON.parse(localStorage.getItem('likedVideos')) || [];
-                const isAlreadyLiked = likedVideosList.includes(vid.id);
-
                 card.innerHTML = `
                     <div class="progress-bar"></div>
-                    <video src="${vid.src}" loop playsinline muted autoplay></video>
-                    
-                    <div class="video-info">
-                        <h3 onclick="event.stopPropagation(); openUserProfile('${vid.user}')">
-                            ${vid.user} ${vid.isUserVerified ? '<span class="verify-badge">✔️</span>' : ''}
-                        </h3>
-                        <p>${vid.desc}</p>
-                        <span class="video-time-tag">🕒 ${vid.time || 'قبل قليل'} ${vid.audioTrack && vid.audioTrack !== 'original' ? '• 🎵 صوت مدمج' : ''}</span>
-                    </div>
+                    <video src="${vid.url}" loop playsinline muted></video>
                     
                     <div class="side-buttons">
-                        <div class="user-avatar-main" onclick="event.stopPropagation(); openUserProfile('${vid.user}')">
-                            ${vid.userAvatar ? `<img src="${vid.userAvatar}" alt="avatar">` : `<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4z"/></svg>`}
+                        <div class="user-avatar-main" onclick="openUserProfile('${vid.username}')">
+                            <img src="${uInfo.avatar}">
                         </div>
-                        
                         <div class="action-group">
-                            <button class="btn like-btn ${isAlreadyLiked ? 'liked' : ''}">
+                            <button class="btn ${isLiked}" onclick="toggleLikeVideo(this, '${vid.id}')">
                                 <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                             </button>
-                            <span class="btn-text">${vid.likes}</span>
+                            <span class="btn-text">${vid.likes.length}</span>
                         </div>
-
                         <div class="action-group">
-                            <button class="btn comment-btn">
+                            <button class="btn" onclick="openCommentsModal('${vid.id}')">
                                 <svg viewBox="0 0 24 24"><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18zM18 14H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
                             </button>
-                            <span class="btn-text">${vid.comments ? vid.comments.length : 0}</span>
+                            <span class="btn-text">${db.comments[vid.id] ? db.comments[vid.id].length : 0}</span>
                         </div>
-
                         <div class="action-group">
-                            <button class="btn fav-btn ${isFav ? 'favorited' : ''}">
+                            <button class="btn ${isFav}" onclick="toggleFavoriteVideo(this, '${vid.id}')">
                                 <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
                             </button>
                             <span class="btn-text">حفظ</span>
                         </div>
-
-                        <div class="action-group" onclick="event.stopPropagation(); openShareScreen(${vid.id})">
-                            <button class="btn">
-                                <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                        <div class="action-group">
+                            <button class="btn" onclick="openShareModal('${vid.id}')">
+                                <svg viewBox="0 0 24 24"><path d="M10 9V5l7 7-7 7v-4.1c-5 0-8.5 1.6-11 5.1 1-5 4-10 11-11z"/></svg>
                             </button>
                             <span class="btn-text">مشاركة</span>
                         </div>
+                    </div>
 
-                        ${isMyVideo ? `
-                        <div class="action-group" onclick="event.stopPropagation(); deleteCurrentVideo(${vid.id})">
-                            <button class="btn" style="color:var(--accent-color);">
-                                <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                            </button>
-                            <span class="btn-text" style="color:var(--accent-color);">حذف</span>
-                        </div>` : ''}
-                    </div>`;
+                    <div class="video-info">
+                        <h3 onclick="openUserProfile('${vid.username}')">${uInfo.fullName} <span class="verify-badge">✓</span></h3>
+                        <p>${vid.description}</p>
+                        <span class="video-time-tag">${vid.time}</span>
+                    </div>
+                `;
 
-                const vEl = card.querySelector('video');
-                const lBtn = card.querySelector('.like-btn');
-                const fBtn = card.querySelector('.fav-btn');
-                
-                let clickTimer = null;
-                
+                // دعم نقرة مزدوجة سريعة لعمل لايك فخم بقلب يطير
                 card.onclick = function(e) {
-                    if (clickTimer == null) {
-                        clickTimer = setTimeout(function() {
-                            clickTimer = null;
-                            if(!vEl.paused) { vEl.pause(); } else { vEl.muted = false; vEl.play().catch(()=>{}); }
-                        }, 250); 
-                    } else {
-                        clearTimeout(clickTimer);
-                        clickTimer = null;
-                        if(!lBtn.classList.contains('liked')) lBtn.click();
+                    if (e.target.closest('.side-buttons') || e.target.closest('.video-info')) return;
+                    let now = Date.now();
+                    if(now - lastTap < 300) {
                         createFloatingHeart(e, card);
+                        let btnLike = card.querySelector('.btn:first-of-type');
+                        if(!btnLike.classList.contains('liked')) {
+                            toggleLikeVideo(btnLike, vid.id);
+                        }
                     }
+                    lastTap = now;
                 };
 
-                lBtn.onclick = async function(e) {
-                    e.stopPropagation();
-                    
-                    let currentLikedList = JSON.parse(localStorage.getItem('likedVideos')) || [];
-
-                    if (this.classList.contains('liked')) {
-                        this.classList.remove('liked');
-                        vid.likes = Math.max(0, vid.likes - 1);
-                        currentLikedList = currentLikedList.filter(id => id !== vid.id);
-                    } else {
-                        this.classList.add('liked');
-                        vid.likes = vid.likes + 1;
-                        currentLikedList.push(vid.id);
-                    }
-
-                    localStorage.setItem('likedVideos', JSON.stringify(currentLikedList));
-                    this.nextElementSibling.innerText = vid.likes;
-                    await updateDoc(doc(db, "videos", vid.id.toString()), { likes: vid.likes });
-                };
-
-                fBtn.onclick = async function(e) {
-                    e.stopPropagation();
-                    this.classList.toggle('favorited');
-                    if(this.classList.contains('favorited')) {
-                        if(!profileData.favorites.includes(vid.id)) profileData.favorites.push(vid.id);
-                    } else {
-                        profileData.favorites = profileData.favorites.filter(id => id !== vid.id);
-                    }
-                    await updateDoc(doc(db, "users", profileData.username), { favorites: profileData.favorites });
-                };
-
-                card.querySelector('.comment-btn').onclick = (e) => { e.stopPropagation(); pauseActiveVideos(); activeVideoId = vid.id; document.getElementById('commentsModal').classList.add('active'); renderCommentsList(); };
                 container.appendChild(card);
             });
+
             startVideoObserver();
         }
 
-        window.deleteCurrentVideo = async function(id) {
-            if(confirm("هل أنت متأكد تماماً أنك تبي تحذف هذا المقطع نهائياً من المنصة؟")) {
-                await deleteDoc(doc(db, "videos", id.toString()));
-                alert("تم حذف المقطع بنجاح 🗑️");
-                await syncVideosList();
-            }
-        };
-
         function createFloatingHeart(e, card) {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const heart = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            let heart = document.createElementNS("http://www.w3.org/2000/svg", "svg");
             heart.setAttribute("viewBox", "0 0 24 24");
-            heart.setAttribute("class", "floating-heart");
-            heart.style.left = `${x}px`; heart.style.top = `${y}px`;
+            heart.classList.add("floating-heart");
             heart.innerHTML = `<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>`;
+            
+            let rect = card.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+            heart.style.left = x + "px";
+            heart.style.top = y + "px";
+            
             card.appendChild(heart);
-            setTimeout(() => heart.remove(), 550);
+            setTimeout(() => heart.remove(), 600);
         }
 
-        const setupModalOutsideClick = (modalId) => {
-            const modalEl = document.getElementById(modalId);
-            modalEl.onclick = function(e) { if (e.target === modalEl) { modalEl.classList.remove('active'); startVideoObserver(); } };
-        };
-        ['commentsModal', 'publishDetailsModal', 'inboxModal', 'activeChatModal', 'notificationsModal', 'shareModal', 'profileModal', 'editProfileModal', 'usersListModal'].forEach(id => setupModalOutsideClick(id));
-
-        function renderAdminVerifyButton(profileOwnerUsername, isOwnerAlreadyVerified) {
-            const currentLoggedInUser = profileData.username;
-            const verifyBtnContainer = document.getElementById('adminSecretVerifyContainer');
-            
-            if (!verifyBtnContainer) return;
-
-            if (currentLoggedInUser === "@_v32" && currentLoggedInUser !== profileOwnerUsername) {
-                verifyBtnContainer.innerHTML = `
-                    <div style="background: rgba(29, 161, 242, 0.05); padding: 10px; border-radius: 12px; margin: 10px auto; border: 1px dashed var(--verify-color); max-width: 90%;">
-                        <p style="font-size: 0.75rem; color: var(--verify-color); font-weight: bold; margin-bottom: 6px;">لوحة الإدارة الإشرافية ⚙️</p>
-                        <div style="display:flex; gap: 8px; justify-content: center;">
-                            <button id="adminVerifyBtnAction" style="background: var(--verify-color); color:#fff; border:none; padding:6px 12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.75rem;">
-                                ${isOwnerAlreadyVerified ? 'تم التوثيق ☑️' : 'توثيق الحساب'}
-                            </button>
-                            <button id="adminUnverifyBtnAction" style="background: #ff2b55; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.75rem;">
-                                إلغاء التوثيق
-                            </button>
-                        </div>
-                    </div>`;
-                    
-                document.getElementById('adminVerifyBtnAction').onclick = async function() {
-                    const userRef = doc(db, "users", profileOwnerUsername);
-                    await updateDoc(userRef, { isVerified: true });
-                    alert(`تم توثيق حساب ${profileOwnerUsername} رسميًا بالشارة الزرقاء ☑️`);
-                    document.getElementById('profileModal').classList.remove('active');
-                    openUserProfile(profileOwnerUsername);
-                };
-
-                document.getElementById('adminUnverifyBtnAction').onclick = async function() {
-                    const userRef = doc(db, "users", profileOwnerUsername);
-                    await updateDoc(userRef, { isVerified: false });
-                    alert(`تم إلغاء التوثيق عن حساب ${profileOwnerUsername}.`);
-                    document.getElementById('profileModal').classList.remove('active');
-                    openUserProfile(profileOwnerUsername);
-                };
+        // تفاعلات اللايك والحفظ
+        function toggleLikeVideo(btn, id) {
+            let vid = db.videos.find(v => v.id === id);
+            if(!vid) return;
+            if(vid.likes.includes(currentUser.username)) {
+                vid.likes = vid.likes.filter(u => u !== currentUser.username);
+                btn.classList.remove('liked');
             } else {
-                verifyBtnContainer.innerHTML = ""; 
+                vid.likes.push(currentUser.username);
+                btn.classList.add('liked');
+            }
+            btn.nextElementSibling.innerText = vid.likes.length;
+        }
+
+        function toggleFavoriteVideo(btn, id) {
+            let vid = db.videos.find(v => v.id === id);
+            if(!vid) return;
+            if(vid.favorites.includes(currentUser.username)) {
+                vid.favorites = vid.favorites.filter(u => u !== currentUser.username);
+                btn.classList.remove('favorited');
+            } else {
+                vid.favorites.push(currentUser.username);
+                btn.classList.add('favorited');
             }
         }
 
-        window.openUserProfile = async function(username) {
-            pauseActiveVideos();
-            targetProfileUsername = username;
-            document.getElementById('profileModal').classList.add('active');
-            document.getElementById('profDisplayUsername').innerText = username;
+        // فتح الملف الشخصي الحقيقي الشامل وفلترة فيديوهات الشخص بدقة!
+        function openUserProfile(username) {
+            // إغلاق جميع المودالات أولاً لضمان واجهة نظيفة
+            document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
             
-            let scopeData = profileData;
-            if(username !== profileData.username) {
-                const snap = await getDoc(doc(db, "users", username));
-                if(snap.exists()) scopeData = snap.data();
-            }
+            let targetUser = db.users[username];
+            if(!targetUser) return;
 
-            document.getElementById('profDisplayFullName').innerText = scopeData.fullName || "عضو في ZAN";
-            document.getElementById('profDisplayBio').innerText = scopeData.bio || "لا توجد نبذة تعريفية.";
+            document.getElementById('profileModalTitle').innerText = targetUser.fullName;
+            document.getElementById('profileCardAvatar').src = targetUser.avatar;
+            document.getElementById('profileCardFullName').innerText = targetUser.fullName;
+            document.getElementById('profileCardUsername').innerText = `@${targetUser.username}`;
+            document.getElementById('profileCardBioDisplay').innerText = targetUser.bio || "لا يوجد بايو حالياً.";
             
-            const ytBtn = document.getElementById('profDisplayYoutube');
-            if (scopeData.youtube && scopeData.youtube.trim() !== "") {
-                ytBtn.href = scopeData.youtube;
-                ytBtn.style.display = "inline-flex";
+            if(targetUser.youtube) {
+                document.getElementById('profileCardYoutubeBtn').style.display = "inline-flex";
+                document.getElementById('profileCardYoutubeBtn').href = `https://youtube.com/${targetUser.youtube}`;
             } else {
-                ytBtn.style.display = "none";
+                document.getElementById('profileCardYoutubeBtn').style.display = "none";
             }
 
-            if (scopeData.isVerified) {
-                document.getElementById('profDisplayUsername').innerHTML = `${username} <span class="verify-badge">✔️</span>`;
-            }
+            document.getElementById('profileCardFollowersCount').innerText = targetUser.followers.length;
+            document.getElementById('profileCardFollowingCount').innerText = targetUser.following.length;
+            document.getElementById('profileCardLikesCount').innerText = targetUser.likes;
 
-            renderAdminVerifyButton(username, scopeData.isVerified);
-
-            const avatarContainer = document.getElementById('profAvatarContainer');
-            if(scopeData.avatar) {
-                avatarContainer.innerHTML = `<img src="${scopeData.avatar}" alt="avatar">`;
+            // تحديد إمكانيات التحكم بناءً على الحساب المفتوح
+            if(username === currentUser.username) {
+                document.getElementById('editProfileBtn').style.display = "block";
+                document.getElementById('followUserBtn').style.display = "none";
+                document.getElementById('logoutBtn').style.display = "block"; // إظهار زر تسجيل الخروج في بروفايلك الخاص
             } else {
-                avatarContainer.innerHTML = `<svg viewBox="0 0 24 24" style="width:40px; height:40px; fill:#fff;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4z"/></svg>`;
-            }
-
-            document.getElementById('profStatFollowing').innerText = scopeData.following ? scopeData.following.length : 0;
-            document.getElementById('profStatFollowers').innerText = scopeData.followers ? scopeData.followers.length : 0;
-
-            const actionContainer = document.getElementById('profileActionContainer');
-            
-            if (username === profileData.username) {
-                actionContainer.innerHTML = `<button class="action-btn submit" id="openEditProfileBtn" style="background:rgba(255,255,255,0.05); color:#fff; border:1px solid #222;">تعديل الحساب ⚙️</button>`;
-                document.getElementById('openEditProfileBtn').onclick = function() {
-                    document.getElementById('profileModal').classList.remove('active');
-                    document.getElementById('editProfileModal').classList.add('active');
-                    document.getElementById('editUsernameInput').value = profileData.username.replace('@', '') || "";
-                    document.getElementById('editFullNameInput').value = profileData.fullName || "";
-                    document.getElementById('editBioInput').value = profileData.bio || "";
-                    document.getElementById('editYoutubeInput').value = profileData.youtube || "";
-                    document.getElementById('editAvatarPreviewImg').src = profileData.avatar || "https://placehold.co/150x150/000/fff?text=ZAN";
-                };
-            } else {
-                const isFollowing = profileData.following.includes(username);
-                actionContainer.innerHTML = `<button class="action-btn submit" id="dynamicFollowBtn" style="background:${isFollowing ? '#111' : '#fff'}; color:${isFollowing ? '#fff' : '#000'}; border:${isFollowing ? '1px solid #333' : 'none'};">${isFollowing ? 'إلغاء المتابعة' : 'متابعة الحساب'}</button>`;
+                document.getElementById('editProfileBtn').style.display = "none";
+                document.getElementById('followUserBtn').style.display = "block";
+                document.getElementById('logoutBtn').style.display = "none"; // إخفاء زر تسجيل الخروج في بروفايلات الآخرين
                 
-                document.getElementById('dynamicFollowBtn').onclick = async function() {
-                    if(profileData.following.includes(username)) {
-                        profileData.following = profileData.following.filter(u => u !== username);
-                        await updateDoc(doc(db, "users", username), { followers: arrayRemove(profileData.username) });
+                if(targetUser.followers.includes(currentUser.username)) {
+                    document.getElementById('followUserBtn').innerText = "إلغاء المتابعة";
+                    document.getElementById('followUserBtn').style.background = "#222";
+                } else {
+                    document.getElementById('followUserBtn').innerText = "متابعة الحين";
+                    document.getElementById('followUserBtn').style.background = "var(--primary-color)";
+                }
+                
+                document.getElementById('followUserBtn').onclick = function() {
+                    if(targetUser.followers.includes(currentUser.username)) {
+                        targetUser.followers = targetUser.followers.filter(u => u !== currentUser.username);
+                        currentUser.following = currentUser.following.filter(u => u !== username);
                     } else {
-                        profileData.following.push(username);
-                        await updateDoc(doc(db, "users", username), { followers: arrayUnion(profileData.username) });
-                        
-                        const targetSnap = await getDoc(doc(db, "users", username));
-                        if(targetSnap.exists()){
-                            let tData = targetSnap.data();
-                            if(!tData.notifications) tData.notifications = [];
-                            tData.notifications.push({ from: profileData.username, text: "قام بمتابعة حسابك الحين ⚡" });
-                            await updateDoc(doc(db, "users", username), { notifications: tData.notifications });
-                        }
+                        targetUser.followers.push(currentUser.username);
+                        currentUser.following.push(username);
                     }
-                    await updateDoc(doc(db, "users", profileData.username), { following: profileData.following });
                     openUserProfile(username);
                 };
             }
-            renderProfileGrid();
-        };
 
-        document.getElementById('saveProfileEditsBtn').onclick = async function() {
-            let newUsername = document.getElementById('editUsernameInput').value.trim();
-            const newName = document.getElementById('editFullNameInput').value.trim();
-            const newBio = document.getElementById('editBioInput').value.trim();
-            const newYoutube = document.getElementById('editYoutubeInput').value.trim();
-            const pendingAvatarUrl = document.getElementById('editAvatarPreviewImg').dataset.pendingUrl || profileData.avatar;
+            // الفلترة الصحيحة: عرض الفيديوهات الخاصة بهذا المستخدم فقط وليس فيديوهاتك أنت دائماً!
+            const grid = document.getElementById('profileVideosGrid');
+            grid.innerHTML = "";
+            let userVids = db.videos.filter(v => v.username === username);
 
-            if(!newName || !newUsername) {
-                alert("الرجاء تعبئة جميع الحقول المطلوبة!");
-                return;
+            userVids.forEach(v => {
+                let thumb = document.createElement('div');
+                thumb.className = "grid-video-thumb";
+                thumb.innerHTML = `<video src="${v.url}"></video>`;
+                thumb.onclick = function() {
+                    document.getElementById('profileModal').classList.remove('active');
+                    renderSpecificVideo(v.id);
+                };
+                grid.appendChild(thumb);
+            });
+
+            document.getElementById('profileModal').classList.add('active');
+        }
+
+        function renderSpecificVideo(id) {
+            let vidIndex = db.videos.findIndex(v => v.id === id);
+            if(vidIndex !== -1) {
+                // تجميع الفيديو ليعرض فوراً بالواجهة الرئيسية
+                let target = db.videos.splice(vidIndex, 1)[0];
+                db.videos.unshift(target);
+                renderVideos();
             }
+        }
 
-            if (!newUsername.startsWith('@')) newUsername = '@' + newUsername;
-
-            const usernameRegex = /^[a-zA-Z0-9._-]+$/;
-            if (!usernameRegex.test(newUsername.replace('@', ''))) {
-                alert("خطأ: اسم المستخدم يجب أن يحتوي على حروف إنجليزية، أرقام، وعلامات (_ . -) فقط وبدون مسافات!");
-                return;
-            }
-
-            if (newUsername !== profileData.username) {
-                const now = Date.now();
-                const lastChange = profileData.lastUsernameChange || 0;
-                const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000; 
-
-                if (now - lastChange < thirtyDaysInMs) {
-                    const daysLeft = Math.ceil((thirtyDaysInMs - (now - lastChange)) / (1000 * 60 * 60 * 24));
-                    alert(`تنبيه: لا يمكنك تغيير اسم المستخدم إلا مرة واحدة كل شهر. متبقي لك: ${daysLeft} يوم!`);
-                    return;
-                }
-
-                const availabilityCheck = await getDoc(doc(db, "users", newUsername));
-                if (availabilityCheck.exists()) {
-                    alert("عذراً، اسم المستخدم هذا محجوز لشخص آخر! اختر اسماً مميزاً.");
-                    return;
-                }
-
-                const oldUsername = profileData.username;
-                profileData.username = newUsername;
-                profileData.fullName = newName;
-                profileData.avatar = pendingAvatarUrl;
-                profileData.bio = newBio;
-                profileData.youtube = newYoutube;
-                profileData.lastUsernameChange = now;
-
-                await setDoc(doc(db, "users", newUsername), profileData);
-                await deleteDoc(doc(db, "users", oldUsername));
-                localStorage.setItem('fit_my_user_cached', newUsername);
-                MY_USERNAME = newUsername;
-            } else {
-                profileData.fullName = newName;
-                profileData.avatar = pendingAvatarUrl;
-                profileData.bio = newBio;
-                profileData.youtube = newYoutube;
-                await updateDoc(doc(db, "users", profileData.username), { fullName: newName, avatar: pendingAvatarUrl, bio: newBio, youtube: newYoutube });
-            }
-
-            alert("تم تحديث معلومات حسابك بنجاح! 🎉");
-            document.getElementById('editProfileModal').classList.remove('active');
-            openUserProfile(profileData.username);
-        };
-
-        document.getElementById('statBtnFollowing').onclick = () => showUsersListModal("الحسابات التي يتابعها", "following");
-        document.getElementById('statBtnFollowers').onclick = () => showUsersListModal("المتابِعون للحساب", "followers");
-
-        async function showUsersListModal(title, type) {
+        // إعداد وإدارة المودالات وربط الأزرار بشكل آمن وسليم بنسبة 100%
+        document.getElementById('myProfileBtn').onclick = () => openUserProfile(currentUser.username);
+        document.getElementById('closeProfileModalBtn').onclick = () => document.getElementById('profileModal').classList.remove('active');
+        
+        document.getElementById('editProfileBtn').onclick = function() {
             document.getElementById('profileModal').classList.remove('active');
-            document.getElementById('usersListModal').add('active');
-            document.getElementById('usersListModalTitle').innerText = title;
-            const content = document.getElementById('usersListContent'); content.innerHTML = '';
+            document.getElementById('editFullNameInput').value = currentUser.fullName;
+            document.getElementById('editBioInput').value = currentUser.bio || "";
+            document.getElementById('editYoutubeInput').value = currentUser.youtube || "";
+            document.getElementById('editProfileFieldsModal').classList.add('active');
+        };
 
-            let scopeData = profileData;
-            if(targetProfileUsername !== profileData.username) {
-                const snap = await getDoc(doc(db, "users", targetProfileUsername));
-                if(snap.exists()) scopeData = snap.data();
+        document.getElementById('saveProfileFieldsBtn').onclick = function() {
+            currentUser.fullName = document.getElementById('editFullNameInput').value.trim() || currentUser.fullName;
+            currentUser.bio = document.getElementById('editBioInput').value.trim();
+            currentUser.youtube = document.getElementById('editYoutubeInput').value.trim();
+            document.getElementById('editProfileFieldsModal').classList.remove('active');
+            openUserProfile(currentUser.username);
+        };
+
+        // تفعيل الضغط على الأفاتار لرفع وتغيير الصورة محلياً وفوراً
+        document.getElementById('avatarEditContainer').onclick = () => document.getElementById('avatarFileInputHidden').click();
+        document.getElementById('avatarFileInputHidden').onchange = function(e) {
+            let file = e.target.files[0];
+            if(file) {
+                let reader = new FileReader();
+                reader.onload = function(event) {
+                    currentUser.avatar = event.target.result;
+                    document.getElementById('profileCardAvatar').src = event.target.result;
+                };
+                reader.readAsDataURL(file);
             }
+        };
 
-            const list = scopeData[type] || [];
-            if(list.length === 0) {
-                content.innerHTML = `<p style="color:#555; text-align:center; padding:20px;">القائمة فارغة حالياً</p>`; return;
-            }
-            list.forEach(user => {
-                content.innerHTML += `
-                    <div class="friend-select-item" onclick="document.getElementById('usersListModal').classList.remove('active'); openUserProfile('${user}');">
-                        <div class="comment-avatar"><svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:#fff;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4z"/></svg></div>
-                        <b>${user}</b>
-                    </div>`;
-            });
-        }
-
-        function renderProfileGrid() {
-            const grid = document.getElementById('profileGridContainer'); grid.innerHTML = '';
+        // شاشة التعليقات الفورية
+        let currentActiveCommentVideoId = null;
+        function openCommentsModal(id) {
+            currentActiveCommentVideoId = id;
+            const container = document.getElementById('commentsListContainer');
+            container.innerHTML = "";
+            let list = db.comments[id] || [];
             
-            if (currentProfileTab === "favorites" && targetProfileUsername !== profileData.username) {
-                grid.innerHTML = `
-                    <div style="grid-column: span 3; text-align:center; padding:40px 20px; color:#555;">
-                        <span style="font-size:35px; display:block; margin-bottom:10px;">🔒</span>
-                        <p style="font-size:0.85rem; font-weight:bold;">المفضلة خاصة بصاحب الحساب فقط</p>
-                    </div>`;
-                return;
-            }
-
-            let displayList = (currentProfileTab === "videos") ? videos.filter(v => v.user === targetProfileUsername) : videos.filter(v => profileData.favorites.includes(v.id));
-            if(displayList.length === 0) {
-                grid.innerHTML = `<p style="grid-column: span 3; color:#555; text-align:center; padding:20px; font-size:0.85rem;">لا توجد مقاطع هنا بعد.</p>`; return;
-            }
-            displayList.forEach(v => { grid.innerHTML += `<div class="grid-video-thumb"><video src="${v.src}" muted></video></div>`; });
+            list.forEach(c => {
+                let u = db.users[c.username] || { fullName: c.username, avatar: "" };
+                let item = document.createElement('div');
+                item.className = "comment-wrapper";
+                item.innerHTML = `
+                    <div class="comment-avatar"><img src="${u.avatar}"></div>
+                    <div>
+                        <strong style="font-size:0.85rem; display:block;">${u.fullName}</strong>
+                        <p style="font-size:0.9rem; margin-top:2px; color:#ccc;">${c.text}</p>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+            document.getElementById('commentsModal').classList.add('active');
         }
 
-        document.getElementById('pTabMyVideos').onclick = function() { currentProfileTab = "videos"; this.classList.add('active'); document.getElementById('pTabFavorites').classList.remove('active'); renderProfileGrid(); };
-        document.getElementById('pTabFavorites').onclick = function() { currentProfileTab = "favorites"; this.classList.add('active'); document.getElementById('pTabMyVideos').classList.remove('active'); renderProfileGrid(); };
-        document.getElementById('myProfileBtn').onclick = () => { currentProfileTab = "videos"; openUserProfile(profileData.username); };
-
-        window.openShareScreen = function(id) {
-            pauseActiveVideos();
-            activeVideoId = id; document.getElementById('shareModal').classList.add('active');
-            const container = document.getElementById('shareFriendsList'); container.innerHTML = '';
-            if(profileData.following.length === 0) { container.innerHTML = `<p style="color:#555; text-align:center; padding:10px;">تابع الأصدقاء أولاً لتتمكن من إرسال المقطع لهم!</p>`; return; }
-            profileData.following.forEach(friend => {
-                container.innerHTML += `
-                    <div class="friend-select-item" onclick="sendVideoToFriend('${friend}')">
-                        <div class="comment-avatar"><svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:#fff;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4z"/></svg></div>
-                        <div style="flex:1;"><b>${friend}</b></div>
-                        <span style="font-size:0.8rem; color:#fff;">إرسال 🏹</span>
-                    </div>`;
-            });
+        document.getElementById('sendCommentBtn').onclick = function() {
+            let txt = document.getElementById('newCommentInput').value.trim();
+            if(!txt || !currentActiveCommentVideoId) return;
+            if(!db.comments[currentActiveCommentVideoId]) db.comments[currentActiveCommentVideoId] = [];
+            db.comments[currentActiveCommentVideoId].push({ username: currentUser.username, text: txt });
+            document.getElementById('newCommentInput').value = "";
+            openCommentsModal(currentActiveCommentVideoId);
         };
 
-        window.sendVideoToFriend = async function(friendUsername) {
-            const timeStr = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-            const sharePayload = { id: Date.now(), sender: profileData.username, text: `🏹 قام بمشاركة مقطع معك: (رقم المقطع #${activeVideoId})`, time: timeStr };
-            if(!profileData.chats[friendUsername]) profileData.chats[friendUsername] = [];
-            profileData.chats[friendUsername].push(sharePayload);
-            await updateDoc(doc(db, "users", profileData.username), { chats: profileData.chats });
-
-            const friendSnap = await getDoc(doc(db, "users", friendUsername));
-            if(friendSnap.exists()) {
-                const fData = friendSnap.data(); if(!fData.chats) fData.chats = {};
-                if(!fData.chats[profileData.username]) fData.chats[profileData.username] = [];
-                fData.chats[profileData.username].push(sharePayload);
-                await updateDoc(doc(db, "users", friendUsername), { chats: fData.chats });
-            }
-            alert(`تم مشاركة المقطع بنجاح مع ${friendUsername} 🎉`);
-            document.getElementById('shareModal').classList.remove('active');
-            startVideoObserver();
-        };
-
-        document.getElementById('openInboxBtn').onclick = function() {
-            pauseActiveVideos();
-            document.getElementById('inboxModal').classList.add('active');
-            const listContainer = document.getElementById('inboxFriendsList'); listContainer.innerHTML = '';
-            const activeChatPartners = Object.keys(profileData.chats || {});
-            if(activeChatPartners.length === 0) { listContainer.innerHTML = `<p style="color:#555; text-align:center; padding:20px;">لا توجد رسائل حالياً</p>`; return; }
-            activeChatPartners.forEach(partner => {
-                const lastMsgArray = profileData.chats[partner]; const lastMsg = lastMsgArray[lastMsgArray.length - 1];
-                listContainer.innerHTML += `
-                    <div class="friend-select-item" onclick="openDirectChat('${partner}')">
-                        <div class="comment-avatar"><svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:#fff;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4z"/></svg></div>
-                        <div style="flex:1;"><b>${partner}</b><p style="font-size:0.75rem; color:#888;">${lastMsg ? lastMsg.text : ''}</p></div>
-                    </div>`;
-            });
-        };
-
-        window.openDirectChat = function(username) {
-            activeChatUser = username; document.getElementById('inboxModal').classList.remove('active');
-            document.getElementById('activeChatModal').classList.add('active');
-            document.getElementById('activeChatTitle').innerText = `المحادثة مع ${username}`;
-            renderChatMessages();
-        };
-
-        function renderChatMessages() {
-            const container = document.getElementById('chatMessagesList'); container.innerHTML = '';
-            const msgList = profileData.chats[activeChatUser] || [];
-            msgList.forEach(m => {
-                const isMe = m.sender === profileData.username;
-                container.innerHTML += `<div class="chat-bubble ${isMe ? 'me' : 'other'}"><p>${m.text}</p></div>`;
-            });
-            container.scrollTop = container.scrollHeight;
-        }
-
-        document.getElementById('sendChatMessageBtn').onclick = async function() {
-            const input = document.getElementById('chatMessageInput'); if(!input.value.trim()) return;
-            const timeStr = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-            const payload = { id: Date.now(), sender: profileData.username, text: input.value.trim(), time: timeStr };
-            profileData.chats[activeChatUser].push(payload);
-            await updateDoc(doc(db, "users", profileData.username), { chats: profileData.chats });
-
-            const friendSnap = await getDoc(doc(db, "users", activeChatUser));
-            if(friendSnap.exists()) {
-                const fData = friendSnap.data(); if(!fData.chats) fData.chats = {};
-                if(!fData.chats[profileData.username]) fData.chats[profileData.username] = [];
-                fData.chats[profileData.username].push(payload);
-                await updateDoc(doc(db, "users", activeChatUser), { chats: fData.chats });
-            }
-            input.value = ''; renderChatMessages();
-        };
-
+        // شاشة التنبيهات والرسائل والبحث المبسطة
         document.getElementById('openNotificationsBtn').onclick = function() {
-            pauseActiveVideos();
-            document.getElementById('notiBadge').style.display = 'none';
-            document.getElementById('notificationsModal').classList.add('active');
-            const container = document.getElementById('notificationsListContainer'); container.innerHTML = '';
-            if(profileData.notifications.length === 0) { container.innerHTML = `<p style="color:#555; text-align:center; padding:20px;">لا توجد تنبيهات جديدة</p>`; return; }
-            profileData.notifications.forEach(n => {
-                container.innerHTML += `<div class="comment-wrapper"><div class="comment-avatar"><svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:#fff;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4z"/></svg></div><div><span><b>${n.from}</b> ${n.text}</span></div></div>`;
+            let listCont = document.getElementById('notificationsListContainer');
+            listCont.innerHTML = "";
+            let list = db.notifications[currentUser.username] || [];
+            if(list.length === 0) {
+                listCont.innerHTML = `<p style="color:#666; text-align:center; padding:20px;">لا توجد تنبيهات جديدة الحين.</p>`;
+            }
+            list.forEach(n => {
+                let item = document.createElement('div');
+                item.className = "friend-select-item";
+                item.innerHTML = `<div><strong>${n.from}</strong> ${n.text}</div>`;
+                listCont.appendChild(item);
             });
+            document.getElementById('notificationsModal').classList.add('active');
         };
 
-        function renderCommentsList() {
-            const container = document.getElementById('commentsListContainer'); container.innerHTML = '';
-            const vid = videos.find(v => v.id === activeVideoId);
-            if (!vid.comments || vid.comments.length === 0) { container.innerHTML = `<p style="color:#555; text-align:center; padding:10px;">لا توجد تعليقات بعد</p>`; return; }
-            vid.comments.forEach(c => {
-                container.innerHTML += `
-                    <div class="comment-wrapper">
-                        <div class="comment-avatar">
-                            ${c.userAvatar ? `<img src="${c.userAvatar}" alt="avatar">` : `<svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:#fff;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5-4-8-4z"/></svg>`}
-                        </div>
-                        <div>
-                            <b>${c.user} ${c.isVerified ? '<span class="verify-badge">✔️</span>' : ''}</b>
-                            <p>${c.text}</p>
-                        </div>
-                    </div>`;
-            });
+        function updateNotificationBadge() {
+            let list = db.notifications[currentUser.username] || [];
+            document.getElementById('notiBadge').style.display = list.length > 0 ? "block" : "none";
         }
 
-        document.getElementById('sendCommentBtn').onclick = async function() {
-            const input = document.getElementById('newCommentInput'); if (!input.value.trim()) return;
-            const vid = videos.find(v => v.id === activeVideoId);
-            if(!vid.comments) vid.comments = [];
-            
-            vid.comments.push({ 
-                id: Date.now(), 
-                user: profileData.username, 
-                userAvatar: profileData.avatar || "",
-                isVerified: profileData.isVerified || false,
-                text: input.value.trim() 
-            });
-            await updateDoc(doc(db, "videos", vid.id.toString()), { comments: vid.comments });
-            
-            if (vid.user !== profileData.username) {
-                const ownerSnap = await getDoc(doc(db, "users", vid.user));
-                if(ownerSnap.exists()) {
-                    let oData = ownerSnap.data(); if(!oData.notifications) oData.notifications = [];
-                    oData.notifications.push({ from: profileData.username, text: `علق على مقطعك: "${input.value.trim()}"` });
-                    await updateDoc(doc(db, "users", vid.user), { notifications: oData.notifications });
-                }
+        // الكاميرا ومعالجة الرفع السحابي النقي والمحلي
+        document.getElementById('openCameraBtn').onclick = async function() {
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: isFrontCamera ? "user" : "environment" }, audio: true });
+                let view = document.getElementById('cameraStreamView');
+                view.srcObject = cameraStream;
+                if(isFrontCamera) view.classList.add('mirror'); else view.classList.remove('mirror');
+                document.getElementById('fullCameraScreen').classList.add('active');
+            } catch(err) {
+                alert("تعذر الوصول إلى الكاميرا، سيتم فتح معرض الرفع مباشرة!");
+                document.getElementById('galleryFileInput').click();
             }
-
-            input.value = ''; renderCommentsList(); syncVideosList();
         };
 
-        document.getElementById('tabFeedForYou').onclick = function() { currentFeedTab = "foryou"; this.classList.add('active'); document.getElementById('tabFeedFollowing').classList.remove('active'); renderVideos(); };
-        document.getElementById('tabFeedFollowing').onclick = function() { currentFeedTab = "following"; this.classList.add('active'); document.getElementById('tabFeedForYou').classList.remove('active'); renderVideos(); };
+        document.getElementById('closeCameraBtn').onclick = function() {
+            if(cameraStream) cameraStream.getTracks().forEach(t => t.stop());
+            document.getElementById('fullCameraScreen').classList.remove('active');
+        };
 
+        document.getElementById('galleryTriggerBtn').onclick = () => document.getElementById('galleryFileInput').click();
+
+        document.getElementById('galleryFileInput').onchange = function(e) {
+            let file = e.target.files[0];
+            if(file) {
+                document.getElementById('fullCameraScreen').classList.remove('active');
+                let url = URL.createObjectURL(file);
+                openPublishModal(url);
+            }
+        };
+
+        function openPublishModal(url) {
+            document.getElementById('previewRecordedVideo').src = url;
+            document.getElementById('publishDetailsModal').classList.add('active');
+        }
+
+        document.getElementById('cancelPublishBtn').onclick = function() {
+            document.getElementById('publishDetailsModal').classList.remove('active');
+        };
+
+        document.getElementById('submitVideoBtn').onclick = function() {
+            let desc = document.getElementById('finalDescInput').value.trim() || "فيديو مميز من زان الفخم! 🚀";
+            let url = document.getElementById('previewRecordedVideo').src;
+            
+            document.getElementById('publishDetailsModal').classList.remove('active');
+            let pop = document.getElementById('uploadPopupProgress');
+            let percentTxt = document.getElementById('uploadProgressPercent');
+            pop.style.display = "flex";
+            
+            let progress = 0;
+            let timer = setInterval(() => {
+                progress += 20;
+                percentTxt.innerText = `${progress}%`;
+                if(progress >= 100) {
+                    clearInterval(timer);
+                    pop.style.display = "none";
+                    
+                    db.videos.unshift({
+                        id: "v_" + Date.now(),
+                        username: currentUser.username,
+                        url: url,
+                        description: desc,
+                        time: "الآن",
+                        likes: [],
+                        favorites: []
+                    });
+                    
+                    document.getElementById('finalDescInput').value = "";
+                    renderVideos();
+                }
+            }, 300);
+        };
+
+        // الـ IntersectionObserver لضمان سلاسة تشغيل الفيديوهات التلقائي عند التمرير
         let observer;
         function startVideoObserver() {
             if(observer) observer.disconnect();
@@ -1574,7 +1153,9 @@
                     const progressBar = entry.target.querySelector('.progress-bar');
                     const anyActiveModal = document.querySelector('.modal.active');
                     if (entry.isIntersecting && video && !anyActiveModal) {
-                        video.currentTime = 0; video.muted = false; video.play().catch(() => {});
+                        video.currentTime = 0; 
+                        video.muted = false; 
+                        video.play().catch(() => {});
                         video.ontimeupdate = () => { progressBar.style.width = `${(video.currentTime / video.duration) * 100}%`; };
                     } else { if(video) video.pause(); }
                 });
@@ -1582,6 +1163,11 @@
             document.querySelectorAll('.video-card').forEach(card => observer.observe(card));
         }
 
+        // ربط أزرار التبويب العلوية (لك / أتابعه) وتحديث المحتوى فورا
+        document.getElementById('tabFeedForYou').onclick = function() { currentFeedTab = "foryou"; this.classList.add('active'); document.getElementById('tabFeedFollowing').classList.remove('active'); renderVideos(); };
+        document.getElementById('tabFeedFollowing').onclick = function() { currentFeedTab = "following"; this.classList.add('active'); document.getElementById('tabFeedForYou').classList.remove('active'); renderVideos(); };
+
+        // تشغيل البرمجية فور التحميل والتحقق من التوثيق
         checkAuthStatus();
     </script>
 </body>
