@@ -10,8 +10,6 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -45,6 +43,19 @@
             position: fixed;
             width: 100vw;
             transition: background-color 0.3s, color 0.3s;
+            user-select: none; /* تم النقل هنا لتجنب تجميد الحقول */
+            -webkit-user-select: none;
+        }
+        
+        /* السماح بالكتابة والضغط للحقول والنصوص */
+        input, textarea, select {
+            user-select: auto !important;
+            -webkit-user-select: auto !important;
+            pointer-events: auto !important;
+        }
+
+        button, .feed-tab, .user-avatar-main, .grid-video-thumb {
+            pointer-events: auto !important;
         }
 
         body.light-mode .video-info h3, 
