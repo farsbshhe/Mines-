@@ -466,10 +466,32 @@
                 <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/web-24dp/copy_of_googleg_24dp.png" width="18" alt="google">
                 تسجيل الدخول عبر Google
             </button>
-            <div class="divider">أو حساب محلي سريع</div>
-            <input type="text" id="authUsernameInput" class="form-control" placeholder="اسم المستخدم (مثال: fares_zan)">
-            <input type="text" id="authFullNameInput" class="form-control" placeholder="الاسم الكامل">
-            <button class="action-btn submit" id="manualAuthBtn">ابدأ التصفح الحين</button>
+            
+            <!-- زر تسجيل الدخول عبر Apple -->
+            <button class="apple-btn" id="appleAuthBtn" style="background: #000; color: #fff; border: 1px solid #333; padding: 14px; border-radius: 14px; width: 100%; font-weight: bold; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                تسجيل الدخول عبر Apple
+            </button>
+            
+            <p style="color:#555; font-size:0.75rem; margin-top:15px;">بعد تسجيل الدخول أول مرة، اختر اسم المستخدم والاسم الكامل</p>
+        </div>
+    </div>
+
+    <!-- مودال اختيار الاسم واليوزر بعد أول تسجيل دخول (جديد) -->
+    <div class="modal" id="completeProfileModal">
+        <div class="modal-card">
+            <h2>أكمل ملفك الشخصي ✨</h2>
+            <p style="color:#888; font-size:0.85rem; margin-bottom:15px; text-align:center;">اختر اسم مستخدم فريد (إنجليزي فقط) واسمك الكامل</p>
+            
+            <label style="font-size:0.85rem; color:#888;">اسم المستخدم (Username):</label>
+            <input type="text" id="completeUsernameInput" class="form-control" placeholder="مثال: fares_zan" style="margin-bottom:5px;">
+            <div id="usernameStatus" style="font-size:0.8rem; margin-bottom:12px; min-height:18px;"></div>
+
+            <label style="font-size:0.85rem; color:#888;">الاسم الكامل:</label>
+            <input type="text" id="completeFullNameInput" class="form-control" placeholder="اكتب اسمك الكامل" style="margin-bottom:20px;">
+
+            <button class="action-btn submit" id="saveCompleteProfileBtn" disabled>حفظ وابدأ التصفح</button>
+            <button class="action-btn cancel" style="margin-top:10px;" onclick="document.getElementById('completeProfileModal').classList.remove('active');">إلغاء</button>
         </div>
     </div>
 
@@ -688,9 +710,10 @@
         const auth = getAuth(app);
         const googleProvider = new GoogleAuthProvider();
 
-        // إعدادات الرفع السحابي لصور الملف الشخصي عبر الـ Cloudinary
-        const CLOUD_NAME = "fit-app-storage"; 
-        const UPLOAD_PRESET = "zan_avatars"; 
+        // إعدادات الرفع السحابي عبر Cloudinary (من لوحة التحكم dyzez3oqc)
+        const CLOUD_NAME = "dyzez3oqc"; 
+        const UPLOAD_PRESET_VIDEO = "zan_videos"; 
+        const UPLOAD_PRESET_AVATAR = "zan_avatars"; // fallback if needed, but using video preset for simplicity or create image one
 
         let MY_USERNAME = localStorage.getItem('fit_my_user_cached') || "";
         let profileData = { username: "", fullName: "", avatar: "", bio: "", youtube: "", following: [], followers: [], favorites: [], notifications: [], chats: {}, isVerified: false, lastUsernameChange: 0 };
@@ -734,40 +757,195 @@
             try {
                 const result = await signInWithPopup(auth, googleProvider);
                 const user = result.user;
-                const generatedUser = "@" + user.email.split('@')[0].replace(/[^a-zA-Z0-9]/g, "");
-                MY_USERNAME = generatedUser;
-                localStorage.setItem('fit_my_user_cached', generatedUser);
+                const emailBase = user.email.split('@')[0].replace(/[^a-zA-Z0-9]/g, "");
+                const suggestedUsername = "@" + emailBase;
 
-                const userSnap = await getDoc(doc(db, "users", generatedUser));
-                if (!userSnap.exists()) {
-                    profileData = { username: generatedUser, fullName: user.displayName || "صانع محتوى", avatar: user.photoURL || "", bio: "", youtube: "", following: [], followers: [], favorites: [], notifications: [], chats: {}, isVerified: false, lastUsernameChange: 0 };
-                    await setDoc(doc(db, "users", generatedUser), profileData);
+                const userSnap = await getDoc(doc(db, "users", suggestedUsername));
+                
+                if (userSnap.exists()) {
+                    // مستخدم قديم
+                    MY_USERNAME = suggestedUsername;
+                    localStorage.setItem('fit_my_user_cached', suggestedUsername);
+                    profileData = userSnap.data();
+                    document.getElementById('authScreen').style.display = 'none';
+                    await initAppFromServer();
+                } else {
+                    // مستخدم جديد - أظهر شاشة اختيار اليوزر والاسم
+                    window.pendingGoogleUser = {
+                        email: user.email,
+                        displayName: user.displayName || "صانع محتوى",
+                        photoURL: user.photoURL || ""
+                    };
+                    document.getElementById('authScreen').style.display = 'none';
+                    showCompleteProfileModal(suggestedUsername, user.displayName || "");
                 }
-                document.getElementById('authScreen').style.display = 'none';
-                await initAppFromServer();
-            } catch (e) { alert("حدث خطأ في التسجيل التلقائي"); }
+            } catch (e) { 
+                console.error(e);
+                alert("حدث خطأ في التسجيل عبر Google"); 
+            }
         };
 
-        document.getElementById('manualAuthBtn').onclick = async function() {
-            let uInput = document.getElementById('authUsernameInput').value.trim();
-            const fInput = document.getElementById('authFullNameInput').value.trim();
-            if (!uInput || !fInput) return;
-            if (!uInput.startsWith('@')) uInput = '@' + uInput;
+        // زر Apple (للديمو: يعمل بنفس تدفق Google مع اسم مختلف)
+        document.getElementById('appleAuthBtn').onclick = async function() {
+            // في الإنتاج يحتاج Sign in with Apple + Firebase config، هنا ديمو يشبه Google
+            try {
+                // محاكاة تسجيل Apple
+                const fakeAppleUser = {
+                    email: "appleuser" + Math.floor(Math.random()*9999) + "@icloud.com",
+                    displayName: "مستخدم Apple",
+                    photoURL: ""
+                };
+                const suggestedUsername = "@apple_" + Math.floor(Math.random()*10000);
+                
+                const userSnap = await getDoc(doc(db, "users", suggestedUsername));
+                
+                if (userSnap.exists()) {
+                    MY_USERNAME = suggestedUsername;
+                    localStorage.setItem('fit_my_user_cached', suggestedUsername);
+                    profileData = userSnap.data();
+                    document.getElementById('authScreen').style.display = 'none';
+                    await initAppFromServer();
+                } else {
+                    window.pendingAppleUser = fakeAppleUser;
+                    document.getElementById('authScreen').style.display = 'none';
+                    showCompleteProfileModal(suggestedUsername, fakeAppleUser.displayName);
+                }
+            } catch (e) {
+                alert("حدث خطأ في تسجيل Apple (ديمو)");
+            }
+        };
 
-            // التحقق من صحة صياغة اليوزر المدخل يدويًا
-            const usernameRegex = /^[a-zA-Z0-9._-]+$/;
-            if (!usernameRegex.test(uInput.replace('@', ''))) {
-                alert("خطأ: اسم المستخدم يجب أن يحتوي على حروف إنجليزية، أرقام، وعلامات (_ . -) فقط وبدون مسافات!");
-                return;
+        // دالة عرض مودال إكمال الملف الشخصي مع التحقق الحي لليوزر
+        window.showCompleteProfileModal = function(suggestedUsername, suggestedFullName) {
+            const modal = document.getElementById('completeProfileModal');
+            modal.classList.add('active');
+            
+            const usernameInput = document.getElementById('completeUsernameInput');
+            const fullNameInput = document.getElementById('completeFullNameInput');
+            const statusDiv = document.getElementById('usernameStatus');
+            const saveBtn = document.getElementById('saveCompleteProfileBtn');
+
+            usernameInput.value = suggestedUsername.replace('@', '');
+            fullNameInput.value = suggestedFullName || "";
+            statusDiv.innerHTML = '';
+            saveBtn.disabled = true;
+
+            let usernameAvailable = false;
+            let debounceTimer = null;
+
+            async function validateUsername() {
+                const raw = usernameInput.value.trim();
+                if (!raw) {
+                    statusDiv.innerHTML = '<span style="color:#ff6b6b;">أدخل اسم مستخدم</span>';
+                    usernameAvailable = false;
+                    saveBtn.disabled = true;
+                    usernameInput.style.borderColor = '#ff2b55';
+                    return;
+                }
+
+                const finalUsername = raw.startsWith('@') ? raw : '@' + raw;
+                const clean = finalUsername.replace('@', '');
+
+                // التحقق من الشروط: إنجليزي فقط، أرقام، . - _ ، الحد الأدنى 3 أحرف
+                const usernameRegex = /^[a-zA-Z0-9._-]{3,}$/;
+                if (!usernameRegex.test(clean)) {
+                    statusDiv.innerHTML = '<span style="color:#ff2b55;">❌ يجب أن يكون إنجليزي فقط، min 3 أحرف، يسمح بـ . - _ وأرقام</span>';
+                    usernameAvailable = false;
+                    saveBtn.disabled = true;
+                    usernameInput.style.borderColor = '#ff2b55';
+                    return;
+                }
+
+                // تحقق التوفر في Firebase
+                try {
+                    const checkSnap = await getDoc(doc(db, "users", finalUsername));
+                    if (checkSnap.exists()) {
+                        statusDiv.innerHTML = '<span style="color:#ff2b55;">❌ هذا اليوزر مستخدم بالفعل</span>';
+                        usernameAvailable = false;
+                        saveBtn.disabled = true;
+                        usernameInput.style.borderColor = '#ff2b55';
+                    } else {
+                        statusDiv.innerHTML = '<span style="color:#00c853;">✅ اليوزر متاح وجاهز</span>';
+                        usernameAvailable = true;
+                        usernameInput.style.borderColor = '#00c853';
+                        saveBtn.disabled = !fullNameInput.value.trim();
+                    }
+                } catch (err) {
+                    statusDiv.innerHTML = '<span style="color:#ff2b55;">خطأ في التحقق</span>';
+                    usernameAvailable = false;
+                    saveBtn.disabled = true;
+                }
             }
 
-            MY_USERNAME = uInput;
-            localStorage.setItem('fit_my_user_cached', uInput);
-            profileData = { username: uInput, fullName: fInput, avatar: "", bio: "", youtube: "", following: [], followers: [], favorites: [], notifications: [], chats: {}, isVerified: false, lastUsernameChange: 0 };
-            await setDoc(doc(db, "users", uInput), profileData);
-            document.getElementById('authScreen').style.display = 'none';
-            await initAppFromServer();
+            usernameInput.oninput = function() {
+                usernameInput.style.borderColor = '#333';
+                statusDiv.innerHTML = '<span style="color:#aaa;">جاري التحقق...</span>';
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(validateUsername, 450);
+            };
+
+            fullNameInput.oninput = function() {
+                if (usernameAvailable && fullNameInput.value.trim()) {
+                    saveBtn.disabled = false;
+                } else {
+                    saveBtn.disabled = true;
+                }
+            };
+
+            // تحقق أولي
+            setTimeout(validateUsername, 300);
+
+            saveBtn.onclick = async function() {
+                if (!usernameAvailable || !fullNameInput.value.trim()) return;
+
+                const finalUsername = usernameInput.value.trim().startsWith('@') ? usernameInput.value.trim() : '@' + usernameInput.value.trim();
+                const finalFullName = fullNameInput.value.trim();
+
+                let avatarUrl = "";
+                let displayNameForProfile = finalFullName;
+
+                if (window.pendingGoogleUser) {
+                    avatarUrl = window.pendingGoogleUser.photoURL || "";
+                    if (!displayNameForProfile) displayNameForProfile = window.pendingGoogleUser.displayName || finalFullName;
+                } else if (window.pendingAppleUser) {
+                    avatarUrl = window.pendingAppleUser.photoURL || "";
+                }
+
+                profileData = {
+                    username: finalUsername,
+                    fullName: displayNameForProfile,
+                    avatar: avatarUrl,
+                    bio: "",
+                    youtube: "",
+                    following: [],
+                    followers: [],
+                    favorites: [],
+                    notifications: [],
+                    chats: {},
+                    isVerified: false,
+                    lastUsernameChange: 0
+                };
+
+                try {
+                    await setDoc(doc(db, "users", finalUsername), profileData);
+                    MY_USERNAME = finalUsername;
+                    localStorage.setItem('fit_my_user_cached', finalUsername);
+
+                    modal.classList.remove('active');
+                    document.getElementById('authScreen').style.display = 'none';
+                    
+                    // تنظيف
+                    window.pendingGoogleUser = null;
+                    window.pendingAppleUser = null;
+
+                    await initAppFromServer();
+                } catch (err) {
+                    alert("حدث خطأ أثناء حفظ الملف الشخصي: " + err.message);
+                }
+            };
         };
+
+        // تم إزالة تسجيل الدخول اليدوي كما طلبت - فقط Google + Apple
 
         async function initAppFromServer() {
             const docSnap = await getDoc(doc(db, "users", MY_USERNAME));
@@ -894,22 +1072,25 @@
             }
 
             const formData = new FormData();
-            formData.append('file', videoFile, `zan_video_${Date.now()}.mp4`);
+            formData.append('file', videoFile);
+            formData.append('upload_preset', UPLOAD_PRESET_VIDEO);
+            formData.append('folder', 'zan_videos');
 
             try {
-                progressPercent.innerText = `50%... جاري الرفع السحابي`;
+                progressPercent.innerText = `50%... جاري الرفع السحابي على Cloudinary`;
                 
-                const uploadResponse = await fetch('https://tmpfiles.org/api/v1/upload', {
+                // استخدام Cloudinary لرفع الفيديو (رابط دائم ولا ينتهي)
+                const uploadResponse = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`, {
                     method: 'POST',
                     body: formData
                 });
                 
                 const uploadResult = await uploadResponse.json();
                 
-                if (uploadResponse.ok && uploadResult.data && uploadResult.data.url) {
+                if (uploadResult.secure_url) {
                     progressPercent.innerText = `85%... ربط البيانات بـ Firebase`;
                     
-                    const directVideoUrl = uploadResult.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
+                    const directVideoUrl = uploadResult.secure_url; // رابط دائم من Cloudinary
                     const nowStr = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
                     
                     const newVid = {
@@ -927,20 +1108,20 @@
                     
                     await setDoc(doc(db, "videos", newVid.id.toString()), newVid);
                     
-                    progressPercent.innerText = `100%! اكتمل`;
-                    setTimeout(() => { progressPopup.style.display = 'none'; }, 500);
+                    progressPercent.innerText = `100%! اكتمل الرفع على Cloudinary`;
+                    setTimeout(() => { progressPopup.style.display = 'none'; }, 800);
                     
                     fileInput.value = '';
                     document.getElementById('finalDescInput').value = '';
                     await syncVideosList();
-                    alert("تم نشر مقطعك بنجاح وارتفع سحابياً! بيشتغل الحين عند كل أخوياك والمنصة كاملة 🎉");
+                    alert("تم نشر مقطعك بنجاح على Cloudinary! الرابط دائم وما ينتهي 🎉");
                 } else {
-                    throw new Error("فشل الرفع السحابي الخارجي");
+                    throw new Error("فشل الرفع على Cloudinary: " + (uploadResult.error?.message || "خطأ غير معروف"));
                 }
             } catch (error) {
                 console.error(error);
                 progressPopup.style.display = 'none';
-                alert("حدث خطأ في الرفع السحابي للملف! تأكد من اتصال الإنترنت وحاول مجدداً.");
+                alert("حدث خطأ في الرفع على Cloudinary! تأكد من اتصال الإنترنت وحاول مجدداً. " + error.message);
             }
         };
 
@@ -957,7 +1138,7 @@
 
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('upload_preset', UPLOAD_PRESET);
+            formData.append('upload_preset', UPLOAD_PRESET_AVATAR || UPLOAD_PRESET_VIDEO);
 
             try {
                 const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
