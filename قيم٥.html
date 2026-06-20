@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>قِيَم</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- خط مزخرف -->
+  <link href="https://fonts.googleapis.com/css2?family=Lemonada:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Lemonada', cursive;
+      background: #f5f1e8;
+      color: #2b2b2b;
+    }
+    .app {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 12px;
+    }
+    .header {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 8px 4px 16px;
+    }
+    .app-logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+      object-fit: cover;
+      margin-left: 12px;
+      border: 2px solid #c49a6c;
+    }
+    .title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #4b3424;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      margin-bottom: 12px;
+    }
+    .card h3 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .btn-google {
+      background: #fff;
+      border: 1px solid #ddd;
+    }
+    .btn-apple {
+      background: #000;
+      color: #fff;
+    }
+    .btn-main {
+      background: #c49a6c;
+      color: #fff;
+    }
+    .btn-logout {
+      background: #b33a3a;
+      color: #fff;
+    }
+    .hidden { display: none; }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-top: 6px;
+      font-family: inherit;
+      font-size: 13px;
+    }
+    .post {
+      border-bottom: 1px solid #eee;
+      padding: 8px 0;
+    }
+    .post:last-child {
+      border-bottom: none;
+    }
+    .post-meta {
+      font-size: 11px;
+      color: #777;
+      margin-bottom: 4px;
+    }
+    .post-actions {
+      margin-top: 6px;
+      display: flex;
+      gap: 8px;
+      font-size: 12px;
+    }
+    .post-actions button {
+      border: none;
+      background: transparent;
+      color: #c49a6c;
+      cursor: pointer;
+      padding: 0;
+      font-family: inherit;
+    }
+    img.post-image, video.post-video {
+      width: 100%;
+      border-radius: 12px;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- هيدر التطبيق -->
+  <div class="header">
+    <!-- غيّر src لاسم صورة التطبيق اللي عندك -->
+    <img src="app-logo.png" class="app-logo" alt="قِيَم">
+    <h2 class="title">قِيَم</h2>
+  </div>
+
+  <!-- شاشة التعهد -->
+  <div id="screen-terms" class="card">
+    <h3>تعهد قِيَم</h3>
+    <p style="font-size:13px;">
+      بدخولك إلى التطبيق فأنت تتعهد بما يلي:<br><br>
+      • عدم السب<br>
+      • عدم التنمر<br>
+      • عدم إثارة الفتنة<br><br>
+      وفي حال مخالفة أي من هذه البنود سيتم التواصل مع الجهات الأمنية في دولتك.
+    </p>
+    <label style="font-size:13px;">
+      <input type="checkbox" id="agreeBox"> أوافق على التعهد
+    </label>
+    <button class="btn btn-main" id="btnContinue">متابعة</button>
+  </div>
+
+  <!-- شاشة تسجيل الدخول -->
+  <div id="screen-auth" class="card hidden">
+    <h3>تسجيل الدخول</h3>
+    <button class="btn btn-google" id="btnGoogle">تسجيل دخول Google (Firebase)</button>
+    <button class="btn btn-apple" id="btnApple">تسجيل دخول Apple (Firebase)</button>
+  </div>
+
+  <!-- الشاشة الرئيسية -->
+  <div id="screen-home" class="card hidden">
+    <h3>الصفحة الرئيسية</h3>
+    <p id="userInfo" style="font-size:13px;">جاري التحميل…</p>
+    <button class="btn btn-logout" id="btnLogout">تسجيل خروج</button>
+  </div>
+
+  <!-- نشر منشور جديد -->
+  <div id="screen-post" class="card hidden">
+    <h3>نشر منشور جديد</h3>
+    <textarea id="postText" rows="3" placeholder="اكتب نص المنشور هنا"></textarea>
+    <label style="font-size:12px;margin-top:6px;display:block;">صورة (Supabase):
+      <input type="file" id="postImage" accept="image/*">
+    </label>
+    <label style="font-size:12px;margin-top:6px;display:block;">مقطع فيديو (Supabase):
+      <input type="file" id="postVideo" accept="video/*">
+    </label>
+    <button class="btn btn-main" id="btnPublish">نشر</button>
+  </div>
+
+  <!-- قائمة المنشورات -->
+  <div id="screen-feed" class="card hidden">
+    <h3>المنشورات</h3>
+    <div id="postsList" style="font-size:13px;"></div>
+  </div>
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  // إعداد Firebase (غيّر القيم لقيم مشروعك)
+  const firebaseConfig = {
+    apiKey: "YOUR_FIREBASE_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "XXXXXXX",
+    appId: "XXXXXXXX"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db   = firebase.firestore();
+
+  // إعداد Supabase (القيم اللي عطيتني إياها)
+  const supabaseUrl = "https://wgotgqzmzckdcoomxgvw.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indnb3RncXptemNrZGNvb214Z3Z3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5MzIyNDUsImV4cCI6MjA5NzUwODI0NX0.xuD3w6fws03UKdCPfm-NoPOW-_lTGeqIKNv9Z62d_bU";
+  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+  const screenTerms = document.getElementById("screen-terms");
+  const screenAuth  = document.getElementById("screen-auth");
+  const screenHome  = document.getElementById("screen-home");
+  const screenPost  = document.getElementById("screen-post");
+  const screenFeed  = document.getElementById("screen-feed");
+
+  let agreed = false;
+
+  document.getElementById("btnContinue").onclick = () => {
+    if (!document.getElementById("agreeBox").checked) {
+      alert("يجب الموافقة على التعهد قبل المتابعة");
+      return;
+    }
+    agreed = true;
+    screenTerms.classList.add("hidden");
+    screenAuth.classList.remove("hidden");
+  };
+
+  // تسجيل دخول Google من Firebase
+  document.getElementById("btnGoogle").onclick = async () => {
+    if (!agreed) {
+      alert("يجب الموافقة على التعهد قبل تسجيل الدخول");
+      return;
+    }
+    const provider = new firebase.auth.GoogleAuthProvider();
+    try {
+      await auth.signInWithPopup(provider);
+    } catch (e) {
+      alert("خطأ في تسجيل دخول Google");
+      console.log(e);
+    }
+  };
+
+  // تسجيل دخول Apple من Firebase
+  document.getElementById("btnApple").onclick = async () => {
+    if (!agreed) {
+      alert("يجب الموافقة على التعهد قبل تسجيل الدخول");
+      return;
+    }
+    const provider = new firebase.auth.OAuthProvider('apple.com');
+    try {
+      await auth.signInWithPopup(provider);
+    } catch (e) {
+      alert("خطأ في تسجيل دخول Apple");
+      console.log(e);
+    }
+  };
+
+  // مراقبة حالة تسجيل الدخول
+  auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      screenAuth.classList.add("hidden");
+      screenHome.classList.remove("hidden");
+      screenPost.classList.remove("hidden");
+      screenFeed.classList.remove("hidden");
+
+      document.getElementById("userInfo").innerText =
+        "مرحبًا " + (user.displayName || user.email || "مستخدم");
+
+      // مزامنة المستخدم مع Supabase (اختياري)
+      try {
+        await supabaseClient.from("users").upsert({
+          id: user.uid,
+          email: user.email,
+          name: user.displayName
+        });
+      } catch (e) {
+        console.log("sync user error", e);
+      }
+
+      loadPosts();
+    } else {
+      screenHome.classList.add("hidden");
+      screenPost.classList.add("hidden");
+      screenFeed.classList.add("hidden");
+      screenAuth.classList.remove("hidden");
+    }
+  });
+
+  // تسجيل خروج
+  document.getElementById("btnLogout").onclick = async () => {
+    await auth.signOut();
+  };
+
+  // رفع صورة إلى Supabase
+  async function uploadImage(file) {
+    if (!file) return null;
+    const fileName = Date.now() + "_" + file.name;
+    const { data, error } = await supabaseClient
+      .storage
+      .from("images")
+      .upload(fileName, file);
+
+    if (error) {
+      alert("خطأ في رفع الصورة");
+      console.log(error);
+      return null;
+    }
+
+    const { data: urlData } = supabaseClient
+      .storage
+      .from("images")
+      .getPublicUrl(fileName);
+
+    return urlData.publicUrl;
+  }
+
+  // رفع فيديو إلى Supabase
+  async function uploadVideo(file) {
+    if (!file) return null;
+    const fileName = Date.now() + "_" + file.name;
+    const { data, error } = await supabaseClient
+      .storage
+      .from("videos")
+      .upload(fileName, file);
+
+    if (error) {
+      alert("خطأ في رفع الفيديو");
+      console.log(error);
+      return null;
+    }
+
+    const { data: urlData } = supabaseClient
+      .storage
+      .from("videos")
+      .getPublicUrl(fileName);
+
+    return urlData.publicUrl;
+  }
+
+  // نشر منشور جديد
+  document.getElementById("btnPublish").onclick = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("يجب تسجيل الدخول أولاً");
+      return;
+    }
+
+    const text = document.getElementById("postText").value.trim();
+    const imageFile = document.getElementById("postImage").files[0];
+    const videoFile = document.getElementById("postVideo").files[0];
+
+    if (!text && !imageFile && !videoFile) {
+      alert("اكتب نص أو أضف صورة/فيديو");
+      return;
+    }
+
+    let imageUrl = null;
+    let videoUrl = null;
+
+    if (imageFile) imageUrl = await uploadImage(imageFile);
+    if (videoFile) videoUrl = await uploadVideo(videoFile);
+
+    try {
+      await db.collection("posts").add({
+        uid: user.uid,
+        author: user.displayName || user.email || "مستخدم",
+        text: text || null,
+        image: imageUrl || null,
+        video: videoUrl || null,
+        likes: 0,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      document.getElementById("postText").value = "";
+      document.getElementById("postImage").value = "";
+      document.getElementById("postVideo").value = "";
+      loadPosts();
+    } catch (e) {
+      alert("خطأ في حفظ المنشور");
+      console.log(e);
+    }
+  };
+
+  // تحميل المنشورات
+  async function loadPosts() {
+    const postsList = document.getElementById("postsList");
+    postsList.innerHTML = "جاري تحميل المنشورات…";
+
+    try {
+      const snap = await db.collection("posts")
+        .orderBy("createdAt", "desc")
+        .limit(50)
+        .get();
+
+      if (snap.empty) {
+        postsList.innerHTML = "لا توجد منشورات بعد.";
+        return;
+      }
+
+      let html = "";
+      snap.forEach(doc => {
+        const p = doc.data();
+        html += `
+          <div class="post">
+            <div class="post-meta">
+              ${p.author || "مستخدم"} • إعجابات: ${p.likes || 0}
+            </div>
+            ${p.text ? `<div>${p.text}</div>` : ""}
+            ${p.image ? `<img class="post-image" src="${p.image}" alt="">` : ""}
+            ${p.video ? `<video class="post-video" src="${p.video}" controls></video>` : ""}
+            <div class="post-actions">
+              <button onclick="likePost('${doc.id}')">إعجاب</button>
+              <button onclick="promptComment('${doc.id}')">تعليق</button>
+            </div>
+          </div>
+        `;
+      });
+
+      postsList.innerHTML = html;
+    } catch (e) {
+      postsList.innerHTML = "خطأ في تحميل المنشورات";
+      console.log(e);
+    }
+  }
+
+  // إعجاب
+  async function likePost(postId) {
+    try {
+      await db.collection("posts").doc(postId).update({
+        likes: firebase.firestore.FieldValue.increment(1)
+      });
+      loadPosts();
+    } catch (e) {
+      alert("خطأ في تسجيل الإعجاب");
+      console.log(e);
+    }
+  }
+
+  // إضافة تعليق
+  async function promptComment(postId) {
+    const text = prompt("اكتب تعليقك:");
+    if (!text) return;
+    const user = auth.currentUser;
+    if (!user) {
+      alert("يجب تسجيل الدخول أولاً");
+      return;
+    }
+    try {
+      await db.collection("posts").doc(postId)
+        .collection("comments")
+        .add({
+          uid: user.uid,
+          author: user.displayName || user.email || "مستخدم",
+          text,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      alert("تم إضافة التعليق");
+    } catch (e) {
+      alert("خطأ في إضافة التعليق");
+      console.log(e);
+    }
+  }
+</script>
+
+</body>
+</html>
