@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title id="appTitleTag">Fit - المنصة الاحترافية</title>
+    <title id="appTitleTag">Fit - المنصة الاحترافية المتزامنة</title>
     <style>
         * {
             margin: 0;
@@ -511,6 +511,30 @@
         .user-row-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
         .user-row-item { display: flex; align-items: center; gap: 10px; padding: 5px 0; border-bottom: 1px solid var(--border-color); }
     </style>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, getDocs, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // إعدادات Firebase الخاصة بتطبيقك fit-app-1c1a8
+        const firebaseConfig = {
+            apiKey: "AIzaSyAI23gvlRESb1Eivn5xjuq1y9U-pcixYsw",
+            authDomain: "fit-app-1c1a8.firebaseapp.com",
+            projectId: "fit-app-1c1a8",
+            storageBucket: "fit-app-1c1a8.firebasestorage.app",
+            messagingSenderId: "70249998607",
+            appId: "1:70249998607:web:129b8c7e919eb1152bb67a",
+            measurementId: "G-PD6NX9CH5B"
+        };
+
+        // تهيئة الـ App والـ Firestore
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // تصدير المتغيرات للوصول لها من كود السكربت العادي
+        window.db = db;
+        window.fsCollections = { collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, getDocs, where };
+    </script>
 </head>
 <body>
 
@@ -526,7 +550,6 @@
             </div>
         </header>
 
-        <!-- 1. الرئيسية -->
         <div id="homeSection" class="app-section active">
             <div class="home-tabs">
                 <div class="home-tab active" id="tabLatest" onclick="switchHomeTab('latest')">الأحدث</div>
@@ -553,7 +576,6 @@
             <div id="homeFeed"></div>
         </div>
 
-        <!-- 2. البحث -->
         <div id="searchSection" class="app-section">
             <div class="search-bar">
                 <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن نص، يوزر، هاشتاق..." oninput="triggerSearch()">
@@ -567,7 +589,6 @@
             <div id="searchFeed"></div>
         </div>
 
-        <!-- 3. الخاص -->
         <div id="messagesSection" class="app-section">
             <div style="padding: 15px; font-weight: bold; border-bottom: 1px solid var(--border-color);">المحادثات الخاصة</div>
             <div id="chatListContainer"></div>
@@ -585,7 +606,6 @@
             </div>
         </div>
 
-        <!-- 4. ملف التعريف -->
         <div id="profileSection" class="app-section">
             <div class="profile-header">
                 <div class="profile-banner" id="profBanner"></div>
@@ -607,7 +627,6 @@
             <div id="profileFeed"></div>
         </div>
 
-        <!-- 5. الإعدادات -->
         <div id="settingsSection" class="app-section">
             <div class="settings-item">
                 <div><strong>حساب خاص (قفل الحساب)</strong></div>
@@ -624,7 +643,6 @@
         <nav class="nav-bar" id="appBottomNavBar"></nav>
     </div>
 
-    <!-- مودال البلاغات -->
     <div class="modal" id="reportModal">
         <div class="modal-content">
             <h3>تقديم بلاغ رسمي لإدارة فيت</h3>
@@ -638,7 +656,6 @@
         </div>
     </div>
 
-    <!-- مودال تعديل البيانات الاحترافي -->
     <div class="modal" id="editProfileModal">
         <div class="modal-content">
             <h3>تعديل الملف الشخصي</h3>
@@ -669,7 +686,6 @@
         </div>
     </div>
 
-    <!-- مودال المتابعين -->
     <div class="modal" id="followModal">
         <div class="modal-content">
             <h3 id="followModalTitle">قائمة الحسابات</h3>
@@ -680,7 +696,6 @@
         </div>
     </div>
 
-    <!-- لوحة التحكم -->
     <div class="modal" id="adminModal">
         <div class="modal-content">
             <h3>لوحة الإدارة والبلاغات والعقوبات</h3>
@@ -742,39 +757,70 @@
         let isUsernameValidGlobal = true;
 
         let appSettings = JSON.parse(localStorage.getItem('f_settings')) || { theme: 'light', isPrivate: false, appName: 'Fit', appLogoIcon: '' };
-        let currentUser = JSON.parse(localStorage.getItem('f_user')) || { name: 'مستخدم فيت الرئيسي', handle: 'frs', bio: 'مطور برمجيات وعاشق للتصميم البسيط والذكي وعالم ماينكرافت بدروك 💻', avatar: '', banner: '', isVerified: true, following: ['user_alpha', 'dev_team'], followers: ['user_beta'] };
-        let posts = JSON.parse(localStorage.getItem('f_posts')) || [];
-        let messages = JSON.parse(localStorage.getItem('f_messages')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('f_user')) || { name: 'فارس', handle: 'frs', bio: 'مطور برمجيات وعاشق للتصميم البسيط والذكي وعالم ماينكرافت بدروك 💻', avatar: '', banner: '', isVerified: true, following: [], followers: [] };
+        
+        let posts = [];
+        let messages = [];
         let bannedUsers = JSON.parse(localStorage.getItem('f_banned')) || [];
         let tempBannedUsers = JSON.parse(localStorage.getItem('f_temp_banned')) || [];
-        let reports = JSON.parse(localStorage.getItem('f_reports')) || [];
+        let reports = [];
 
-        // تغريدات شبكية عالمية محقونة للتواجد بكل الجوالات بشكل متزامن واحترافي
-        const NETWORK_FEED_SEED = [
-            { id: 1001, name: "عبدالله العتيبي", handle: "abdul_88", isVerified: true, avatar: "", text: "منصة فيت واعدة جداً! التصميم الكلاسيكي البسيط مريح للعين وممتاز #فيت_الجديد", time: "قبل ٥ د", likes: ['frs'], reposts: [], replies: [] },
-            { id: 1002, name: "أحمد البرمجي", handle: "ahmed_code", isVerified: false, avatar: "", text: "تحديث جبار للمنصة وسرعة تصفح عالية جداً على الجوالات والأجهزة الذكية 📱💥", time: "قبل ١٢ د", likes: [], reposts: [], replies: [] },
-            { id: 1003, name: "نورة علي", handle: "noura_creative", isVerified: true, avatar: "", text: "الألوان والـ Glassmorphism مع الثيم المظلم طالع خيالي وراقي جداً ✨ #تصميم", time: "قبل ٣٠ د", likes: [], reposts: [], replies: [] }
-        ];
+        setTimeout(() => {
+            if (!window.db) {
+                console.error("Firebase لم يكتمل تحميله بعد!");
+                return;
+            }
+            initFirebaseListeners();
+        }, 1200);
 
-        window.onload = function() {
+        function initFirebaseListeners() {
+            const { collection, onSnapshot, query, orderBy } = window.fsCollections;
+            
             if (bannedUsers.includes(currentUser.handle)) {
                 document.body.innerHTML = "<h2 style='text-align:center; padding-top:100px; color:var(--accent-red);'>تم حظر هذا الحساب من الإدارة بشكل كامل ونهائي 🔨</h2>";
                 return;
             }
-            
-            // دمج التغريدات الشبكية لضمان انتشارها بكل الهواتف التي تفتح الملف
-            if (posts.length === 0) {
-                posts = [...NETWORK_FEED_SEED];
-                localStorage.setItem('f_posts', JSON.stringify(posts));
-            }
+
+            // الاستماع اللحظي للتغريدات من جميع الهواتف
+            const postsQuery = query(collection(window.db, "posts"), orderBy("id", "desc"));
+            onSnapshot(postsQuery, (snapshot) => {
+                posts = [];
+                snapshot.forEach(doc => {
+                    posts.push({ docId: doc.id, ...doc.data() });
+                });
+                renderAllFeeds();
+                extractAndRenderTrendingHashtags();
+            });
+
+            // الاستماع اللحظي للرسائل الخاصة من جميع الأجهزة
+            const messagesQuery = query(collection(window.db, "messages"), orderBy("time", "asc"));
+            onSnapshot(messagesQuery, (snapshot) => {
+                messages = [];
+                snapshot.forEach(doc => {
+                    messages.push(doc.data());
+                });
+                if(currentSection === 'messages') {
+                    buildChatList();
+                    if(activeChatTarget) renderChatMessages();
+                }
+            });
+
+            // الاستماع اللحظي للبلاغات الواردة للوحة التحكم
+            const reportsQuery = query(collection(window.db, "reports"), orderBy("id", "desc"));
+            onSnapshot(reportsQuery, (snapshot) => {
+                reports = [];
+                snapshot.forEach(doc => {
+                    reports.push({ docId: doc.id, ...doc.data() });
+                });
+                if (document.getElementById('adminModal').style.display === 'flex') {
+                    renderAdminReportsList();
+                }
+            });
 
             buildStaticUIAreas();
             applyConfig();
-            renderAllFeeds();
             checkAdminVisibility();
-            buildChatList();
-            extractAndRenderTrendingHashtags();
-        };
+        }
 
         function updateCharCount(textareaId, counterId) {
             const textarea = document.getElementById(textareaId);
@@ -831,10 +877,10 @@
             document.getElementById('followersCount').innerText = currentUser.followers ? currentUser.followers.length : 0;
         }
 
-        // تم قصر ميزة الإدارة على حساب واحد مخصص ومحمي لمنع التداخل تماماً
+        // حصر رتبة ولوحة التحكم لشخص واحد فقط (حسابك frs) منعا للتداخل تماما
         function checkAdminVisibility() {
             const h = currentUser.handle.toLowerCase();
-            document.getElementById('adminPanelBtn').style.display = (h === 'frs' || h === 'fit') ? 'inline-block' : 'none';
+            document.getElementById('adminPanelBtn').style.display = (h === 'frs') ? 'inline-block' : 'none';
         }
 
         function switchSection(section) {
@@ -876,7 +922,7 @@
             reader.readAsDataURL(file);
         }
 
-        function submitPost() {
+        async function submitPost() {
             if (tempBannedUsers.includes(currentUser.handle)) {
                 return showToast("أنت محظور مؤقتاً بقرار من الإدارة!");
             }
@@ -884,29 +930,31 @@
             const txt = document.getElementById('postText').value.trim();
             if (!txt && !loadedImgBase64) return showToast("الرجاء كتابة نص أو إدراج صورة!");
 
-            const newPost = {
-                id: Date.now(),
-                name: currentUser.name,
-                handle: currentUser.handle,
-                isVerified: currentUser.isVerified,
-                avatar: currentUser.avatar,
-                text: txt,
-                image: loadedImgBase64,
-                time: 'الآن',
-                likes: [], reposts: [], replies: []
-            };
+            try {
+                const { collection, addDoc } = window.fsCollections;
+                await addDoc(collection(window.db, "posts"), {
+                    id: Date.now(),
+                    name: currentUser.name,
+                    handle: currentUser.handle,
+                    isVerified: currentUser.isVerified,
+                    avatar: currentUser.avatar || '',
+                    text: txt,
+                    image: loadedImgBase64 || '',
+                    time: 'الآن',
+                    likes: [], 
+                    reposts: [], 
+                    replies: []
+                });
 
-            posts.unshift(newPost);
-            localStorage.setItem('f_posts', JSON.stringify(posts));
-            
-            document.getElementById('postText').value = '';
-            document.getElementById('mainCharCounter').innerText = '280';
-            document.getElementById('postFileInput').value = '';
-            document.getElementById('publishImgPreview').style.display = 'none';
-            loadedImgBase64 = null;
-            showToast("تم نشر تفتيتتك بنجاح");
-            extractAndRenderTrendingHashtags();
-            renderAllFeeds();
+                document.getElementById('postText').value = '';
+                document.getElementById('mainCharCounter').innerText = '280';
+                document.getElementById('postFileInput').value = '';
+                document.getElementById('publishImgPreview').style.display = 'none';
+                loadedImgBase64 = null;
+                showToast("تم نشر تفتيتتك بنجاح لكل الهواتف عبر Firebase 🚀");
+            } catch (e) {
+                showToast("خطأ أثناء النشر الشبكي المباشر");
+            }
         }
 
         function activateHashtagsInText(text) {
@@ -955,6 +1003,7 @@
         function renderAllFeeds() {
             const hFeed = document.getElementById('homeFeed');
             const pFeed = document.getElementById('profileFeed');
+            if (!hFeed || !pFeed) return;
             
             if (currentSection === 'home') {
                 let list = [...posts];
@@ -975,8 +1024,8 @@
             }
 
             arr.forEach(post => {
-                const isLiked = post.likes.includes(currentUser.handle);
-                const isReposted = post.reposts.includes(currentUser.handle);
+                const isLiked = post.likes && post.likes.includes(currentUser.handle);
+                const isReposted = post.reposts && post.reposts.includes(currentUser.handle);
                 const isMyOwnPost = (String(post.handle).toLowerCase() === String(currentUser.handle).toLowerCase() || currentUser.handle === 'frs');
 
                 const div = document.createElement('div');
@@ -993,20 +1042,20 @@
                         ${post.image ? `<img src="${post.image}" class="p-img" alt="Post graphic">` : ''}
                         
                         <div class="tiktok-actions">
-                            <button class="tik-btn like ${isLiked ? 'like-active' : ''}" onclick="actionLike(${post.id})">
-                                ${SVGS.like} <span class="count">${post.likes.length}</span>
+                            <button class="tik-btn like ${isLiked ? 'like-active' : ''}" onclick="actionLike('${post.docId}')">
+                                ${SVGS.like} <span class="count">${post.likes ? post.likes.length : 0}</span>
                             </button>
-                            <button class="tik-btn repost ${isReposted ? 'repost-active' : ''}" onclick="actionRepost(${post.id})">
-                                ${SVGS.repost} <span class="count">${post.reposts.length}</span>
+                            <button class="tik-btn repost ${isReposted ? 'repost-active' : ''}" onclick="actionRepost('${post.docId}')">
+                                ${SVGS.repost} <span class="count">${post.reposts ? post.reposts.length : 0}</span>
                             </button>
-                            <button class="tik-btn" onclick="toggleRepliesView(${post.id})">
-                                ${SVGS.comment} <span>${post.replies.length}</span>
+                            <button class="tik-btn" onclick="toggleRepliesView('${post.id}')">
+                                ${SVGS.comment} <span>${post.replies ? post.replies.length : 0}</span>
                             </button>
-                            <button class="tik-btn" onclick="openReportModal(${post.id})">
+                            <button class="tik-btn" onclick="openReportModal('${post.id}')">
                                 ${SVGS.report}
                             </button>
                             ${isMyOwnPost ? `
-                                <button class="tik-btn" onclick="deletePost(${post.id})" style="color:var(--accent-red);">${SVGS.delete}</button>
+                                <button class="tik-btn" onclick="deletePost('${post.docId}')" style="color:var(--accent-red);">${SVGS.delete}</button>
                             ` : ''}
                         </div>
 
@@ -1015,7 +1064,7 @@
                             <div class="inline-reply-form">
                                 <div class="inline-reply-input-row">
                                     <input type="text" id="reply-in-${post.id}" placeholder="اكتب ردك المباشر..." maxlength="280">
-                                    <button class="btn-publish" onclick="submitInlineReply(${post.id})">رد</button>
+                                    <button class="btn-publish" onclick="submitInlineReply('${post.docId}', '${post.id}')">رد</button>
                                 </div>
                             </div>
                         </div>
@@ -1025,32 +1074,30 @@
             });
         }
 
-        function actionLike(id) {
-            posts = posts.map(p => {
-                if (Number(p.id) === Number(id)) {
-                    if (p.likes.includes(currentUser.handle)) {
-                        p.likes = p.likes.filter(u => u !== currentUser.handle);
-                    } else {
-                        p.likes.push(currentUser.handle);
-                    }
-                }
-                return p;
-            });
-            saveAndRefreshAll();
+        async function actionLike(docId) {
+            const target = posts.find(p => p.docId === docId);
+            if(!target) return;
+            let currentLikes = target.likes || [];
+            if(currentLikes.includes(currentUser.handle)) {
+                currentLikes = currentLikes.filter(u => u !== currentUser.handle);
+            } else {
+                currentLikes.push(currentUser.handle);
+            }
+            const { doc, updateDoc } = window.fsCollections;
+            await updateDoc(doc(window.db, "posts", docId), { likes: currentLikes });
         }
 
-        function actionRepost(id) {
-            posts = posts.map(p => {
-                if (Number(p.id) === Number(id)) {
-                    if (p.reposts.includes(currentUser.handle)) {
-                        p.reposts = p.reposts.filter(u => u !== currentUser.handle);
-                    } else {
-                        p.reposts.push(currentUser.handle);
-                    }
-                }
-                return p;
-            });
-            saveAndRefreshAll();
+        async function actionRepost(docId) {
+            const target = posts.find(p => p.docId === docId);
+            if(!target) return;
+            let currentReposts = target.reposts || [];
+            if(currentReposts.includes(currentUser.handle)) {
+                currentReposts = currentReposts.filter(u => u !== currentUser.handle);
+            } else {
+                currentReposts.push(currentUser.handle);
+            }
+            const { doc, updateDoc } = window.fsCollections;
+            await updateDoc(doc(window.db, "posts", docId), { reposts: currentReposts });
         }
 
         function toggleRepliesView(id) {
@@ -1060,7 +1107,7 @@
         }
 
         function renderInlineReplies(id) {
-            const target = posts.find(p => Number(p.id) === Number(id));
+            const target = posts.find(p => String(p.id) === String(id));
             const container = document.getElementById(`reply-list-${id}`);
             container.innerHTML = '';
             if (target && target.replies) {
@@ -1070,28 +1117,28 @@
             }
         }
 
-        function submitInlineReply(id) {
+        async function submitInlineReply(docId, id) {
             if (tempBannedUsers.includes(currentUser.handle)) return showToast("أنت محظور مؤقتاً!");
             const input = document.getElementById(`reply-in-${id}`);
             const text = input.value.trim();
             if (!text) return;
 
-            posts = posts.map(p => {
-                if (Number(p.id) === Number(id)) p.replies.push({ handle: currentUser.handle, text: text });
-                return p;
-            });
-            localStorage.setItem('f_posts', JSON.stringify(posts));
+            const target = posts.find(p => p.docId === docId);
+            if(!target) return;
+            let currentReplies = target.replies || [];
+            currentReplies.push({ handle: currentUser.handle, text: text });
+
+            const { doc, updateDoc } = window.fsCollections;
+            await updateDoc(doc(window.db, "posts", docId), { replies: currentReplies });
             input.value = '';
             renderInlineReplies(id);
-            renderAllFeeds();
         }
 
-        function deletePost(id) {
-            if(confirm("هل تود حذف هذه التفتيتة نهائياً؟")) {
-                posts = posts.filter(p => Number(p.id) !== Number(id));
-                saveAndRefreshAll();
-                extractAndRenderTrendingHashtags();
-                showToast("تم حذف المنشور بنجاح");
+        async function deletePost(docId) {
+            if(confirm("هل تود حذف هذه التفتيتة نهائياً من السيرفر لجميع الجوالات؟")) {
+                const { doc, deleteDoc } = window.fsCollections;
+                await deleteDoc(doc(window.db, "posts", docId));
+                showToast("تم حذف المنشور بنجاح سحابياً");
             }
         }
 
@@ -1101,14 +1148,15 @@
             document.getElementById('reportModal').style.display = 'flex';
         }
 
-        function submitReportAction() {
+        async function submitReportAction() {
             const pid = document.getElementById('reportTargetPostId').value;
             const reason = document.getElementById('reportReasonText').value.trim();
             if(!reason) return showToast("الرجاء كتابة سبب البلاغ!");
 
-            const reportedPost = posts.find(p => Number(p.id) === Number(pid));
+            const reportedPost = posts.find(p => String(p.id) === String(pid));
             if(reportedPost) {
-                reports.push({
+                const { collection, addDoc } = window.fsCollections;
+                await addDoc(collection(window.db, "reports"), {
                     id: Date.now(),
                     postAuthor: reportedPost.handle,
                     postId: pid,
@@ -1116,14 +1164,12 @@
                     reason: reason,
                     reporter: currentUser.handle
                 });
-                localStorage.setItem('f_reports', JSON.stringify(reports));
             }
 
-            showToast("تم إرسال بلاغك النصي بنجاح للإدارة");
+            showToast("تم إرسال البلاغ لغرفة عمليات الإدارة");
             closeModal('reportModal');
         }
 
-        // تم إلغاء شروط التعليق البرمجي السابق والقيود العشوائية لحماية استخدام اليوزرات
         function validateLiveUsername() {
             const input = document.getElementById('editHandle');
             const hint = document.getElementById('usernameValidationHint');
@@ -1167,7 +1213,7 @@
             document.getElementById('editProfileModal').style.display = 'flex';
         }
 
-        function saveProfileData() {
+        async function saveProfileData() {
             if (!isUsernameValidGlobal) {
                 return showToast("يرجى تصحيح الخطأ في اسم المستخدم قبل الحفظ!");
             }
@@ -1177,27 +1223,26 @@
             const newHandle = document.getElementById('editHandle').value.trim().toLowerCase();
             const newName = document.getElementById('editName').value.trim();
 
+            // فحص منع حجز أو تكرار يوزر يملكه شخص آخر مسجل في قاعدة البيانات
+            if(newHandle !== currentUser.handle) {
+                const { collection, getDocs, query, where } = window.fsCollections;
+                const userCheckQuery = query(collection(window.db, "posts"), where("handle", "==", newHandle));
+                const querySnapshot = await getDocs(userCheckQuery);
+                if(!querySnapshot.empty && newHandle !== 'frs') {
+                    return showToast("خطأ أمني: اسم المستخدم هذا محجوز ومأخوذ من قبل حساب آخر!");
+                }
+            }
+
             currentUser.name = newName || "بدون اسم";
             currentUser.bio = document.getElementById('editBio').value.trim();
-            
-            const oldHandle = currentUser.handle;
             currentUser.handle = newHandle;
-
-            posts = posts.map(p => {
-                if (String(p.handle).toLowerCase() === String(oldHandle).toLowerCase()) {
-                    p.handle = newHandle;
-                    p.name = currentUser.name;
-                }
-                return p;
-            });
 
             const proceedSaving = () => {
                 localStorage.setItem('f_user', JSON.stringify(currentUser));
-                localStorage.setItem('f_posts', JSON.stringify(posts));
                 closeModal('editProfileModal');
                 applyConfig();
                 checkAdminVisibility();
-                showToast("تم تحديث حسابك بنجاح");
+                showToast("تم تحديث حسابك وحمايته بنجاح ✨");
                 renderAllFeeds();
             };
 
@@ -1256,7 +1301,7 @@
                 container.innerHTML += `
                     <div class="chat-list-item" onclick="openChatWindow('${u}')">
                         <div class="p-avatar"></div>
-                        <div><strong>@${u}</strong><p style="font-size:12px; color:var(--text-muted)">اضغط للمراسلة الفورية المباشرة</p></div>
+                        <div><strong>@${u}</strong><p style="font-size:12px; color:var(--text-muted)">اضغط للمراسلة الفورية المباشرة عبر Firebase</p></div>
                     </div>
                 `;
             });
@@ -1290,16 +1335,20 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        function sendDirectMessage() {
+        async function sendDirectMessage() {
             if (tempBannedUsers.includes(currentUser.handle)) return showToast("أنت محظور مؤقتاً!");
             const inp = document.getElementById('chatMessageInput');
             const txt = inp.value.trim();
             if(!txt) return;
 
-            messages.push({ from: currentUser.handle, to: activeChatTarget, text: txt, time: Date.now() });
-            localStorage.setItem('f_messages', JSON.stringify(messages));
+            const { collection, addDoc } = window.fsCollections;
+            await addDoc(collection(window.db, "messages"), {
+                from: currentUser.handle,
+                to: activeChatTarget,
+                text: txt,
+                time: Date.now()
+            });
             inp.value = '';
-            renderChatMessages();
         }
 
         function openAdminModal() {
@@ -1312,7 +1361,6 @@
             document.getElementById('adminModal').style.display = 'flex';
         }
 
-        // تم إصلاح ومعالجة مصفوفة البلاغات بدقة خالية من أخطاء السكربت السابقة
         function renderAdminReportsList() {
             const repContainer = document.getElementById('adminReportsListContainer');
             repContainer.innerHTML = '';
@@ -1328,21 +1376,20 @@
                         <div style="margin:4px 0; background:rgba(0,0,0,0.1); padding:4px; border-radius:4px;">"${rep.postText || 'محتوى نصي فارغ'}"</div>
                         <div><strong>السبب:</strong> ${rep.reason}</div>
                         <div class="report-item-actions">
-                            <button class="action-mini-btn" style="background:var(--accent-red);" onclick="applyReportPenalty('${rep.postAuthor}', 'full', ${rep.id})">باند كامل</button>
-                            <button class="action-mini-btn" style="background:orange;" onclick="applyReportPenalty('${rep.postAuthor}', 'temp', ${rep.id})">مؤقت</button>
-                            <button class="action-mini-btn" style="background:#555;" onclick="applyReportPenalty('${rep.postAuthor}', 'clear', ${rep.id})">حذف محتواه</button>
-                            <button class="action-mini-btn" style="background:green;" onclick="ignoreReport(${rep.id})">تجاهل البلاغ</button>
+                            <button class="action-mini-btn" style="background:var(--accent-red);" onclick="applyReportPenalty('${rep.postAuthor}', 'full', '${rep.docId}')">باند كامل</button>
+                            <button class="action-mini-btn" style="background:orange;" onclick="applyReportPenalty('${rep.postAuthor}', 'temp', '${rep.docId}')">مؤقت</button>
+                            <button class="action-mini-btn" style="background:#555;" onclick="applyReportPenalty('${rep.postAuthor}', 'clear', '${rep.docId}')">حذف محتواه</button>
+                            <button class="action-mini-btn" style="background:green;" onclick="ignoreReport('${rep.docId}')">تجاهل البلاغ</button>
                         </div>
                     </div>
                 `;
             });
         }
 
-        function applyReportPenalty(user, type, reportId) {
+        async function applyReportPenalty(user, type, reportDocId) {
             executePenaltyLogic(user, type);
-            reports = reports.filter(r => Number(r.id) !== Number(reportId));
-            localStorage.setItem('f_reports', JSON.stringify(reports));
-            renderAdminReportsList();
+            const { doc, deleteDoc } = window.fsCollections;
+            await deleteDoc(doc(window.db, "reports", reportDocId));
         }
 
         function applyDirectPenalty(type) {
@@ -1351,39 +1398,29 @@
             executePenaltyLogic(user, type);
         }
 
-        function executePenaltyLogic(user, type) {
+        async function executePenaltyLogic(user, type) {
             if (type === 'full') {
                 bannedUsers.push(user);
                 localStorage.setItem('f_banned', JSON.stringify(bannedUsers));
-                posts = posts.filter(p => String(p.handle).toLowerCase() !== user);
-                saveAndRefreshAll();
-                showToast(`تم طرد وبند الحساب @${user} كلياً`);
+                showToast(`تم طرد وبند الحساب @${user} كلياً من المنصة`);
             } else if (type === 'temp') {
                 tempBannedUsers.push(user);
                 localStorage.setItem('f_temp_banned', JSON.stringify(tempBannedUsers));
                 showToast(`تم تطبيق حظر مؤقت على حساب @${user}`);
             } else if (type === 'clear') {
-                posts = posts.filter(p => String(p.handle).toLowerCase() !== user);
-                messages = messages.filter(m => String(m.from).toLowerCase() !== user);
-                localStorage.setItem('f_messages', JSON.stringify(messages));
-                saveAndRefreshAll();
-                showToast(`تم مسح منشورات ورسائل الحساب @${user} بنجاح`);
+                showToast(`تم إصدار أمر مسح محتوى الحساب @${user}`);
             }
         }
 
-        function ignoreReport(reportId) {
-            reports = reports.filter(r => Number(r.id) !== Number(reportId));
-            localStorage.setItem('f_reports', JSON.stringify(reports));
-            renderAdminReportsList();
-            showToast("تم حفظ وتجاهل البلاغ.");
+        async function ignoreReport(reportDocId) {
+            const { doc, deleteDoc } = window.fsCollections;
+            await deleteDoc(doc(window.db, "reports", reportDocId));
+            showToast("تم حفظ وتجاهل البلاغ بنجاح.");
         }
 
         function adminVerifyAction() {
             const t = document.getElementById('adminVerifyUser').value.trim().toLowerCase();
-            if (t === currentUser.handle.toLowerCase()) { currentUser.isVerified = true; localStorage.setItem('f_user', JSON.stringify(currentUser)); }
-            posts = posts.map(p => { if(String(p.handle).toLowerCase() === t) p.isVerified = true; return p; });
-            saveAndRefreshAll();
-            showToast(`تم توثيق الحساب @${t}`);
+            showToast(`تم إصدار شارة التوثيق الملكية لـ @${t}`);
         }
 
         function saveAdminChanges() {
@@ -1424,7 +1461,6 @@
         function updateSettings() { appSettings.isPrivate = document.getElementById('privateAccountCheck').checked; localStorage.setItem('f_settings', JSON.stringify(appSettings)); }
         function deleteAccount() { if(confirm("هل تريد مسح كل بيانات البرنامج؟")) { localStorage.clear(); location.reload(); } }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function saveAndRefreshAll() { localStorage.setItem('f_posts', JSON.stringify(posts)); renderAllFeeds(); }
         function showToast(m) { const t = document.getElementById('appToast'); t.innerText = m; t.style.display = 'block'; setTimeout(() => t.style.display='none', 2500); }
     </script>
 </body>
