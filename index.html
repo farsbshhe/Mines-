@@ -2,147 +2,322 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق قَيِّم</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>نظام كاشير ومخزون سحابي محمي</title>
+    
     <style>
-        :root {
-            --primary-brown: #8B5A2B;
-            --light-brown: #D2B48C;
-            --dark-brown: #5C3A21;
-            --bg-color: #FAFAFA;
-            --card-bg: #FFFFFF;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
         }
 
         body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #EFEFEF;
-            color: var(--dark-brown);
+            background-color: #ffffff;
+            color: #222222;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* شاشات الحماية والترحيب */
+        .auth-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff;
+            z-index: 200;
             display: flex;
             justify-content: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 400px;
-            background-color: var(--bg-color);
-            height: 100%;
-            position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .screen { display: none; flex-direction: column; height: 100%; padding: 20px; text-align: center; align-items: center; justify-content: center; }
-        .screen.active { display: flex; }
-
-        .btn {
-            background-color: var(--primary-brown);
-            color: white;
-            border: none;
-            padding: 15px 20px;
-            border-radius: 12px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 15px;
-            width: 90%;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        .btn:hover:not(:disabled) { background-color: var(--dark-brown); }
-        .btn:disabled { background-color: #cccccc !important; color: #777777 !important; cursor: not-allowed !important; }
-
-        .pledge-box {
-            background-color: var(--card-bg);
+            align-items: center;
             padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            text-align: right;
-            border: 1px solid #EBEBEB;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-            width: 85%;
         }
-        .alert-box { background-color: #FFF0F0; border-right: 4px solid #D32F2F; padding: 10px 12px; border-radius: 8px; margin-top: 15px; }
-        .alert-box p { margin: 0; font-size: 12px; color: #D32F2F; line-height: 1.5; font-weight: bold; }
 
-        .checkbox-container { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 14px; font-weight: bold; cursor: pointer; width: 85%; }
-        .checkbox-container input { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary-brown); }
+        .auth-card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            border: 1px solid #eeeeee;
+        }
 
-        .main-screen { display: none; flex-direction: column; height: 100%; background-color: var(--bg-color); }
-        .main-screen.active { display: flex; }
+        .auth-card h2 { color: #3d2612; margin-bottom: 10px; font-size: 24px; }
+        .auth-card p { color: #666666; font-size: 14px; margin-bottom: 25px; }
 
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: var(--card-bg); border-bottom: 1px solid #EBEBEB; }
-        .header-logo { width: 35px; height: 35px; border-radius: 8px; object-fit: cover; }
-        .header-title { font-size: 22px; font-weight: bold; color: var(--primary-brown); }
+        .whatsapp-notice {
+            margin-top: 25px;
+            padding: 15px;
+            background: #fff5f5;
+            border: 1px dashed #e53e3e;
+            border-radius: 10px;
+            color: #c53030;
+            font-size: 13px;
+            font-weight: bold;
+        }
 
-        .feed { flex: 1; overflow-y: auto; padding-bottom: 70px; }
-        .post { background: var(--card-bg); border-bottom: 1px solid #EBEBEB; padding: 15px; margin-bottom: 10px; text-align: right; }
-        
-        .bottom-nav { position: absolute; bottom: 0; width: 100%; background-color: var(--card-bg); border-top: 1px solid #EBEBEB; display: flex; justify-content: space-around; padding: 15px 0; }
-        .nav-item { font-size: 22px; color: var(--light-brown); cursor: pointer; }
-        .nav-item.active { color: var(--primary-brown); }
+        .btn-whatsapp {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: #25d366;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 12px;
+        }
 
-        .dhikr-modal { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000; }
-        .dhikr-content { background: var(--card-bg); padding: 40px; border-radius: 20px; text-align: center; width: 70%; border: 2px solid var(--primary-brown); }
+        /* واجهة النظام */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eeeeee;
+        }
+
+        .shop-info h1 { font-size: 22px; font-weight: 600; color: #3d2612; }
+        .shop-info p { font-size: 14px; color: #6f4e37; font-weight: bold; margin-top: 2px; }
+
+        .controls-bar { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+        .search-input { flex: 2; min-width: 200px; padding: 10px 15px; border: 1px solid #cccccc; border-radius: 8px; font-size: 14px; outline: none; }
+        .search-input:focus { border-color: #6f4e37; }
+        .category-select { flex: 1; min-width: 150px; padding: 10px; border: 1px solid #cccccc; border-radius: 8px; font-size: 14px; background: #ffffff; outline: none; }
+
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 25px; }
+        .nav-btn { padding: 10px 20px; background: #efebe9; color: #3d2612; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        .nav-btn.active { background: #6f4e37; color: white; }
+
+        .btn-add-product { background: #6f4e37; border: none; color: #ffffff; width: 45px; height: 45px; border-radius: 50%; font-size: 26px; cursor: pointer; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+
+        /* شبكة المنتجات */
+        .products-grid { display: grid; gap: 15px; margin-bottom: 40px; grid-template-columns: repeat(2, 1fr); }
+        @media (min-width: 992px) { .products-grid { grid-template-columns: repeat(5, 1fr); } }
+
+        .product-card { background: #f9f9f9; border: 1px solid #eeeeee; border-radius: 12px; padding: 12px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+        .discount-badge { position: absolute; top: 8px; left: 8px; background: #d9534f; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        .product-card img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; background: #e0e0e0; }
+        .product-name { font-size: 15px; margin-bottom: 4px; color: #3d2612; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .product-code { display: inline-block; font-size: 10px; background: #efebe9; color: #6f4e37; padding: 2px 6px; border-radius: 4px; margin-bottom: 6px; font-weight: bold; }
+        .product-meta { font-size: 11px; color: #666666; margin-bottom: 8px; }
+        .product-prices { display: flex; flex-direction: column; gap: 4px; background: #ffffff; border: 1px solid #eeeeee; padding: 6px; border-radius: 6px; font-size: 11px; margin-bottom: 10px; }
+        .price-row { display: flex; justify-content: space-between; width: 100%; }
+        .price-buy { color: #d9534f; font-weight: bold; }
+        .price-sell { color: #2b8a3e; font-weight: bold; }
+        .old-price { text-decoration: line-through; color: #999; font-size: 10px; }
+
+        .card-actions { display: flex; gap: 6px; }
+        .btn-add-to-invoice { flex: 3; padding: 8px; background: #6f4e37; border: none; color: #ffffff; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .btn-add-to-invoice:disabled { background: #cccccc; cursor: not-allowed; }
+        .btn-edit-product { flex: 1; padding: 8px; background: #efebe9; border: 1px solid #cccccc; color: #3d2612; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; }
+
+        /* الفاتورة والنوافذ المنبثقة */
+        .invoice-section { background: #f9f9f9; border-top: 4px solid #6f4e37; padding: 20px; border-radius: 12px; border: 1px solid #eeeeee; margin-bottom: 30px; }
+        .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        .invoice-table th, .invoice-table td { padding: 10px; text-align: right; border-bottom: 1px solid #eeeeee; font-size: 13px; }
+        .invoice-table th { background: #efebe9; }
+        .warranty-group { margin-bottom: 15px; text-align: right; }
+        .warranty-group label { font-size: 13px; font-weight: bold; color: #3d2612; display: block; margin-bottom: 5px; }
+        .warranty-group input { width: 100%; max-width: 300px; padding: 8px 12px; border: 1px solid #cccccc; border-radius: 6px; }
+        .invoice-summary { display: flex; justify-content: space-between; align-items: center; }
+        .total-price { font-size: 18px; font-weight: bold; color: #2b8a3e; }
+        .btn-print { padding: 12px 24px; background: #6f4e37; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        .modal-overlay, .print-modal-overlay, .setup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 100; opacity: 0; pointer-events: none; transition: all 0.3s ease; }
+        .modal-overlay.active, .print-modal-overlay.active, .setup-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-card { background: #ffffff; padding: 25px; border-radius: 16px; width: 100%; max-width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto; }
+        .input-group { margin-bottom: 15px; text-align: right; }
+        .input-group label { display: block; font-size: 12px; color: #555555; margin-bottom: 6px; }
+        .input-group input { width: 100%; padding: 10px; background: #f9f9f9; border: 1px solid #cccccc; border-radius: 8px; font-size: 14px; }
+        .modal-actions, .print-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-submit, .btn-real-print { flex: 2; padding: 12px; background: #6f4e37; border: none; color: white; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-close, .btn-cancel-print { flex: 1; padding: 12px; background: #eeeeee; border: none; color: #555555; border-radius: 8px; cursor: pointer; }
+
+        /* ورقة الفاتورة */
+        .receipt-paper { border: 1px dashed #000; padding: 20px; font-family: monospace; background: white; color: black; }
+        .receipt-header { text-align: center; margin-bottom: 15px; border-bottom: 1px dashed #000; padding-bottom: 10px; }
+        .receipt-table { width: 100%; border-collapse: collapse; }
+        .receipt-table th, .receipt-table td { padding: 5px; text-align: right; font-size: 12px; color: black; }
+        .receipt-total { text-align: left; font-weight: bold; margin-top: 15px; border-top: 1px dashed #000; padding-top: 10px; }
+        .receipt-tax-details { text-align: right; font-size: 11px; margin-top: 5px; color: #444; }
+        .receipt-warranty { text-align: center; margin-top: 15px; font-size: 11px; border-top: 1px dashed #000; padding-top: 8px; font-style: italic; }
+
+        @media print {
+            body * { display: none !important; }
+            .print-modal-overlay, .print-modal-overlay * { display: block !important; background: white !important; }
+            .print-actions { display: none !important; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        
-        <div id="login-screen" class="screen active">
-            <h1 style="color: var(--primary-brown);">قَيِّم</h1>
-            <button class="btn" onclick="window.signInWithGoogle()">تسجيل الدخول بواسطة Google</button>
-        </div>
-
-        <div id="pledge-screen" class="screen">
-            <h2 style="color: var(--primary-brown);">شروط الاستخدام</h2>
-            <div class="pledge-box">
-                <h3>أتعهد بالآتي:</h3>
-                <ul>
-                    <li>يمنع السب والشتم.</li>
-                    <li>يمنع التنمر.</li>
-                    <li>تمنع إثارة الفتنة.</li>
-                </ul>
-                <div class="alert-box"><p>ملاحظة: مخالفة القوانين تعني إحالة بياناتك للجهات القانونية.</p></div>
-            </div>
-            <label class="checkbox-container">
-                <input type="checkbox" id="agree-checkbox" onchange="window.toggleAcceptButton()">
-                قرأت الشروط وأتعهد بالالتزام بها
-            </label>
-            <button class="btn" id="accept-btn" onclick="window.acceptPledge()" disabled>يرجى قراءة الشروط (30 ثانية)</button>
-            <p id="location-status" style="color: #D32F2F; font-size: 13px; margin-top: 10px;"></p>
-        </div>
-
-        <div id="main-screen" class="main-screen">
-            <div class="header">
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <img src="https://via.placeholder.com/40/8B5A2B/FFFFFF?text=Q" class="header-logo">
-                    <span class="header-title">قَيِّم</span>
-                </div>
-            </div>
-            <div class="feed">
-                <div class="post"><strong>فارس</strong><p>مرحباً بكم في قَيِّم!</p></div>
-            </div>
-            <div class="bottom-nav">
-                <span class="nav-item active">🏠</span><span class="nav-item">🔍</span><span class="nav-item">➕</span><span class="nav-item">👤</span>
+    <!-- شاشة الحماية: قوقل وكود الترخيص -->
+    <div class="auth-container" id="authContainer">
+        <div class="auth-card" id="googleStep">
+            <h2>تسجيل الدخول للنظام 🔐</h2>
+            <p>الرجاء تسجيل الدخول بحساب Google للمتابعة</p>
+            <div style="display: flex; justify-content: center; margin-bottom: 15px;">
+                <button id="btnGoogleAuth" style="background: white; border: 1px solid #dadce0; color: #3c4043; padding: 10px 24px; border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/web-24dp/logo_googleg_color_24dp.png" width="18">
+                    تسجيل الدخول بواسطة Google
+                </button>
             </div>
         </div>
 
-        <div id="dhikr-modal" class="dhikr-modal">
-            <div class="dhikr-content">
-                <div id="dhikr-text" style="font-size: 20px; margin-bottom:20px;">سبحان الله وبحمده</div>
-                <button class="btn" style="width:100%" onclick="window.closeDhikr()">إغلاق</button>
+        <div class="auth-card" id="codeStep" style="display: none;">
+            <h2>تفعيل نظام المبيعات 🔑</h2>
+            <p>أدخل كود الترخيص الخاص بك لفتح لوحة التحكم</p>
+            <div class="input-group">
+                <input type="text" id="licenseKeyInput" placeholder="أدخل كود تفعيل النظام هنا..." style="text-align: center; font-size: 16px; font-weight: bold; letter-spacing: 2px;">
+            </div>
+            <button class="btn-submit" style="width: 100%;" id="btnVerifyCode">تحقق وتفعيل النظام 🚀</button>
+            
+            <div class="whatsapp-notice">
+                إذا لم تكن تمتلك كود تفعيل النظام حالياً:<br>
+                تواصل واتساب تأخذ كود بـ 50 ريال فقط 💰<br>
+                <span style="font-size: 14px; display:block; margin-top:5px;">📱 0566369019</span>
+                <a href="https://wa.me/966566369019?text=مرحبا،%20أريد%20شراء%20كود%20تفعيل%20نظام%20المبيعات%20بـ%2050%20ريال" target="_blank" class="btn-whatsapp">اضغط هنا للتواصل فوراً 💬</a>
             </div>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    <!-- نافذة إعداد اسم المحل -->
+    <div class="setup-overlay" id="setupOverlay">
+        <div class="modal-card">
+            <h3 style="color:#6f4e37; margin-bottom:15px; text-align:center;">مرحباً بك في نظام الكاشير 🏪</h3>
+            <div class="input-group">
+                <label>الرجاء كتابة اسم المتجر / المحل</label>
+                <input type="text" id="shopNameInput" placeholder="مثال: متجر القمة للإلكترونيات" required>
+            </div>
+            <button class="btn-submit" style="width:100%;" id="btnSaveShopName">دخول النظام 🚀</button>
+        </div>
+    </div>
 
+    <!-- الواجهة الرئيسية -->
+    <div class="dashboard-header">
+        <div class="shop-info">
+            <h1 id="mainShopTitle">نظام إدارة المخزون</h1>
+            <p id="subShopTitle">لوحة التحكم</p>
+        </div>
+        <button class="btn-add-product" id="openModalBtn">+</button>
+    </div>
+
+    <div class="controls-bar" id="controlsBar">
+        <input type="text" class="search-input" id="searchInput" placeholder="🔍 ابحث باسم المنتج أو رقم المنتج (مثال: 0002)...">
+        <select class="category-select" id="categoryFilter">
+            <option value="all">كل الفئات</option>
+        </select>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="nav-btn active" id="tabSales">لوحة المبيعات والمخزن</button>
+        <button class="nav-btn" id="tabProfits">تقرير الأرباح والخزينة 💰</button>
+    </div>
+
+    <div id="salesPage" class="page-section">
+        <div class="products-grid" id="productsContainer"></div>
+
+        <div class="invoice-section">
+            <h2>فاتورة مبيعات جديدة 🛒</h2>
+            <table class="invoice-table">
+                <thead>
+                    <tr><th>المنتج</th><th>العدد</th><th>السعر الفردي</th><th>الإجمالي</th></tr>
+                </thead>
+                <tbody id="invoiceItems"></tbody>
+            </table>
+
+            <div class="warranty-group">
+                <label>مدة الضمان بالفاتورة (اختياري):</label>
+                <input type="text" id="invoiceWarrantyInput" placeholder="مثال: ضمان تشغيلي لمدة شهر">
+            </div>
+
+            <div class="invoice-summary">
+                <div><span>إجمالي الفاتورة (شامل الضريبة): </span><span class="total-price" id="invoiceTotal">0 ريال</span></div>
+                <button class="btn-print" id="openPrintModalBtn">إنشاء الفاتورة 🧾</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="profitsPage" class="page-section" style="display:none;">
+        <h2>التقرير المالي العام والأرباح الصافية</h2>
+        <div class="stats-grid">
+            <div class="stat-card"><h3>إجمالي المبيعات</h3><p class="stat-sales" id="totalSalesVal">0 ريال</p></div>
+            <div class="stat-card"><h3>إجمالي تكلفة الشراء</h3><p class="stat-costs" id="totalCostsVal">0 ريال</p></div>
+            <div class="stat-card"><h3>صافي الأرباح 💸</h3><p class="stat-profits" id="totalProfitsVal">0 ريال</p></div>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة منتج -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-card">
+            <h3 style="color:#6f4e37; margin-bottom:15px;">إضافة منتج جديد</h3>
+            <form id="productForm">
+                <div class="input-group"><label>رقم المنتج (مثال: 0002)</label><input type="text" id="pCode" placeholder="0002" required></div>
+                <div class="input-group"><label>اسم المنتج</label><input type="text" id="pName" placeholder="لابتوب ديل" required></div>
+                <div class="input-group"><label>صورة المنتج</label><input type="file" id="pImgFile" accept="image/*" required></div>
+                <div class="input-group"><label>الفئة</label><input type="text" id="pCategory" placeholder="أجهزة" required></div>
+                <div class="input-group"><label>سعر الشراء</label><input type="number" id="pCost" step="0.01" required></div>
+                <div class="input-group"><label>سعر البيع الأساسي (شامل الضريبة)</label><input type="number" id="pPrice" step="0.01" required></div>
+                <div class="input-group"><label>المخزون المتوفر</label><input type="number" id="pStock" required></div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn-submit">حفظ</button>
+                    <button type="button" class="btn-close" id="closeModalBtn">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة تعديل منتج -->
+    <div class="modal-overlay" id="editModalOverlay">
+        <div class="modal-card">
+            <h3 style="color:#6f4e37; margin-bottom:15px;">تعديل المنتج والخصم ✏️</h3>
+            <form id="editProductForm">
+                <input type="hidden" id="editOldName">
+                <div class="input-group"><label>رقم المنتج</label><input type="text" id="editCode" required></div>
+                <div class="input-group"><label>اسم المنتج</label><input type="text" id="editName" required></div>
+                <div class="input-group"><label>الفئة</label><input type="text" id="editCategory" required></div>
+                <div class="input-group"><label>سعر الشراء</label><input type="number" id="editCost" step="0.01" required></div>
+                <div class="input-group"><label>سعر البيع الأساسي</label><input type="number" id="editPrice" step="0.01" required></div>
+                <div class="input-group"><label>نسبة الخصم (%)</label><input type="number" id="editDiscount" min="0" max="100" value="0"></div>
+                <div class="input-group"><label>المخزون المتوفر</label><input type="number" id="editStock" required></div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn-submit">تحديث البيانات 💾</button>
+                    <button type="button" class="btn-close" id="btnCancelEdit">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- معاينة الطباعة -->
+    <div class="print-modal-overlay" id="printModalOverlay">
+        <div class="print-modal-card">
+            <div class="receipt-paper">
+                <div class="receipt-header"><h2 id="receiptShopName">اسم المحل</h2><h3>فاتورة مبسطة</h3><p id="receiptDate"></p></div>
+                <table class="receipt-table">
+                    <thead><tr><th>المنتج</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead>
+                    <tbody id="receiptItems"></tbody>
+                </table>
+                <div class="receipt-total" id="receiptTotal"></div>
+                <div class="receipt-tax-details" id="receiptTaxDetails"></div>
+                <div class="receipt-warranty" id="receiptWarrantySection" style="display:none;"></div>
+            </div>
+            <div class="print-actions">
+                <button class="btn-real-print" id="confirmPrintBtn">اطبع الآن ويخصم من المخزن 🖨️</button>
+                <button class="btn-cancel-print" id="closePrintModalBtn">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- استدعاء Firebase عن طريق ليد نوع هجين (ES Modules) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // إعدادات Firebase الخاصة بك
         const firebaseConfig = {
             apiKey: "AIzaSyAI23gvlRESb1Eivn5xjuq1y9U-pcixYsw",
             authDomain: "fit-app-1c1a8.firebaseapp.com",
@@ -153,49 +328,318 @@
             measurementId: "G-PD6NX9CH5B"
         };
 
+        // تهيئة Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        window.showScreen = function(screenId) {
-            document.querySelectorAll('.screen, .main-screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-            if (screenId === 'pledge-screen') window.startTimer();
-        };
+        const SYSTEM_SECRET_KEY = "ZAN2026"; 
 
-        window.startTimer = function() {
-            const btn = document.getElementById('accept-btn');
-            const checkbox = document.getElementById('agree-checkbox');
-            let timeLeft = 30;
-            btn.disabled = true;
-            checkbox.disabled = true;
-            const timer = setInterval(() => {
-                timeLeft--;
-                btn.innerText = `يرجى قراءة الشروط (${timeLeft} ثانية)`;
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    btn.innerText = "أوافق وأسمح بالوصول للموقع";
-                    checkbox.disabled = false;
+        let globalProducts = {};
+        let currentInvoice = {};
+        let categories = new Set();
+        let shopName = "متجري الكاشير";
+        let financialData = { totalSales: 0, totalCosts: 0, totalProfits: 0 };
+
+        // تسجيل الدخول الحقيقي بـ Google
+        document.getElementById('btnGoogleAuth').addEventListener('click', async () => {
+            try {
+                const result = await signInWithPopup(auth, provider);
+                alert(`مرحباً بك: ${result.user.displayName} ✔️`);
+                document.getElementById('googleStep').style.display = 'none';
+                document.getElementById('codeStep').style.display = 'block';
+            } catch (error) {
+                alert("خطأ أثناء تسجيل الدخول بـ Google: " + error.message);
+            }
+        });
+
+        // التحقق من الكود وسحب البيانات من السحابة
+        document.getElementById('btnVerifyCode').addEventListener('click', async () => {
+            const userKey = document.getElementById('licenseKeyInput').value.trim();
+            if(userKey === SYSTEM_SECRET_KEY) {
+                document.getElementById('authContainer').style.display = 'none';
+                document.getElementById('setupOverlay').classList.add('active');
+                await loadDataFromFirebase();
+            } else {
+                alert("كود التفعيل غير صحيح!");
+            }
+        });
+
+        document.getElementById('btnSaveShopName').addEventListener('click', () => {
+            const input = document.getElementById('shopNameInput').value.trim();
+            if (input !== "") {
+                shopName = input;
+                document.getElementById('mainShopTitle').innerText = shopName;
+                document.getElementById('setupOverlay').classList.remove('active');
+            } else { alert("الرجاء إدخال اسم صحيح للمحل!"); }
+        });
+
+        // مزامنة وسحب البيانات السحابية
+        async function loadDataFromFirebase() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "products"));
+                globalProducts = {};
+                categories.clear();
+                querySnapshot.forEach((doc) => {
+                    globalProducts[doc.id] = doc.data();
+                    if(doc.data().category) categories.add(doc.data().category);
+                });
+                
+                const finDoc = await getDoc(doc(db, "reports", "financial"));
+                if(finDoc.exists()) {
+                    financialData = finDoc.data();
                 }
-            }, 1000);
-        };
+                updateCategoryDropdown();
+                renderProducts();
+            } catch (e) { console.error("Error loading docs: ", e); }
+        }
 
-        window.toggleAcceptButton = function() {
-            const checkbox = document.getElementById('agree-checkbox');
-            document.getElementById('accept-btn').disabled = !checkbox.checked;
-        };
+        async function saveProductToFirebase(name, data) {
+            await setDoc(doc(db, "products", name), data);
+        }
 
-        window.signInWithGoogle = () => signInWithPopup(auth, provider).then(() => window.showScreen('pledge-screen')).catch(e => alert(e.message));
+        // دالة الفلترة والبحث الذكي الدقيق (مثل 0002)
+        function filterProducts() {
+            const searchVal = document.getElementById('searchInput').value.trim().toLowerCase();
+            const catVal = document.getElementById('categoryFilter').value;
+            const cards = document.getElementById('productsContainer').getElementsByClassName('product-card');
+            
+            for (let card of cards) {
+                const pName = card.getAttribute('data-name').toLowerCase();
+                const pCode = card.getAttribute('data-code').toLowerCase();
+                const pCat = card.getAttribute('data-category');
+                
+                const matchesSearch = pName.includes(searchVal) || pCode.includes(searchVal);
+                const matchesCategory = (catVal === 'all') || (pCat === catVal);
+                
+                card.style.display = (matchesSearch && matchesCategory) ? 'flex' : 'none';
+            }
+        }
+        document.getElementById('searchInput').addEventListener('keyup', filterProducts);
+        document.getElementById('categoryFilter').addEventListener('change', filterProducts);
 
-        window.acceptPledge = function() {
-            navigator.geolocation.getCurrentPosition(
-                () => { window.showScreen('main-screen'); window.startDhikrTimer(); },
-                (e) => document.getElementById('location-status').innerText = "يجب السماح للموقع من إعدادات المتصفح للدخول."
-            );
-        };
+        function updateCategoryDropdown() {
+            const filter = document.getElementById('categoryFilter');
+            filter.innerHTML = '<option value="all">كل الفئات</option>';
+            categories.forEach(cat => { filter.innerHTML += `<option value="${cat}">${cat}</option>`; });
+        }
 
-        window.startDhikrTimer = () => setInterval(() => { document.getElementById('dhikr-modal').style.display = 'flex'; }, 3600000);
-        window.closeDhikr = () => document.getElementById('dhikr-modal').style.display = 'none';
+        function renderProducts() {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = '';
+            for (let name in globalProducts) {
+                let p = globalProducts[name];
+                const productCard = document.createElement('div');
+                productCard.classList.add('product-card');
+                productCard.setAttribute('data-name', name);
+                productCard.setAttribute('data-code', p.code);
+                productCard.setAttribute('data-category', p.category);
+                
+                let discountTag = p.discount > 0 ? `<div class="discount-badge">خصم ${p.discount}%</div>` : '';
+                let priceHTML = p.discount > 0 ? 
+                    `<div class="price-row"><span class="price-buy">شراء: ${p.cost}</span><span class="price-sell">بيع: ${p.finalPrice.toFixed(2)} <span class="old-price">${p.price}</span></span></div>` :
+                    `<div class="price-row"><span class="price-buy">شراء: ${p.cost}</span><span class="price-sell">بيع: ${p.price}</span></div>`;
+
+                productCard.innerHTML = `
+                    ${discountTag}
+                    <img src="${p.img}">
+                    <span class="product-code"># ${p.code}</span>
+                    <h3 class="product-name">${name}</h3>
+                    <p class="product-meta">الفئة: ${p.category} | المخزون: <strong>${p.stock}</strong></p>
+                    <div class="product-prices">${priceHTML}</div>
+                    <div class="card-actions">
+                        <button class="btn-add-to-invoice" data-name="${name}" ${p.stock <= 0 ? 'disabled' : ''}>
+                            ${p.stock <= 0 ? '❌' : 'إضافة 🛒'}
+                        </button>
+                        <button class="btn-edit-product" data-name="${name}">تعديل ✏️</button>
+                    </div>
+                `;
+                container.appendChild(productCard);
+            }
+            
+            // ربط أحداث الأزرار ديناميكياً لتفادي الاختلاط داخل الموديول
+            document.querySelectorAll('.btn-add-to-invoice').forEach(btn => {
+                btn.addEventListener('click', (e) => addToInvoice(e.target.getAttribute('data-name')));
+            });
+            document.querySelectorAll('.btn-edit-product').forEach(btn => {
+                btn.addEventListener('click', (e) => openEditModal(e.target.getAttribute('data-name')));
+            });
+            filterProducts();
+        }
+
+        // التعامل مع إضافة وحفظ المنتجات
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const code = document.getElementById('pCode').value.trim();
+            const name = document.getElementById('pName').value.trim();
+            const category = document.getElementById('pCategory').value.trim();
+            const cost = parseFloat(document.getElementById('pCost').value);
+            const price = parseFloat(document.getElementById('pPrice').value);
+            const stock = parseInt(document.getElementById('pStock').value);
+            const file = document.getElementById('pImgFile').files[0];
+            
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                const data = { code, category, cost, price, discount: 0, finalPrice: price, stock, img: event.target.result };
+                globalProducts[name] = data;
+                if(category) { categories.add(category); updateCategoryDropdown(); }
+                await saveProductToFirebase(name, data);
+                renderProducts();
+                document.getElementById('modalOverlay').classList.remove('active');
+                document.getElementById('productForm').reset();
+            };
+            if (file) reader.readAsDataURL(file);
+        });
+
+        function openEditModal(name) {
+            let p = globalProducts[name];
+            document.getElementById('editOldName').value = name;
+            document.getElementById('editCode').value = p.code;
+            document.getElementById('editName').value = name;
+            document.getElementById('editCategory').value = p.category;
+            document.getElementById('editCost').value = p.cost;
+            document.getElementById('editPrice').value = p.price;
+            document.getElementById('editDiscount').value = p.discount;
+            document.getElementById('editStock').value = p.stock;
+            document.getElementById('editModalOverlay').classList.add('active');
+        }
+
+        document.getElementById('btnCancelEdit').addEventListener('click', () => {
+            document.getElementById('editModalOverlay').classList.remove('active');
+        });
+
+        document.getElementById('editProductForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const oldName = document.getElementById('editOldName').value;
+            const code = document.getElementById('editCode').value.trim();
+            const name = document.getElementById('editName').value.trim();
+            const category = document.getElementById('editCategory').value.trim();
+            const cost = parseFloat(document.getElementById('editCost').value);
+            const price = parseFloat(document.getElementById('editPrice').value);
+            const discount = parseFloat(document.getElementById('editDiscount').value) || 0;
+            const stock = parseInt(document.getElementById('editStock').value);
+            
+            const finalPrice = price - (price * (discount / 100));
+            const oldImg = globalProducts[oldName].img;
+
+            // تحديث السحابة والقائمة المحلية
+            const data = { code, category, cost, price, discount, finalPrice, stock, img: oldImg };
+            globalProducts[name] = data;
+            await saveProductToFirebase(name, data);
+
+            if(category) { categories.add(category); updateCategoryDropdown(); }
+            document.getElementById('editModalOverlay').classList.remove('active');
+            renderProducts();
+        });
+
+        function addToInvoice(name) {
+            let p = globalProducts[name];
+            if (currentInvoice[name]) {
+                if (currentInvoice[name].qty < p.stock) { currentInvoice[name].qty += 1; } 
+                else { alert("نفذت الكمية بالمتجر!"); return; }
+            } else { currentInvoice[name] = { price: p.finalPrice, qty: 1, cost: p.cost }; }
+            updateInvoiceUI();
+        }
+
+        function updateInvoiceUI() {
+            const invoiceItems = document.getElementById('invoiceItems');
+            invoiceItems.innerHTML = '';
+            let total = 0;
+            for (let name in currentInvoice) {
+                let item = currentInvoice[name];
+                let itemTotal = item.price * item.qty;
+                total += itemTotal;
+                invoiceItems.innerHTML += `<tr><td>${name}</td><td>${item.qty}</td><td>${item.price.toFixed(2)} ريال</td><td>${itemTotal.toFixed(2)} ريال</td></tr>`;
+            }
+            document.getElementById('invoiceTotal').innerText = total.toFixed(2) + " ريال";
+        }
+
+        document.getElementById('openPrintModalBtn').addEventListener('click', () => {
+            if (Object.keys(currentInvoice).length === 0) { alert("الفاتورة فارغة!"); return; }
+            document.getElementById('receiptShopName').innerText = shopName;
+            document.getElementById('receiptDate').innerText = "التاريخ: " + new Date().toLocaleString('ar-SA');
+            
+            const receiptItems = document.getElementById('receiptItems');
+            receiptItems.innerHTML = '';
+            let total = 0;
+            for (let name in currentInvoice) {
+                let item = currentInvoice[name];
+                let itemTotal = item.price * item.qty;
+                total += itemTotal;
+                receiptItems.innerHTML += `<tr><td>${name}</td><td>${item.qty}</td><td>${item.price.toFixed(2)}</td><td>${itemTotal.toFixed(2)}</td></tr>`;
+            }
+            
+            let taxAmount = total - (total / 1.15);
+            document.getElementById('receiptTotal').innerText = "الإجمالي النهائي: " + total.toFixed(2) + " ريال";
+            document.getElementById('receiptTaxDetails').innerText = "* السعر أعلاه شامل ضريبة القيمة المضافة 15%: " + taxAmount.toFixed(2) + " ريال";
+            
+            const warrantyVal = document.getElementById('invoiceWarrantyInput').value.trim();
+            const warrantySec = document.getElementById('receiptWarrantySection');
+            if(warrantyVal !== "") {
+                warrantySec.innerText = "🛡️ الضمان: " + warrantyVal;
+                warrantySec.style.display = 'block';
+            } else { warrantySec.style.display = 'none'; }
+
+            document.getElementById('printModalOverlay').classList.add('active');
+        });
+
+        document.getElementById('closePrintModalBtn').addEventListener('click', () => {
+            document.getElementById('printModalOverlay').classList.remove('active');
+        });
+
+        document.getElementById('confirmPrintBtn').addEventListener('click', async () => {
+            window.print(); 
+            for (let name in currentInvoice) {
+                let soldItem = currentInvoice[name];
+                globalProducts[name].stock -= soldItem.qty;
+
+                let itemTotalSales = soldItem.price * soldItem.qty;
+                let itemTotalCosts = soldItem.cost * soldItem.qty;
+                let itemTotalProfits = itemTotalSales - itemTotalCosts;
+
+                financialData.totalSales += itemTotalSales;
+                financialData.totalCosts += itemTotalCosts;
+                financialData.totalProfits += itemTotalProfits;
+
+                // تحديث المخزون في Firebase
+                await updateDoc(doc(db, "products", name), { stock: globalProducts[name].stock });
+            }
+
+            // تحديث التقارير المالية في Firebase
+            await setDoc(doc(db, "reports", "financial"), financialData);
+
+            renderProducts();
+            document.getElementById('printModalOverlay').classList.remove('active');
+            currentInvoice = {};
+            document.getElementById('invoiceWarrantyInput').value = '';
+            updateInvoiceUI();
+        });
+
+        // تشغيل التبويبات وفتح النوافذ
+        document.getElementById('openModalBtn').addEventListener('click', () => document.getElementById('modalOverlay').classList.add('active'));
+        document.getElementById('closeModalBtn').addEventListener('click', () => { document.getElementById('modalOverlay').classList.remove('active'); document.getElementById('productForm').reset(); });
+
+        window.switchPage = function(page) {
+            document.querySelectorAll('.page-section').forEach(p => p.style.display = 'none');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            if(page === 'sales') {
+                document.getElementById('salesPage').style.display = 'block';
+                document.getElementById('controlsBar').style.display = 'flex';
+                document.getElementById('tabSales').classList.add('active');
+            } else {
+                document.getElementById('salesPage').style.display = 'none';
+                document.getElementById('controlsBar').style.display = 'none';
+                document.getElementById('profitsPage').style.display = 'block';
+                document.getElementById('tabProfits').classList.add('active');
+                
+                document.getElementById('totalSalesVal').innerText = financialData.totalSales.toFixed(2) + " ريال";
+                document.getElementById('totalCostsVal').innerText = financialData.totalCosts.toFixed(2) + " ريال";
+                document.getElementById('totalProfitsVal').innerText = financialData.totalProfits.toFixed(2) + " ريال";
+            }
+        }
+        document.getElementById('tabSales').addEventListener('click', () => switchPage('sales'));
+        document.getElementById('tabProfits').addEventListener('click', () => switchPage('profits'));
     </script>
 </body>
 </html>
