@@ -154,7 +154,6 @@
 </head>
 <body>
 
-    <!-- شاشة الحماية: قوقل وكود الترخيص -->
     <div class="auth-container" id="authContainer">
         <div class="auth-card" id="googleStep">
             <h2>تسجيل الدخول للنظام 🔐</h2>
@@ -169,7 +168,7 @@
 
         <div class="auth-card" id="codeStep" style="display: none;">
             <h2>تفعيل نظام المبيعات 🔑</h2>
-            <p>أدخل كود الترخيص الخاص بك لفتح لوحة التحكم</p>
+            <p>أدخل كود الترخيص السحابي لفتح لوحة التحكم</p>
             <div class="input-group">
                 <input type="text" id="licenseKeyInput" placeholder="أدخل كود تفعيل النظام هنا..." style="text-align: center; font-size: 16px; font-weight: bold; letter-spacing: 2px;">
             </div>
@@ -184,7 +183,6 @@
         </div>
     </div>
 
-    <!-- نافذة إعداد اسم المحل -->
     <div class="setup-overlay" id="setupOverlay">
         <div class="modal-card">
             <h3 style="color:#6f4e37; margin-bottom:15px; text-align:center;">مرحباً بك في نظام الكاشير 🏪</h3>
@@ -196,7 +194,6 @@
         </div>
     </div>
 
-    <!-- الواجهة الرئيسية -->
     <div class="dashboard-header">
         <div class="shop-info">
             <h1 id="mainShopTitle">نظام إدارة المخزون</h1>
@@ -250,7 +247,6 @@
         </div>
     </div>
 
-    <!-- نافذة إضافة منتج -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-card">
             <h3 style="color:#6f4e37; margin-bottom:15px;">إضافة منتج جديد</h3>
@@ -270,7 +266,6 @@
         </div>
     </div>
 
-    <!-- نافذة تعديل منتج -->
     <div class="modal-overlay" id="editModalOverlay">
         <div class="modal-card">
             <h3 style="color:#6f4e37; margin-bottom:15px;">تعديل المنتج والخصم ✏️</h3>
@@ -291,7 +286,6 @@
         </div>
     </div>
 
-    <!-- معاينة الطباعة -->
     <div class="print-modal-overlay" id="printModalOverlay">
         <div class="print-modal-card">
             <div class="receipt-paper">
@@ -311,7 +305,6 @@
         </div>
     </div>
 
-    <!-- استدعاء Firebase عن طريق ليد نوع هجين (ES Modules) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -328,13 +321,10 @@
             measurementId: "G-PD6NX9CH5B"
         };
 
-        // تهيئة Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
-
-        const SYSTEM_SECRET_KEY = "ZAN2026"; 
 
         let globalProducts = {};
         let currentInvoice = {};
@@ -342,7 +332,7 @@
         let shopName = "متجري الكاشير";
         let financialData = { totalSales: 0, totalCosts: 0, totalProfits: 0 };
 
-        // تسجيل الدخول الحقيقي بـ Google
+        // تسجيل الدخول بـ Google
         document.getElementById('btnGoogleAuth').addEventListener('click', async () => {
             try {
                 const result = await signInWithPopup(auth, provider);
@@ -354,15 +344,30 @@
             }
         });
 
-        // التحقق من الكود وسحب البيانات من السحابة
+        // 🛡️ التحقق السحابي الفوري من كود التفعيل داخل Firebase
         document.getElementById('btnVerifyCode').addEventListener('click', async () => {
             const userKey = document.getElementById('licenseKeyInput').value.trim();
-            if(userKey === SYSTEM_SECRET_KEY) {
-                document.getElementById('authContainer').style.display = 'none';
-                document.getElementById('setupOverlay').classList.add('active');
-                await loadDataFromFirebase();
-            } else {
-                alert("كود التفعيل غير صحيح!");
+            
+            if(userKey === "") {
+                alert("الرجاء إدخال الكود أولاً!");
+                return;
+            }
+
+            try {
+                // جلب مستند الكود المكتوب مباشرة من مجموعة licenses
+                const licenseDocRef = doc(db, "licenses", userKey);
+                const licenseSnapshot = await getDoc(licenseDocRef);
+
+                if (licenseSnapshot.exists() && licenseSnapshot.data().active === true) {
+                    alert("تم التحقق بنجاح! جاري تحميل النظام سحابياً... 🎉");
+                    document.getElementById('authContainer').style.display = 'none';
+                    document.getElementById('setupOverlay').classList.add('active');
+                    await loadDataFromFirebase();
+                } else {
+                    alert("كود التفعيل غير صحيح أو منتهي الصلاحية! يرجى التواصل لشراء كود ترخيص مفعّل.");
+                }
+            } catch (error) {
+                alert("حدث خطأ أثناء الاتصال بالسحابة: " + error.message);
             }
         });
 
@@ -375,7 +380,7 @@
             } else { alert("الرجاء إدخال اسم صحيح للمحل!"); }
         });
 
-        // مزامنة وسحب البيانات السحابية
+        // تحميل المنتجات والتقارير المالية
         async function loadDataFromFirebase() {
             try {
                 const querySnapshot = await getDocs(collection(db, "products"));
@@ -399,7 +404,6 @@
             await setDoc(doc(db, "products", name), data);
         }
 
-        // دالة الفلترة والبحث الذكي الدقيق (مثل 0002)
         function filterProducts() {
             const searchVal = document.getElementById('searchInput').value.trim().toLowerCase();
             const catVal = document.getElementById('categoryFilter').value;
@@ -458,7 +462,6 @@
                 container.appendChild(productCard);
             }
             
-            // ربط أحداث الأزرار ديناميكياً لتفادي الاختلاط داخل الموديول
             document.querySelectorAll('.btn-add-to-invoice').forEach(btn => {
                 btn.addEventListener('click', (e) => addToInvoice(e.target.getAttribute('data-name')));
             });
@@ -468,7 +471,6 @@
             filterProducts();
         }
 
-        // التعامل مع إضافة وحفظ المنتجات
         document.getElementById('productForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const code = document.getElementById('pCode').value.trim();
@@ -523,7 +525,6 @@
             const finalPrice = price - (price * (discount / 100));
             const oldImg = globalProducts[oldName].img;
 
-            // تحديث السحابة والقائمة المحلية
             const data = { code, category, cost, price, discount, finalPrice, stock, img: oldImg };
             globalProducts[name] = data;
             await saveProductToFirebase(name, data);
@@ -602,11 +603,9 @@
                 financialData.totalCosts += itemTotalCosts;
                 financialData.totalProfits += itemTotalProfits;
 
-                // تحديث المخزون في Firebase
                 await updateDoc(doc(db, "products", name), { stock: globalProducts[name].stock });
             }
 
-            // تحديث التقارير المالية في Firebase
             await setDoc(doc(db, "reports", "financial"), financialData);
 
             renderProducts();
@@ -616,7 +615,6 @@
             updateInvoiceUI();
         });
 
-        // تشغيل التبويبات وفتح النوافذ
         document.getElementById('openModalBtn').addEventListener('click', () => document.getElementById('modalOverlay').classList.add('active'));
         document.getElementById('closeModalBtn').addEventListener('click', () => { document.getElementById('modalOverlay').classList.remove('active'); document.getElementById('productForm').reset(); });
 
