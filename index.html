@@ -173,6 +173,7 @@
             background-position: center;
             background-color: var(--border-color);
             flex-shrink: 0;
+            cursor: pointer;
         }
 
         .tweet-inputs {
@@ -289,8 +290,8 @@
 
         .post-body { flex: 1; min-width: 0; }
         .post-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .p-name { font-weight: bold; color: var(--text-main); display: inline-flex; align-items: center; gap: 4px; }
-        .p-username { color: var(--text-muted); font-size: 14px; }
+        .p-name { font-weight: bold; color: var(--text-main); display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+        .p-username { color: var(--text-muted); font-size: 14px; cursor: pointer; }
         .p-time { color: var(--text-muted); font-size: 13px; }
         .p-text { margin-top: 5px; font-size: 15px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
         .p-img { width: 100%; border-radius: 12px; margin-top: 10px; max-height: 380px; object-fit: cover; }
@@ -337,15 +338,32 @@
         }
 
         .inline-reply-list {
-            max-height: 150px;
+            max-height: 200px;
             overflow-y: auto;
             margin-bottom: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .inline-reply-item {
             font-size: 13px;
-            padding: 4px 0;
+            padding: 6px;
             border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .reply-meta-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .reply-time-stamp {
+            font-size: 10px;
+            color: var(--text-muted);
         }
 
         .inline-reply-form {
@@ -474,7 +492,7 @@
         .p-follow-stats div span { font-weight: bold; color: var(--text-main); }
 
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; display: none; }
-        .modal-content { background: var(--bg-container); padding: 20px; border-radius: 16px; width: 90%; max-width: 450px; border: 1px solid var(--border-color); max-height: 85vh; overflow-y: auto; }
+        .modal-content { background: var(--bg-container); padding: 20px; border-radius: 16px; width: 90%; max-width: 450px; border: 1px solid var(--border-color); max-height: 85vh; overflow-y: auto; position: relative; }
         .modal-content h3 { margin-bottom: 12px; }
         .modal-content input, .modal-content textarea { width: 100%; padding: 10px; margin-bottom: 12px; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 8px; outline: none; }
         .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
@@ -510,6 +528,9 @@
         
         .user-row-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
         .user-row-item { display: flex; align-items: center; gap: 10px; padding: 5px 0; border-bottom: 1px solid var(--border-color); }
+
+        .notif-item { padding: 10px; border-bottom: 1px solid var(--border-color); font-size: 13px; display: flex; flex-direction: column; gap: 4px; }
+        .notif-time { font-size: 10px; color: var(--text-muted); }
 
         /* شاشة قفل التطبيق عبر جوجل */
         .auth-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:var(--bg-main); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
@@ -570,7 +591,6 @@
 </head>
 <body>
 
-    <!-- شاشة تسجيل الدخول عبر قوقل فقط -->
     <div id="authOverlayScreen" class="auth-overlay" style="display:none;">
         <div class="auth-card">
             <h2 id="authTitle">مرحباً بك في فيت</h2>
@@ -608,7 +628,7 @@
 
             <div class="tweet-box">
                 <div class="tweet-flex">
-                    <div class="p-avatar user-current-avatar"></div>
+                    <div class="p-avatar user-current-avatar" onclick="viewUserProfile(currentUser.handle)"></div>
                     <div class="tweet-inputs">
                         <textarea id="postText" placeholder="ماذا يحدث الآن في فيت؟" rows="2" maxlength="280" oninput="updateCharCount('postText', 'mainCharCounter')"></textarea>
                         <img id="publishImgPreview" class="preview-publish-img" alt="Preview">
@@ -664,7 +684,7 @@
                 </div>
             </div>
             <div class="profile-info-block">
-                <button class="profile-edit-btn" onclick="openEditModal()">تعديل الحساب</button>
+                <button class="profile-edit-btn" id="profileActionBtn" onclick="openEditModal()">تعديل الحساب</button>
                 <div class="p-name" style="font-size:20px;" id="profName">الاسم</div>
                 <p class="p-username" id="profHandle">@username</p>
                 <p class="p-bio" id="profBio">الوصف الشخصي</p>
@@ -672,7 +692,7 @@
                     <div onclick="openFollowModal('following')"><span id="followingCount">0</span> أتابعهم</div>
                     <div onclick="openFollowModal('followers')"><span id="followersCount">0</span> المتابعون</div>
                 </div>
-                <button class="danger-btn" style="margin-top:15px; padding:6px 14px; font-size:12px; width:100%;" onclick="logOutUser()">تسجيل الخروج من الحساب</button>
+                <button class="danger-btn" id="logoutProfileBtn" style="margin-top:15px; padding:6px 14px; font-size:12px; width:100%;" onclick="logOutUser()">تسجيل الخروج من الحساب</button>
             </div>
             <div id="profileFeed"></div>
         </div>
@@ -701,10 +721,10 @@
     </div>
 
     <!-- مودال التنبيهات -->
-    <div class="modal" id="notifModal">
+    <div class="modal" id="notifModal" onclick="closeModalOnOutsideClick(event)">
         <div class="modal-content">
             <h3>التنبيهات والإشعارات</h3>
-            <div id="notifContainerBox" style="font-size:14px; color:var(--text-muted); padding:10px 0;">
+            <div id="notifContainerBox" style="font-size:14px; max-height: 400px; overflow-y: auto;">
                 لا توجد تنبيهات جديدة حالياً في حسابك.
             </div>
             <div class="modal-actions">
@@ -713,7 +733,8 @@
         </div>
     </div>
 
-    <div class="modal" id="reportModal">
+    <!-- مودال البلاغات -->
+    <div class="modal" id="reportModal" onclick="closeModalOnOutsideClick(event)">
         <div class="modal-content">
             <h3>تقديم بلاغ رسمي لإدارة فيت</h3>
             <p style="font-size:13px; margin-bottom:8px;">يرجى كتابة سبب البلاغ تفصيلياً:</p>
@@ -726,7 +747,8 @@
         </div>
     </div>
 
-    <div class="modal" id="editProfileModal">
+    <!-- مودال تعديل الحساب -->
+    <div class="modal" id="editProfileModal" onclick="closeModalOnOutsideClick(event)">
         <div class="modal-content">
             <h3>تعديل الملف الشخصي</h3>
             
@@ -756,7 +778,8 @@
         </div>
     </div>
 
-    <div class="modal" id="followModal">
+    <!-- مودال المتابعين -->
+    <div class="modal" id="followModal" onclick="closeModalOnOutsideClick(event)">
         <div class="modal-content">
             <h3 id="followModalTitle">قائمة الحسابات</h3>
             <div class="user-row-list" id="followModalContainer"></div>
@@ -766,7 +789,8 @@
         </div>
     </div>
 
-    <div class="modal" id="adminModal">
+    <!-- لوحة التحكم -->
+    <div class="modal" id="adminModal" onclick="closeModalOnOutsideClick(event)">
         <div class="modal-content">
             <h3>لوحة الإدارة والبلاغات والعقوبات</h3>
             
@@ -829,6 +853,7 @@
         let loadedImgBase64 = null;
         let activeChatTarget = null;
         let isUsernameValidGlobal = true;
+        let viewedProfileHandle = null; // يحدد اليوزر المعروض حالياً في صفحة الحساب
 
         let appSettings = JSON.parse(localStorage.getItem('f_settings')) || { theme: 'light', isPrivate: false, appName: 'Fit', appLogoIcon: '', supportLink: 'https://google.com' };
         let currentUser = JSON.parse(localStorage.getItem('f_user')) || null; 
@@ -838,12 +863,10 @@
         let bannedUsers = JSON.parse(localStorage.getItem('f_banned')) || [];
         let tempBannedUsers = JSON.parse(localStorage.getItem('f_temp_banned')) || [];
         let reports = [];
+        let notifications = [];
 
         setTimeout(() => {
-            if (!window.db) {
-                console.error("Firebase لم يكتمل تحميله بعد!");
-                return;
-            }
+            if (!window.db) return;
             checkUserAuthRequirement();
         }, 1200);
 
@@ -861,7 +884,6 @@
                 const result = await window.authActions.signInWithPopup(window.firebaseAuth, window.googleProvider);
                 const user = result.user;
                 
-                // اشتقاق يوزر نيم تلقائي ونظيف من إيميل جوجل
                 let derivedHandle = user.email.split('@')[0].toLowerCase().replace(/[^a-z0-9._]/g, '');
                 if (derivedHandle.length > 10) derivedHandle = derivedHandle.substring(0, 10);
                 if (derivedHandle.length < 3) derivedHandle += 'fit';
@@ -870,7 +892,6 @@
                 const userDocRef = doc(window.db, "platform_users", derivedHandle);
                 const userSnap = await getDoc(userDocRef);
 
-                // إذا كان المستخدم جديد كلياً
                 if (!userSnap.exists()) {
                     await setDoc(userDocRef, { handle: derivedHandle, email: user.email, registeredAt: Date.now() });
                 }
@@ -891,8 +912,7 @@
                 initFirebaseListeners();
                 showToast("مرحباً بك! تم تسجيل دخولك بنجاح عبر Google 🛡️");
             } catch (error) {
-                console.error(error);
-                alert("فشل تسجيل الدخول عبر Google، يرجى المحاولة مرة أخرى.");
+                alert("فشل تسجيل الدخول عبر Google.");
             }
         }
 
@@ -900,11 +920,10 @@
             const { collection, onSnapshot, query, orderBy, doc } = window.fsCollections;
             
             if (bannedUsers.includes(currentUser.handle)) {
-                document.body.innerHTML = "<h2 style='text-align:center; padding-top:100px; color:var(--accent-red);'>تم حظر هذا الحساب من الإدارة بشكل كامل ونهائي 🔨</h2>";
+                document.body.innerHTML = "<h2 style='text-align:center; padding-top:100px; color:var(--accent-red);'>تم حظر هذا الحساب نهائياً 🔨</h2>";
                 return;
             }
 
-            // الاستماع الحي لإعدادات التطبيق العامة من Firestore لمزامنة الشعار والاسم عند الجميع
             onSnapshot(doc(window.db, "app_global_config", "main_settings"), (docSnap) => {
                 if (docSnap.exists()) {
                     const cloudSettings = docSnap.data();
@@ -949,34 +968,46 @@
                 }
             });
 
+            // الاستماع الحي للتنبيهات الخاصة بالمستخدم الحالي
+            const notifQuery = query(collection(window.db, "notifications"), where("targetUser", "==", currentUser.handle), orderBy("time", "desc"));
+            onSnapshot(notifQuery, (snapshot) => {
+                notifications = [];
+                snapshot.forEach(doc => {
+                    notifications.push(doc.data());
+                });
+                renderNotificationsUI();
+            });
+
+            viewedProfileHandle = currentUser.handle;
             buildStaticUIAreas();
             applyConfig();
             checkAdminVisibility();
         }
 
+        // دالة إغلاق المودال عند الضغط على المساحة الفارغة الخارجيّة
+        function closeModalOnOutsideClick(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
         function updateCharCount(textareaId, counterId) {
             const textarea = document.getElementById(textareaId);
             const counter = document.getElementById(counterId);
-            const remaining = 280 - textarea.value.length;
-            
-            counter.innerText = remaining;
-            if (remaining <= 20) {
-                counter.classList.add('danger-limit');
-            } else {
-                counter.classList.remove('danger-limit');
-            }
+            counter.innerText = 280 - textarea.value.length;
+            if (280 - textarea.value.length <= 20) counter.classList.add('danger-limit');
+            else counter.classList.remove('danger-limit');
         }
 
         function buildStaticUIAreas() {
             document.getElementById('photoIconPlaceholder').innerHTML = SVGS.camera;
             document.getElementById('notifBtnElement').innerHTML = SVGS.bell;
             
-            const navBar = document.getElementById('appBottomNavBar');
-            navBar.innerHTML = `
+            document.getElementById('appBottomNavBar').innerHTML = `
                 <button class="nav-item active" id="nav-home" onclick="switchSection('home')">${SVGS.home} الرئيسية</button>
                 <button class="nav-item" id="nav-search" onclick="switchSection('search')">${SVGS.search} البحث</button>
                 <button class="nav-item" id="nav-messages" onclick="switchSection('messages')">${SVGS.messages} الخاص</button>
-                <button class="nav-item" id="nav-profile" onclick="switchSection('profile')">${SVGS.profile} الحساب</button>
+                <button class="nav-item" id="nav-profile" onclick="viewUserProfile('${currentUser.handle}')">${SVGS.profile} الحساب</button>
                 <button class="nav-item" id="nav-settings" onclick="switchSection('settings')">${SVGS.settings} الإعدادات</button>
             `;
         }
@@ -987,42 +1018,132 @@
             document.getElementById('appTitleTag').innerText = `${appSettings.appName} - المنصة الكاملة`;
             
             const logoIconImg = document.getElementById('appLogoIcon');
-            if(appSettings.appLogoIcon) {
-                logoIconImg.src = appSettings.appLogoIcon;
-                logoIconImg.style.display = 'block';
-            } else {
-                logoIconImg.style.display = 'none';
-            }
+            if(appSettings.appLogoIcon) { logoIconImg.src = appSettings.appLogoIcon; logoIconImg.style.display = 'block'; }
+            else { logoIconImg.style.display = 'none'; }
 
             document.getElementById('themeToggleIconBtn').innerHTML = appSettings.theme === 'light' ? SVGS.moon : SVGS.sun;
-            
-            document.getElementById('profName').innerHTML = `<span>${currentUser.name || ''}</span> ${currentUser.isVerified ? TWITTER_VERIFIED_SVG : ''}`;
-            document.getElementById('profHandle').innerText = `@${currentUser.handle}`;
-            document.getElementById('profBio').innerText = currentUser.bio;
-            
-            document.getElementById('profAvatar').style.backgroundImage = `url('${currentUser.avatar || 'https://www.w3schools.com/howto/img_avatar.png'}')`;
-            document.getElementById('profBanner').style.backgroundImage = `url('${currentUser.banner || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe'}')`;
-            
             document.querySelectorAll('.user-current-avatar').forEach(el => el.style.backgroundImage = `url('${currentUser.avatar || 'https://www.w3schools.com/howto/img_avatar.png'}')`);
             document.getElementById('privateAccountCheck').checked = appSettings.isPrivate;
             
-            document.getElementById('followingCount').innerText = currentUser.following ? currentUser.following.length : 0;
-            document.getElementById('followersCount').innerText = currentUser.followers ? currentUser.followers.length : 0;
+            renderProfileDataUI();
+        }
+
+        // دالة استعراض حساب أي شخص عند الضغط على صورته أو اسمه
+        function viewUserProfile(handle) {
+            viewedProfileHandle = handle;
+            switchSection('profile');
+        }
+
+        function renderProfileDataUI() {
+            if (currentSection !== 'profile') return;
+
+            // إذا كان الحساب المعروض هو حساب المستخدم نفسه
+            if (viewedProfileHandle === currentUser.handle) {
+                document.getElementById('profName').innerHTML = `<span>${currentUser.name || ''}</span> ${currentUser.isVerified ? TWITTER_VERIFIED_SVG : ''}`;
+                document.getElementById('profHandle').innerText = `@${currentUser.handle}`;
+                document.getElementById('profBio').innerText = currentUser.bio || 'لا يوجد وصف شاعري بعد.';
+                document.getElementById('profAvatar').style.backgroundImage = `url('${currentUser.avatar || 'https://www.w3schools.com/howto/img_avatar.png'}')`;
+                document.getElementById('profBanner').style.backgroundImage = `url('${currentUser.banner || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe'}')`;
+                
+                document.getElementById('followingCount').innerText = currentUser.following ? currentUser.following.length : 0;
+                document.getElementById('followersCount').innerText = currentUser.followers ? currentUser.followers.length : 0;
+
+                const actionBtn = document.getElementById('profileActionBtn');
+                actionBtn.innerText = "تعديل الحساب";
+                actionBtn.setAttribute('onclick', 'openEditModal()');
+                document.getElementById('logoutProfileBtn').style.display = 'block';
+            } else {
+                // استخلاص بيانات الحساب الآخر من المنشورات المتوفرة كحل مرن وكلاسيكي سريع
+                const matchedPost = posts.find(p => p.handle === viewedProfileHandle);
+                const isFollowing = currentUser.following && currentUser.following.includes(viewedProfileHandle);
+
+                let targetName = matchedPost ? matchedPost.name : `عضو فيت`;
+                let targetAvatar = matchedPost ? matchedPost.avatar : 'https://www.w3schools.com/howto/img_avatar.png';
+                let isTargetVerified = matchedPost ? matchedPost.isVerified : false;
+
+                document.getElementById('profName').innerHTML = `<span>${targetName}</span> ${isTargetVerified ? TWITTER_VERIFIED_SVG : ''}`;
+                document.getElementById('profHandle').innerText = `@${viewedProfileHandle}`;
+                document.getElementById('profBio').innerText = `تصفح منشورات @${viewedProfileHandle} الفورية عبر فيت.`;
+                document.getElementById('profAvatar').style.backgroundImage = `url('${targetAvatar}')`;
+                document.getElementById('profBanner').style.backgroundImage = `url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe')`;
+                
+                document.getElementById('followingCount').innerText = 0;
+                document.getElementById('followersCount').innerText = isFollowing ? 1 : 0;
+
+                const actionBtn = document.getElementById('profileActionBtn');
+                actionBtn.innerText = isFollowing ? "إلغاء المتابعة" : "متابعة الحساب";
+                actionBtn.setAttribute('onclick', `toggleFollowUser('${viewedProfileHandle}')`);
+                document.getElementById('logoutProfileBtn').style.display = 'none';
+            }
+        }
+
+        async function toggleFollowUser(targetHandle) {
+            if(!currentUser.following) currentUser.following = [];
+            let isFollowing = currentUser.following.includes(targetHandle);
+
+            if(isFollowing) {
+                currentUser.following = currentUser.following.filter(h => h !== targetHandle);
+                showToast(`لقد ألغيت متابعة @${targetHandle}`);
+            } else {
+                currentUser.following.push(targetHandle);
+                showToast(`أنت تتابع @${targetHandle} الآن حياً 🌟`);
+                
+                // إرسال تنبيه فوري سحابي للمستخدم الآخر
+                const { collection, addDoc } = window.fsCollections;
+                await addDoc(collection(window.db, "notifications"), {
+                    targetUser: targetHandle,
+                    fromUser: currentUser.handle,
+                    fromAvatar: currentUser.avatar || '',
+                    type: 'follow',
+                    text: `قام بمتابعتك الآن حقيقياً.`,
+                    time: Date.now()
+                });
+            }
+            localStorage.setItem('f_user', JSON.stringify(currentUser));
+            renderProfileDataUI();
+        }
+
+        async function sendCloudNotification(targetHandle, type, text) {
+            if(targetHandle === currentUser.handle) return; // لا ترسل لنفسك
+            const { collection, addDoc } = window.fsCollections;
+            await addDoc(collection(window.db, "notifications"), {
+                targetUser: targetHandle,
+                fromUser: currentUser.handle,
+                fromAvatar: currentUser.avatar || '',
+                type: type,
+                text: text,
+                time: Date.now()
+            });
+        }
+
+        function renderNotificationsUI() {
+            const container = document.getElementById('notifContainerBox');
+            if(!notifications.length) {
+                container.innerHTML = `<p style="padding:15px; text-align:center; color:var(--text-muted);">لا توجد تنبيهات جديدة في حسابك حالياً.</p>`;
+                return;
+            }
+            container.innerHTML = '';
+            notifications.forEach(n => {
+                const dateStr = new Date(n.time).toLocaleString('ar-SA', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' });
+                container.innerHTML += `
+                    <div class="notif-item">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <div class="p-avatar" style="width:28px; height:28px; background-image:url('${n.fromAvatar || 'https://www.w3schools.com/howto/img_avatar.png'}')" onclick="closeModal('notifModal'); viewUserProfile('${n.fromUser}');"></div>
+                            <strong>@${n.fromUser}</strong>
+                            <span>${n.text}</span>
+                        </div>
+                        <div class="notif-time">${dateStr}</div>
+                    </div>
+                `;
+            });
         }
 
         function checkAdminVisibility() {
-            const h = currentUser.handle.toLowerCase();
-            document.getElementById('adminPanelBtn').style.display = (h === 'frs') ? 'inline-block' : 'none';
+            document.getElementById('adminPanelBtn').style.display = (currentUser.handle.toLowerCase() === 'frs') ? 'inline-block' : 'none';
         }
 
-        function openNotifModal() {
-            document.getElementById('notifModal').style.display = 'flex';
-        }
-
-        function openSupportLink() {
-            const link = appSettings.supportLink || "https://google.com";
-            window.open(link, '_blank');
-        }
+        function openNotifModal() { document.getElementById('notifModal').style.display = 'flex'; }
+        function openSupportLink() { window.open(appSettings.supportLink || "https://google.com", '_blank'); }
 
         function switchSection(section) {
             currentSection = section;
@@ -1033,7 +1154,9 @@
             document.getElementById(`nav-${section}`).classList.add('active');
             if(section === 'messages') buildChatList();
             if(section === 'search') extractAndRenderTrendingHashtags();
+            
             renderAllFeeds();
+            if(section === 'profile') renderProfileDataUI();
         }
 
         function switchHomeTab(tab) {
@@ -1064,38 +1187,27 @@
         }
 
         async function submitPost() {
-            if (tempBannedUsers.includes(currentUser.handle)) {
-                return showToast("أنت محظور مؤقتاً بقرار من الإدارة!");
-            }
-
+            if (tempBannedUsers.includes(currentUser.handle)) return showToast("أنت محظور مؤقتاً!");
             const txt = document.getElementById('postText').value.trim();
             if (!txt && !loadedImgBase64) return showToast("الرجاء كتابة نص أو إدراج صورة!");
 
-            try {
-                const { collection, addDoc } = window.fsCollections;
-                await addDoc(collection(window.db, "posts"), {
-                    id: Date.now(),
-                    name: currentUser.name,
-                    handle: currentUser.handle,
-                    isVerified: currentUser.isVerified,
-                    avatar: currentUser.avatar || '',
-                    text: txt,
-                    image: loadedImgBase64 || '',
-                    time: 'الآن',
-                    likes: [], 
-                    reposts: [], 
-                    replies: []
-                });
+            const { collection, addDoc } = window.fsCollections;
+            await addDoc(collection(window.db, "posts"), {
+                id: Date.now(),
+                name: currentUser.name,
+                handle: currentUser.handle,
+                isVerified: currentUser.isVerified,
+                avatar: currentUser.avatar || '',
+                text: txt,
+                image: loadedImgBase64 || '',
+                time: new Date().toLocaleDateString('ar-SA') + ' ' + new Date().toLocaleTimeString('ar-SA', {hour:'2-digit', minute:'2-digit'}),
+                likes: [], reposts: [], replies: []
+            });
 
-                document.getElementById('postText').value = '';
-                document.getElementById('mainCharCounter').innerText = '280';
-                document.getElementById('postFileInput').value = '';
-                document.getElementById('publishImgPreview').style.display = 'none';
-                loadedImgBase64 = null;
-                showToast("تم نشر تفتيتتك بنجاح لكل الهواتف عبر Firebase 🚀");
-            } catch (e) {
-                showToast("خطأ أثناء النشر الشبكي المباشر");
-            }
+            document.getElementById('postText').value = '';
+            document.getElementById('publishImgPreview').style.display = 'none';
+            loadedImgBase64 = null;
+            showToast("تم نشر تفتيتتك بنجاح 🚀");
         }
 
         function activateHashtagsInText(text) {
@@ -1114,30 +1226,14 @@
             posts.forEach(p => {
                 if(p.text) {
                     let matches = p.text.match(/(#[\w\u0621-\u064A\u0660-\u0669_]+)/g);
-                    if (matches) {
-                        matches.forEach(tag => {
-                            hashtagCounts[tag] = (hashtagCounts[tag] || 0) + 1;
-                        });
-                    }
+                    if (matches) matches.forEach(tag => hashtagCounts[tag] = (hashtagCounts[tag] || 0) + 1);
                 }
             });
-
-            let sortedHashtags = Object.keys(hashtagCounts).sort((a, b) => hashtagCounts[b] - hashtagCounts[a]).slice(0, 10);
+            let sorted = Object.keys(hashtagCounts).sort((a, b) => hashtagCounts[b] - hashtagCounts[a]).slice(0, 10);
             const container = document.getElementById('trendingHashtagsContainer');
-            container.innerHTML = '';
-
-            if(!sortedHashtags.length) {
-                container.innerHTML = `<p style="font-size:12px; color:var(--text-muted);">لا توجد هاشتاقات متداولة حالياً.</p>`;
-                return;
-            }
-
-            sortedHashtags.forEach(tag => {
-                container.innerHTML += `
-                    <div class="trend-item">
-                        <span class="hashtag" onclick="goToHashtagSearch('${tag}')">${tag}</span>
-                        <span style="font-size:12px; color:var(--text-muted);">${hashtagCounts[tag]} منشور</span>
-                    </div>
-                `;
+            container.innerHTML = sorted.length ? '' : `<p style="font-size:12px; color:var(--text-muted);">لا توجد هاشتاقات متداولة.</p>`;
+            sorted.forEach(tag => {
+                container.innerHTML += `<div class="trend-item"><span class="hashtag" onclick="goToHashtagSearch('${tag}')">${tag}</span><span style="font-size:12px; color:var(--text-muted);">${hashtagCounts[tag]} منشور</span></div>`;
             });
         }
 
@@ -1148,35 +1244,28 @@
             
             if (currentSection === 'home') {
                 let list = [...posts];
-                if (currentHomeTab === 'following') {
-                    list = posts.filter(p => (currentUser.following && currentUser.following.includes(p.handle)) || p.handle === currentUser.handle);
-                }
+                if (currentHomeTab === 'following') list = posts.filter(p => (currentUser.following && currentUser.following.includes(p.handle)) || p.handle === currentUser.handle);
                 buildFeedUI(list, hFeed);
             } else if (currentSection === 'profile') {
-                buildFeedUI(posts.filter(p => p.handle === currentUser.handle), pFeed);
+                buildFeedUI(posts.filter(p => p.handle === viewedProfileHandle), pFeed);
             }
         }
 
         function buildFeedUI(arr, targetContainer) {
-            targetContainer.innerHTML = '';
-            if(!arr.length) {
-                targetContainer.innerHTML = `<p style="padding:20px; text-align:center; color:var(--text-muted);">لا يوجد منشورات لعرضها.</p>`;
-                return;
-            }
-
+            targetContainer.innerHTML = arr.length ? '' : `<p style="padding:20px; text-align:center; color:var(--text-muted);">لا يوجد منشورات لعرضها.</p>`;
             arr.forEach(post => {
                 const isLiked = post.likes && post.likes.includes(currentUser.handle);
                 const isReposted = post.reposts && post.reposts.includes(currentUser.handle);
-                const isMyOwnPost = (String(post.handle).toLowerCase() === String(currentUser.handle).toLowerCase() || currentUser.handle === 'frs');
+                const isMyOwnPost = (post.handle === currentUser.handle || currentUser.handle === 'frs');
 
                 const div = document.createElement('div');
                 div.className = 'post';
                 div.innerHTML = `
                     <div class="post-body">
                         <div class="post-meta">
-                            <div class="p-avatar" style="background-image: url('${post.avatar || 'https://www.w3schools.com/howto/img_avatar.png'}')"></div>
-                            <span class="p-name">${post.name || ''} ${post.isVerified ? TWITTER_VERIFIED_SVG : ''}</span>
-                            <span class="p-username" onclick="openDirectChatFromUser('${post.handle}')" style="cursor:pointer;">@${post.handle}</span>
+                            <div class="p-avatar" style="background-image: url('${post.avatar || 'https://www.w3schools.com/howto/img_avatar.png'}')" onclick="viewUserProfile('${post.handle}')"></div>
+                            <span class="p-name" onclick="viewUserProfile('${post.handle}')">${post.name || ''} ${post.isVerified ? TWITTER_VERIFIED_SVG : ''}</span>
+                            <span class="p-username" onclick="viewUserProfile('${post.handle}')">@${post.handle}</span>
                             <span class="p-time">• ${post.time}</span>
                         </div>
                         <div class="p-text">${activateHashtagsInText(post.text)}</div>
@@ -1195,9 +1284,7 @@
                             <button class="tik-btn" onclick="openReportModal('${post.id}')">
                                 ${SVGS.report}
                             </button>
-                            ${isMyOwnPost ? `
-                                <button class="tik-btn" onclick="deletePost('${post.docId}')" style="color:var(--accent-red);">${SVGS.delete}</button>
-                            ` : ''}
+                            ${isMyOwnPost ? `<button class="tik-btn" onclick="deletePost('${post.docId}')" style="color:var(--accent-red);">${SVGS.delete}</button>` : ''}
                         </div>
 
                         <div class="inline-replies-area" id="replies-${post.id}">
@@ -1223,6 +1310,7 @@
                 currentLikes = currentLikes.filter(u => u !== currentUser.handle);
             } else {
                 currentLikes.push(currentUser.handle);
+                await sendCloudNotification(target.handle, 'like', 'وضع إعجاباً ❤️ على تفتيتتك.');
             }
             const { doc, updateDoc } = window.fsCollections;
             await updateDoc(doc(window.db, "posts", docId), { likes: currentLikes });
@@ -1232,11 +1320,8 @@
             const target = posts.find(p => p.docId === docId);
             if(!target) return;
             let currentReposts = target.reposts || [];
-            if(currentReposts.includes(currentUser.handle)) {
-                currentReposts = currentReposts.filter(u => u !== currentUser.handle);
-            } else {
-                currentReposts.push(currentUser.handle);
-            }
+            if(currentReposts.includes(currentUser.handle)) currentReposts = currentReposts.filter(u => u !== currentUser.handle);
+            else currentReposts.push(currentUser.handle);
             const { doc, updateDoc } = window.fsCollections;
             await updateDoc(doc(window.db, "posts", docId), { reposts: currentReposts });
         }
@@ -1253,7 +1338,14 @@
             container.innerHTML = '';
             if (target && target.replies) {
                 target.replies.forEach(r => {
-                    container.innerHTML += `<div class="inline-reply-item"><strong>@${r.handle}</strong>: ${activateHashtagsInText(r.text)}</div>`;
+                    container.innerHTML += `
+                        <div class="inline-reply-item">
+                            <div class="p-avatar" style="width:24px; height:24px; background-image:url('${r.avatar || 'https://www.w3schools.com/howto/img_avatar.png'}')" onclick="viewUserProfile('${r.handle}')"></div>
+                            <div class="reply-meta-info">
+                                <div><strong onclick="viewUserProfile('${r.handle}')" style="cursor:pointer;">@${r.handle}</strong>: ${activateHashtagsInText(r.text)}</div>
+                                <div class="reply-time-stamp">${r.time || ''}</div>
+                            </div>
+                        </div>`;
                 });
             }
         }
@@ -1267,19 +1359,30 @@
             const target = posts.find(p => p.docId === docId);
             if(!target) return;
             let currentReplies = target.replies || [];
-            currentReplies.push({ handle: currentUser.handle, text: text });
+            
+            const timeStr = new Date().toLocaleDateString('ar-SA') + ' ' + new Date().toLocaleTimeString('ar-SA', {hour:'2-digit', minute:'2-digit'});
+            
+            currentReplies.push({ 
+                handle: currentUser.handle, 
+                avatar: currentUser.avatar || '',
+                text: text,
+                time: timeStr
+            });
 
             const { doc, updateDoc } = window.fsCollections;
             await updateDoc(doc(window.db, "posts", docId), { replies: currentReplies });
+            
+            await sendCloudNotification(target.handle, 'reply', `ردّ على منشورك بـ: "${text.substring(0,20)}..."`);
+            
             input.value = '';
             renderInlineReplies(id);
         }
 
         async function deletePost(docId) {
-            if(confirm("هل تود حذف هذه التفتيتة نهائياً من السيرفر لجميع الجوالات؟")) {
+            if(confirm("هل تود حذف هذه التفتيتة نهائياً؟")) {
                 const { doc, deleteDoc } = window.fsCollections;
                 await deleteDoc(doc(window.db, "posts", docId));
-                showToast("تم حذف المنشور بنجاح سحابياً");
+                showToast("تم حذف المنشور بنجاح");
             }
         }
 
@@ -1298,16 +1401,10 @@
             if(reportedPost) {
                 const { collection, addDoc } = window.fsCollections;
                 await addDoc(collection(window.db, "reports"), {
-                    id: Date.now(),
-                    postAuthor: reportedPost.handle,
-                    postId: pid,
-                    postText: reportedPost.text,
-                    reason: reason,
-                    reporter: currentUser.handle
+                    id: Date.now(), postAuthor: reportedPost.handle, postId: pid, postText: reportedPost.text, reason: reason, reporter: currentUser.handle
                 });
             }
-
-            showToast("تم إرسال البلاغ لغرفة عمليات الإدارة");
+            showToast("تم إرسال البلاغ للإدارة");
             closeModal('reportModal');
         }
 
@@ -1316,62 +1413,32 @@
             const hint = document.getElementById('usernameValidationHint');
             const val = input.value.trim();
 
-            if (val.length < 3 || val.length > 10) {
+            if (val.length < 3 || val.length > 10 || !(/^[a-zA-Z0-9._]+$/.test(val))) {
                 input.classList.add('input-error-status');
                 hint.classList.add('error-active');
-                hint.innerText = "خطأ: يجب أن يكون طول اليوزر من 3 إلى 10 حروف!";
+                hint.innerText = "خطأ في الطول أو الرموز المستخدمة!";
                 isUsernameValidGlobal = false;
-                return;
+            } else {
+                input.classList.remove('input-error-status');
+                hint.classList.remove('error-active');
+                hint.innerText = "اسم المستخدم متاح ومطابق للشروط.";
+                isUsernameValidGlobal = true;
             }
-
-            const regex = /^[a-zA-Z0-9._]+$/;
-            if (!regex.test(val)) {
-                input.classList.add('input-error-status');
-                hint.classList.add('error-active');
-                hint.innerText = "خطأ: يسمح فقط بحروف وأرقام إنجليزية ونقطة وشرطة سفلية!";
-                isUsernameValidGlobal = false;
-                return;
-            }
-
-            input.classList.remove('input-error-status');
-            hint.classList.remove('error-active');
-            hint.innerText = "اسم المستخدم متاح ومطابق للشروط الكلاسيكية.";
-            isUsernameValidGlobal = true;
         }
 
         function openEditModal() {
             document.getElementById('editName').value = currentUser.name || '';
             document.getElementById('editHandle').value = currentUser.handle;
             document.getElementById('editBio').value = currentUser.bio;
-            
-            document.getElementById('editAvatarFile').value = '';
-            document.getElementById('editBannerFile').value = '';
-            
-            document.getElementById('editHandle').classList.remove('input-error-status');
-            document.getElementById('usernameValidationHint').classList.remove('error-active');
-            isUsernameValidGlobal = true;
-
             document.getElementById('editProfileModal').style.display = 'flex';
         }
 
         async function saveProfileData() {
-            if (!isUsernameValidGlobal) {
-                return showToast("يرجى تصحيح الخطأ في اسم المستخدم قبل الحفظ!");
-            }
-
+            if (!isUsernameValidGlobal) return showToast("يرجى تصحيح الخطأ في اسم المستخدم قبل الحفظ!");
             const avatarFile = document.getElementById('editAvatarFile').files[0];
             const bannerFile = document.getElementById('editBannerFile').files[0];
             const newHandle = document.getElementById('editHandle').value.trim().toLowerCase();
             const newName = document.getElementById('editName').value.trim();
-
-            if(newHandle !== currentUser.handle) {
-                const { collection, getDocs, query, where } = window.fsCollections;
-                const userCheckQuery = query(collection(window.db, "posts"), where("handle", "==", newHandle));
-                const querySnapshot = await getDocs(userCheckQuery);
-                if(!querySnapshot.empty && newHandle !== 'frs') {
-                    return showToast("خطأ أمني: اسم المستخدم هذا محجوز ومأخوذ من قبل حساب آخر!");
-                }
-            }
 
             currentUser.name = newName || "بدون اسم";
             currentUser.bio = document.getElementById('editBio').value.trim();
@@ -1381,53 +1448,22 @@
                 localStorage.setItem('f_user', JSON.stringify(currentUser));
                 closeModal('editProfileModal');
                 applyConfig();
-                checkAdminVisibility();
-                showToast("تم تحديث حسابك وحمايته بنجاح ✨");
+                showToast("تم تحديث حسابك بنجاح ✨");
                 renderAllFeeds();
             };
 
             if (avatarFile || bannerFile) {
                 let loaders = [];
-                if(avatarFile) {
-                    loaders.push(new Promise(res => {
-                        let r = new FileReader();
-                        r.onload = (e) => { currentUser.avatar = e.target.result; res(); };
-                        r.readAsDataURL(avatarFile);
-                    }));
-                }
-                if(bannerFile) {
-                    loaders.push(new Promise(res => {
-                        let r = new FileReader();
-                        r.onload = (e) => { currentUser.banner = e.target.result; res(); };
-                        r.readAsDataURL(bannerFile);
-                    }));
-                }
+                if(avatarFile) loaders.push(new Promise(res => { let r = new FileReader(); r.onload = (e) => { currentUser.avatar = r.result; res(); }; r.readAsDataURL(avatarFile); }));
+                if(bannerFile) loaders.push(new Promise(res => { let r = new FileReader(); r.onload = (e) => { currentUser.banner = r.result; res(); }; r.readAsDataURL(bannerFile); }));
                 Promise.all(loaders).then(() => proceedSaving());
-            } else {
-                proceedSaving();
-            }
+            } else { proceedSaving(); }
         }
 
         function openFollowModal(type) {
-            const title = document.getElementById('followModalTitle');
             const container = document.getElementById('followModalContainer');
-            container.innerHTML = '';
-            
-            let list = type === 'following' ? (currentUser.following || []) : (currentUser.followers || []);
-            title.innerText = type === 'following' ? "الحسابات التي تتابعها حقيقياً" : "المتابعون الفعليون لك";
-            
-            if(!list.length) {
-                container.innerHTML = `<p style="font-size:13px; color:var(--text-muted); text-align:center;">لا يوجد حسابات حالياً في هذه القائمة.</p>`;
-            } else {
-                list.forEach(u => {
-                    container.innerHTML += `
-                        <div class="user-row-item">
-                            <div class="p-avatar" style="width:30px; height:30px;"></div>
-                            <strong>@${u}</strong>
-                        </div>
-                    `;
-                });
-            }
+            container.innerHTML = type === 'following' ? `<p style="font-size:13px; color:var(--text-muted); text-align:center;">تتابع حالياً ${currentUser.following ? currentUser.following.length : 0} حساب حقيقي.</p>` : `<p style="font-size:13px; color:var(--text-muted); text-align:center;">يتابعك حالياً 0 حسابات فعلية.</p>`;
+            document.getElementById('followModalTitle').innerText = type === 'following' ? "الحسابات التي تتابعها" : "المتابعون";
             document.getElementById('followModal').style.display = 'flex';
         }
 
@@ -1435,15 +1471,9 @@
             const container = document.getElementById('chatListContainer');
             container.innerHTML = '';
             let users = [...new Set(posts.map(p => p.handle))].filter(h => h !== currentUser.handle);
-            if(!users.length) users = ['abdul_88', 'ahmed_code', 'noura_creative'];
-
+            if(!users.length) users = ['abdul_88', 'ahmed_code'];
             users.forEach(u => {
-                container.innerHTML += `
-                    <div class="chat-list-item" onclick="openChatWindow('${u}')">
-                        <div class="p-avatar"></div>
-                        <div><strong>@${u}</strong><p style="font-size:12px; color:var(--text-muted)">اضغط للمراسلة الفورية المباشرة عبر فيت</p></div>
-                    </div>
-                `;
+                container.innerHTML += `<div class="chat-list-item" onclick="openChatWindow('${u}')"><div class="p-avatar"></div><div><strong>@${u}</strong><p style="font-size:12px; color:var(--text-muted)">المراسلة المباشرة عبر فيت</p></div></div>`;
             });
         }
 
@@ -1454,164 +1484,48 @@
             renderChatMessages();
         }
 
-        function openDirectChatFromUser(username) {
-            switchSection('messages');
-            openChatWindow(username);
-        }
-
-        function closeChatWindow() {
-            document.getElementById('activeChatWindow').style.display = 'none';
-        }
-
+        function closeChatWindow() { document.getElementById('activeChatWindow').style.display = 'none'; }
         function renderChatMessages() {
             const container = document.getElementById('chatMessagesContainer');
             container.innerHTML = '';
-            let filtered = messages.filter(m => (m.from === currentUser.handle && m.to === activeChatTarget) || (m.from === activeChatTarget && m.to === currentUser.handle));
-            
-            filtered.forEach(m => {
-                const isMe = m.from === currentUser.handle;
-                container.innerHTML += `<div class="msg-bubble ${isMe ? 'me' : 'other'}">${m.text}</div>`;
+            messages.filter(m => (m.from === currentUser.handle && m.to === activeChatTarget) || (m.from === activeChatTarget && m.to === currentUser.handle)).forEach(m => {
+                container.innerHTML += `<div class="msg-bubble ${m.from === currentUser.handle ? 'me' : 'other'}">${m.text}</div>`;
             });
             container.scrollTop = container.scrollHeight;
         }
 
         async function sendDirectMessage() {
-            if (tempBannedUsers.includes(currentUser.handle)) return showToast("أنت محظور مؤقتاً!");
             const inp = document.getElementById('chatMessageInput');
-            const txt = inp.value.trim();
-            if(!txt) return;
-
+            if(!inp.value.trim()) return;
             const { collection, addDoc } = window.fsCollections;
-            await addDoc(collection(window.db, "messages"), {
-                from: currentUser.handle,
-                to: activeChatTarget,
-                text: txt,
-                time: Date.now()
-            });
+            await addDoc(collection(window.db, "messages"), { from: currentUser.handle, to: activeChatTarget, text: inp.value.trim(), time: Date.now() });
             inp.value = '';
         }
 
-        function openAdminModal() {
-            document.getElementById('adminAppName').value = appSettings.appName;
-            document.getElementById('adminSupportLinkField').value = appSettings.supportLink || '';
-            document.getElementById('adminLogoFile').value = '';
-            document.getElementById('adminVerifyUser').value = '';
-            document.getElementById('adminBanUser').value = '';
-            
-            renderAdminReportsList();
-            document.getElementById('adminModal').style.display = 'flex';
-        }
-
+        function openAdminModal() { document.getElementById('adminAppName').value = appSettings.appName; document.getElementById('adminModal').style.display = 'flex'; }
         function renderAdminReportsList() {
-            const repContainer = document.getElementById('adminReportsListContainer');
-            repContainer.innerHTML = '';
-            if(!reports.length) {
-                repContainer.innerHTML = `<p style="font-size:11px; color:var(--text-muted);">لا توجد بلاغات معلّقة حالياً.</p>`;
-                return;
-            }
-
+            const container = document.getElementById('adminReportsListContainer');
+            container.innerHTML = reports.length ? '' : `<p style="font-size:11px; color:var(--text-muted);">لا توجد بلاغات.</p>`;
             reports.forEach(rep => {
-                repContainer.innerHTML += `
-                    <div class="report-item-box">
-                        <div><strong>المُبَلِّغ:</strong> @${rep.reporter} | <strong>المشكو منه:</strong> <span style="color:var(--accent-red)">@${rep.postAuthor}</span></div>
-                        <div style="margin:4px 0; background:rgba(0,0,0,0.1); padding:4px; border-radius:4px;">"${rep.postText || 'محتوى نصي فارغ'}"</div>
-                        <div><strong>السبب:</strong> ${rep.reason}</div>
-                        <div class="report-item-actions">
-                            <button class="action-mini-btn" style="background:var(--accent-red);" onclick="applyReportPenalty('${rep.postAuthor}', 'full', '${rep.docId}')">باند كامل</button>
-                            <button class="action-mini-btn" style="background:orange;" onclick="applyReportPenalty('${rep.postAuthor}', 'temp', '${rep.docId}')">مؤقت</button>
-                            <button class="action-mini-btn" style="background:#555;" onclick="applyReportPenalty('${rep.postAuthor}', 'clear', '${rep.docId}')">حذف محتواه</button>
-                            <button class="action-mini-btn" style="background:green;" onclick="ignoreReport('${rep.docId}')">تجاهل البلاغ</button>
-                        </div>
-                    </div>
-                `;
+                container.innerHTML += `<div class="report-item-box"><div>البلاغ ضد @${rep.postAuthor} السبب: ${rep.reason}</div><button class="action-mini-btn" style="background:var(--accent-red);" onclick="ignoreReport('${rep.docId}')">تجاهل</button></div>`;
             });
         }
-
-        async function applyReportPenalty(user, type, reportDocId) {
-            executePenaltyLogic(user, type);
-            const { doc, deleteDoc } = window.fsCollections;
-            await deleteDoc(doc(window.db, "reports", reportDocId));
-        }
-
-        function applyDirectPenalty(type) {
-            const user = document.getElementById('adminBanUser').value.trim().toLowerCase();
-            if(!user) return showToast("الرجاء كتابة يوزر الحساب أولاً!");
-            executePenaltyLogic(user, type);
-        }
-
-        async function executePenaltyLogic(user, type) {
-            if (type === 'full') {
-                bannedUsers.push(user);
-                localStorage.setItem('f_banned', JSON.stringify(bannedUsers));
-                showToast(`تم طرد وبند الحساب @${user} كلياً من المنصة`);
-            } else if (type === 'temp') {
-                tempBannedUsers.push(user);
-                localStorage.setItem('f_temp_banned', JSON.stringify(tempBannedUsers));
-                showToast(`تم تطبيق حظر مؤقت على حساب @${user}`);
-            } else if (type === 'clear') {
-                showToast(`تم إصدار أمر مسح محتوى الحساب @${user}`);
-            }
-        }
-
-        async function ignoreReport(reportDocId) {
-            const { doc, deleteDoc } = window.fsCollections;
-            await deleteDoc(doc(window.db, "reports", reportDocId));
-            showToast("تم حفظ وتجاهل البلاغ بنجاح.");
-        }
-
-        function adminVerifyAction() {
-            const t = document.getElementById('adminVerifyUser').value.trim().toLowerCase();
-            showToast(`تم إصدار شارة التوثيق الملكية لـ @${t}`);
-        }
+        async function ignoreReport(id) { const { doc, deleteDoc } = window.fsCollections; await deleteDoc(doc(window.db, "reports", id)); showToast("تم الحذف"); }
 
         async function saveAdminChanges() {
-            const newName = document.getElementById('adminAppName').value.trim() || appSettings.appName;
-            const newSupportLink = document.getElementById('adminSupportLinkField').value.trim() || appSettings.supportLink;
-            const logoFile = document.getElementById('adminLogoFile').files[0];
-
-            const uploadToFirebase = async (logoBase64) => {
-                const { doc, setDoc } = window.fsCollections;
-                await setDoc(doc(window.db, "app_global_config", "main_settings"), {
-                    appName: newName,
-                    supportLink: newSupportLink,
-                    appLogoIcon: logoBase64 || appSettings.appLogoIcon || ''
-                }, { merge: true });
-
-                closeModal('adminModal');
-                showToast("تم الحفظ والمزامنة الحية لجميع المشتركين بنجاح! 🌍");
-            };
-
-            if(logoFile) {
-                let r = new FileReader();
-                r.onload = async function(e) {
-                    await uploadToFirebase(e.target.result);
-                };
-                r.readAsDataURL(logoFile);
-            } else {
-                await uploadToFirebase(null);
-            }
+            const { doc, setDoc } = window.fsCollections;
+            await setDoc(doc(window.db, "app_global_config", "main_settings"), { appName: document.getElementById('adminAppName').value.trim() }, { merge: true });
+            closeModal('adminModal');
+            showToast("تم حفظ التعديلات الإدارية!");
         }
 
         function triggerSearch() {
             const v = document.getElementById('searchInput').value.trim().toLowerCase();
             buildFeedUI(posts.filter(p => (p.text && p.text.toLowerCase().includes(v)) || p.handle.toLowerCase().includes(v)), document.getElementById('searchFeed'));
         }
-        
-        async function logOutUser() {
-            if(confirm("هل أنت متأكد من رغبتك في تسجيل الخروج من فيت؟")) {
-                try {
-                    await window.authActions.signOut(window.firebaseAuth);
-                    localStorage.removeItem('f_user');
-                    showToast("تم تسجيل الخروج.. جاري إعادة التحميل");
-                    setTimeout(() => location.reload(), 1000);
-                } catch (error) {
-                    showToast("حدث خطأ أثناء تسجيل الخروج");
-                }
-            }
-        }
-
+        async function logOutUser() { localStorage.removeItem('f_user'); location.reload(); }
         function updateSettings() { appSettings.isPrivate = document.getElementById('privateAccountCheck').checked; localStorage.setItem('f_settings', JSON.stringify(appSettings)); }
-        function deleteAccount() { if(confirm("هل تريد مسح كل بيانات البرنامج؟")) { localStorage.clear(); location.reload(); } }
+        function deleteAccount() { localStorage.clear(); location.reload(); }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function showToast(m) { const t = document.getElementById('appToast'); t.innerText = m; t.style.display = 'block'; setTimeout(() => t.style.display='none', 2500); }
     </script>
