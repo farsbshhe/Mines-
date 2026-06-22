@@ -511,17 +511,41 @@
         .user-row-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
         .user-row-item { display: flex; align-items: center; gap: 10px; padding: 5px 0; border-bottom: 1px solid var(--border-color); }
 
-        /* شاشة قفل التطبيق بدون حساب */
+        /* شاشة قفل التطبيق عبر جوجل */
         .auth-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:var(--bg-main); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
-        .auth-card { width:100%; max-width:400px; background:var(--bg-container); border:1px solid var(--border-color); padding:30px; border-radius:16px; box-shadow:0 8px 24px rgba(0,0,0,0.05); }
+        .auth-card { width:100%; max-width:400px; background:var(--bg-container); border:1px solid var(--border-color); padding:30px; border-radius:16px; box-shadow:0 8px 24px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; }
         .auth-card h2 { font-size:24px; font-weight:900; margin-bottom:8px; text-align:center; }
-        .auth-card p { font-size:14px; color:var(--text-muted); text-align:center; margin-bottom:20px; }
-        .auth-card input, .auth-card textarea { width:100%; padding:12px; margin-bottom:14px; border-radius:8px; border:1px solid var(--border-color); background:var(--card-bg); color:var(--text-main); outline:none; }
+        .auth-card p { font-size:14px; color:var(--text-muted); text-align:center; margin-bottom:24px; }
+        
+        .google-login-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            background: var(--bg-main);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .google-login-btn:hover {
+            background: var(--hover-color);
+        }
+        .google-icon {
+            width: 20px;
+            height: 20px;
+        }
     </style>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, getDocs, where, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAI23gvlRESb1Eivn5xjuq1y9U-pcixYsw",
@@ -535,22 +559,31 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
         window.db = db;
+        window.firebaseAuth = auth;
+        window.googleProvider = new GoogleAuthProvider();
+        window.authActions = { signInWithPopup, signOut };
         window.fsCollections = { collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, getDocs, where, setDoc, getDoc };
     </script>
 </head>
 <body>
 
-    <!-- شاشة تسجيل الدخول / إنشاء الحساب الإجبارية -->
+    <!-- شاشة تسجيل الدخول عبر قوقل فقط -->
     <div id="authOverlayScreen" class="auth-overlay" style="display:none;">
         <div class="auth-card">
             <h2 id="authTitle">مرحباً بك في فيت</h2>
-            <p id="authDesc">الرجاء إنشاء حساب فريد لفتح المنصة</p>
-            <input type="text" id="authNameField" placeholder="الاسم الشخصي الكامل">
-            <input type="text" id="authHandleField" placeholder="اسم المستخدم (اليوزر بالإنجليزية)" oninput="this.value = this.value.toLowerCase().replace(/[^a-z0-9._]/g, '')">
-            <textarea id="authBioField" placeholder="اكتب نبذة بسيطة عنك..." rows="2"></textarea>
-            <button class="btn-publish" style="width:100%; padding:12px; font-size:15px;" onclick="handlePlatformAuth()">دخول المنصة</button>
+            <p id="authDesc">الرجاء تسجيل الدخول عبر حسابك لفتح المنصة</p>
+            <button class="google-login-btn" onclick="handleGoogleAuth()">
+                <svg class="google-icon" viewBox="0 0 24 24">
+                    <path fill="#EA4335" d="M5.266 9.765A7.077 7.077 0 0 1 12 4.909c1.69 0 3.218.6 4.418 1.582L19.91 3C17.782 1.145 15.055 0 12 0 7.273 0 3.19 2.691 1.145 6.655L5.266 9.765z"/>
+                    <path fill="#4285F4" d="M23.455 12.273c0-.818-.073-1.609-.209-2.373H12v4.509h6.418a5.505 5.505 0 0 1-2.391 3.609l3.964 3.073c2.318-2.136 3.664-5.282 3.664-8.818z"/>
+                    <path fill="#FBBC05" d="M5.266 14.235L1.145 17.345A11.947 11.947 0 0 0 12 24c3.055 0 5.782-1.009 7.736-2.736l-3.964-3.073a7.144 7.144 0 0 1-10.506-3.956z"/>
+                    <path fill="#34A853" d="M5.266 9.765a7.126 7.126 0 0 1 0 4.47l-4.121 3.11A11.945 11.945 0 0 0 0 12c0-1.927.455-3.745 1.145-5.345l4.121 3.11z"/>
+                </svg>
+                سجل الدخول باستخدام Google
+            </button>
         </div>
     </div>
 
@@ -649,7 +682,6 @@
                 <div><strong>حساب خاص (قفل الحساب)</strong></div>
                 <input type="checkbox" id="privateAccountCheck" onchange="updateSettings()">
             </div>
-            <!-- مكان ادعمنا في الإعدادات -->
             <div class="settings-item" id="supportSettingsCard">
                 <div>
                     <strong>ادعمنا</strong>
@@ -668,7 +700,7 @@
         <nav class="nav-bar" id="appBottomNavBar"></nav>
     </div>
 
-    <!-- مودال التنبيهات علوي يسار -->
+    <!-- مودال التنبيهات -->
     <div class="modal" id="notifModal">
         <div class="modal-content">
             <h3>التنبيهات والإشعارات</h3>
@@ -745,12 +777,11 @@
 
             <input type="text" id="adminAppName" placeholder="تغيير اسم التطبيق الكلي">
             
-            <!-- إضافة ميزة تحكم الادمن برابط ادعمنا -->
             <label style="font-size:12px; font-weight:bold; color:var(--text-muted);">رابط حقل "ادعمنا":</label>
             <input type="text" id="adminSupportLinkField" placeholder="ضع رابط الدعم هنا (مثال: https://...)">
 
             <div class="upload-row">
-                <label>تغيير صورة اللوجو العلوي بجانب الاسم:</label>
+                <label>تغيير صورة اللوجو العلوي بجانب الاسم لجميع الأجهزة:</label>
                 <input type="file" id="adminLogoFile" accept="image/*">
             </div>
 
@@ -765,7 +796,7 @@
             </div>
             
             <div class="modal-actions">
-                <button class="btn-publish" onclick="saveAdminChanges()">حفظ وتطبيق</button>
+                <button class="btn-publish" onclick="saveAdminChanges()">حفظ وتطبيق شامل</button>
                 <button class="btn-publish" style="background:#ccc; color:#000;" onclick="closeModal('adminModal')">إغلاق</button>
             </div>
         </div>
@@ -813,7 +844,6 @@
                 console.error("Firebase لم يكتمل تحميله بعد!");
                 return;
             }
-            // فحص إجبارية وجود الحساب
             checkUserAuthRequirement();
         }, 1200);
 
@@ -826,54 +856,65 @@
             }
         }
 
-        async function handlePlatformAuth() {
-            const name = document.getElementById('authNameField').value.trim();
-            const handle = document.getElementById('authHandleField').value.trim().toLowerCase();
-            const bio = document.getElementById('authBioField').value.trim();
+        async function handleGoogleAuth() {
+            try {
+                const result = await window.authActions.signInWithPopup(window.firebaseAuth, window.googleProvider);
+                const user = result.user;
+                
+                // اشتقاق يوزر نيم تلقائي ونظيف من إيميل جوجل
+                let derivedHandle = user.email.split('@')[0].toLowerCase().replace(/[^a-z0-9._]/g, '');
+                if (derivedHandle.length > 10) derivedHandle = derivedHandle.substring(0, 10);
+                if (derivedHandle.length < 3) derivedHandle += 'fit';
 
-            if (!name || !handle) {
-                return alert("الرجاء ملء الاسم واليوزر كشرط أساسي لدخول فيت!");
+                const { doc, getDoc, setDoc } = window.fsCollections;
+                const userDocRef = doc(window.db, "platform_users", derivedHandle);
+                const userSnap = await getDoc(userDocRef);
+
+                // إذا كان المستخدم جديد كلياً
+                if (!userSnap.exists()) {
+                    await setDoc(userDocRef, { handle: derivedHandle, email: user.email, registeredAt: Date.now() });
+                }
+
+                currentUser = {
+                    name: user.displayName || "مستخدم فيت",
+                    handle: derivedHandle,
+                    bio: "عضو موثق عبر Google في منصة فيت",
+                    avatar: user.photoURL || '',
+                    banner: '',
+                    isVerified: (derivedHandle === 'frs'),
+                    following: [],
+                    followers: []
+                };
+
+                localStorage.setItem('f_user', JSON.stringify(currentUser));
+                document.getElementById('authOverlayScreen').style.display = 'none';
+                initFirebaseListeners();
+                showToast("مرحباً بك! تم تسجيل دخولك بنجاح عبر Google 🛡️");
+            } catch (error) {
+                console.error(error);
+                alert("فشل تسجيل الدخول عبر Google، يرجى المحاولة مرة أخرى.");
             }
-            if (handle.length < 3 || handle.length > 10) {
-                return alert("يجب أن يكون اليوزر بين 3 إلى 10 أحرف!");
-            }
-
-            // فحص من الفايربيس لمنع تكرار اليوزر أو دخول شخصين بنفس اليوزر
-            const { collection, getDocs, query, where, setDoc, doc, getDoc } = window.fsCollections;
-            
-            const userDocRef = doc(window.db, "platform_users", handle);
-            const userSnap = await getDoc(userDocRef);
-
-            if (userSnap.exists()) {
-                return alert("هذا الحساب أو اسم المستخدم محجوز ومسجل لشخص آخر في المنصة!");
-            }
-
-            // حجز اليوزر سحابياً باسم المستخدم الجديد لمنع تكراره قطعيًا
-            currentUser = {
-                name: name,
-                handle: handle,
-                bio: bio || "مستخدم فيت المحترف",
-                avatar: '',
-                banner: '',
-                isVerified: (handle === 'frs'),
-                following: [],
-                followers: []
-            };
-
-            await setDoc(userDocRef, { handle: handle, registeredAt: Date.now() });
-            localStorage.setItem('f_user', JSON.stringify(currentUser));
-            
-            document.getElementById('authOverlayScreen').style.display = 'none';
-            initFirebaseListeners();
         }
 
         function initFirebaseListeners() {
-            const { collection, onSnapshot, query, orderBy } = window.fsCollections;
+            const { collection, onSnapshot, query, orderBy, doc } = window.fsCollections;
             
             if (bannedUsers.includes(currentUser.handle)) {
                 document.body.innerHTML = "<h2 style='text-align:center; padding-top:100px; color:var(--accent-red);'>تم حظر هذا الحساب من الإدارة بشكل كامل ونهائي 🔨</h2>";
                 return;
             }
+
+            // الاستماع الحي لإعدادات التطبيق العامة من Firestore لمزامنة الشعار والاسم عند الجميع
+            onSnapshot(doc(window.db, "app_global_config", "main_settings"), (docSnap) => {
+                if (docSnap.exists()) {
+                    const cloudSettings = docSnap.data();
+                    appSettings.appName = cloudSettings.appName || appSettings.appName;
+                    appSettings.appLogoIcon = cloudSettings.appLogoIcon || appSettings.appLogoIcon;
+                    appSettings.supportLink = cloudSettings.supportLink || appSettings.supportLink;
+                    localStorage.setItem('f_settings', JSON.stringify(appSettings));
+                    applyConfig();
+                }
+            });
 
             const postsQuery = query(collection(window.db, "posts"), orderBy("id", "desc"));
             onSnapshot(postsQuery, (snapshot) => {
@@ -1400,7 +1441,7 @@
                 container.innerHTML += `
                     <div class="chat-list-item" onclick="openChatWindow('${u}')">
                         <div class="p-avatar"></div>
-                        <div><strong>@${u}</strong><p style="font-size:12px; color:var(--text-muted)">اضغط للمراسلة الفورية المباشرة عبر Firebase</p></div>
+                        <div><strong>@${u}</strong><p style="font-size:12px; color:var(--text-muted)">اضغط للمراسلة الفورية المباشرة عبر فيت</p></div>
                     </div>
                 `;
             });
@@ -1523,26 +1564,31 @@
             showToast(`تم إصدار شارة التوثيق الملكية لـ @${t}`);
         }
 
-        function saveAdminChanges() {
-            appSettings.appName = document.getElementById('adminAppName').value.trim() || appSettings.appName;
-            appSettings.supportLink = document.getElementById('adminSupportLinkField').value.trim() || appSettings.supportLink;
+        async function saveAdminChanges() {
+            const newName = document.getElementById('adminAppName').value.trim() || appSettings.appName;
+            const newSupportLink = document.getElementById('adminSupportLinkField').value.trim() || appSettings.supportLink;
             const logoFile = document.getElementById('adminLogoFile').files[0];
+
+            const uploadToFirebase = async (logoBase64) => {
+                const { doc, setDoc } = window.fsCollections;
+                await setDoc(doc(window.db, "app_global_config", "main_settings"), {
+                    appName: newName,
+                    supportLink: newSupportLink,
+                    appLogoIcon: logoBase64 || appSettings.appLogoIcon || ''
+                }, { merge: true });
+
+                closeModal('adminModal');
+                showToast("تم الحفظ والمزامنة الحية لجميع المشتركين بنجاح! 🌍");
+            };
 
             if(logoFile) {
                 let r = new FileReader();
-                r.onload = function(e) {
-                    appSettings.appLogoIcon = e.target.result;
-                    localStorage.setItem('f_settings', JSON.stringify(appSettings));
-                    applyConfig();
-                    closeModal('adminModal');
-                    showToast("تم تحديث شعار البرنامج والاسم بنجاح!");
+                r.onload = async function(e) {
+                    await uploadToFirebase(e.target.result);
                 };
                 r.readAsDataURL(logoFile);
             } else {
-                localStorage.setItem('f_settings', JSON.stringify(appSettings));
-                applyConfig();
-                closeModal('adminModal');
-                showToast("تم الحفظ بنجاح!");
+                await uploadToFirebase(null);
             }
         }
 
@@ -1551,11 +1597,16 @@
             buildFeedUI(posts.filter(p => (p.text && p.text.toLowerCase().includes(v)) || p.handle.toLowerCase().includes(v)), document.getElementById('searchFeed'));
         }
         
-        function logOutUser() {
+        async function logOutUser() {
             if(confirm("هل أنت متأكد من رغبتك في تسجيل الخروج من فيت؟")) {
-                localStorage.removeItem('f_user');
-                showToast("تم تسجيل الخروج.. جاري إعادة التحميل");
-                setTimeout(() => location.reload(), 1000);
+                try {
+                    await window.authActions.signOut(window.firebaseAuth);
+                    localStorage.removeItem('f_user');
+                    showToast("تم تسجيل الخروج.. جاري إعادة التحميل");
+                    setTimeout(() => location.reload(), 1000);
+                } catch (error) {
+                    showToast("حدث خطأ أثناء تسجيل الخروج");
+                }
             }
         }
 
