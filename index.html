@@ -103,7 +103,7 @@
             gap: 12px;
         }
 
-        .theme-toggle-btn, .admin-btn {
+        .theme-toggle-btn, .admin-btn, .notif-btn {
             background: none;
             border: 1px solid var(--border-color);
             color: var(--text-main);
@@ -117,7 +117,7 @@
             justify-content: center;
         }
 
-        .theme-toggle-btn svg {
+        .theme-toggle-btn svg, .notif-btn svg {
             width: 18px;
             height: 18px;
             fill: currentColor;
@@ -510,13 +510,19 @@
         
         .user-row-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
         .user-row-item { display: flex; align-items: center; gap: 10px; padding: 5px 0; border-bottom: 1px solid var(--border-color); }
+
+        /* شاشة قفل التطبيق بدون حساب */
+        .auth-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:var(--bg-main); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
+        .auth-card { width:100%; max-width:400px; background:var(--bg-container); border:1px solid var(--border-color); padding:30px; border-radius:16px; box-shadow:0 8px 24px rgba(0,0,0,0.05); }
+        .auth-card h2 { font-size:24px; font-weight:900; margin-bottom:8px; text-align:center; }
+        .auth-card p { font-size:14px; color:var(--text-muted); text-align:center; margin-bottom:20px; }
+        .auth-card input, .auth-card textarea { width:100%; padding:12px; margin-bottom:14px; border-radius:8px; border:1px solid var(--border-color); background:var(--card-bg); color:var(--text-main); outline:none; }
     </style>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, getDocs, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, getDocs, where, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // إعدادات Firebase الخاصة بتطبيقك fit-app-1c1a8
         const firebaseConfig = {
             apiKey: "AIzaSyAI23gvlRESb1Eivn5xjuq1y9U-pcixYsw",
             authDomain: "fit-app-1c1a8.firebaseapp.com",
@@ -527,16 +533,26 @@
             measurementId: "G-PD6NX9CH5B"
         };
 
-        // تهيئة الـ App والـ Firestore
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // تصدير المتغيرات للوصول لها من كود السكربت العادي
         window.db = db;
-        window.fsCollections = { collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, getDocs, where };
+        window.fsCollections = { collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, getDocs, where, setDoc, getDoc };
     </script>
 </head>
 <body>
+
+    <!-- شاشة تسجيل الدخول / إنشاء الحساب الإجبارية -->
+    <div id="authOverlayScreen" class="auth-overlay" style="display:none;">
+        <div class="auth-card">
+            <h2 id="authTitle">مرحباً بك في فيت</h2>
+            <p id="authDesc">الرجاء إنشاء حساب فريد لفتح المنصة</p>
+            <input type="text" id="authNameField" placeholder="الاسم الشخصي الكامل">
+            <input type="text" id="authHandleField" placeholder="اسم المستخدم (اليوزر بالإنجليزية)" oninput="this.value = this.value.toLowerCase().replace(/[^a-z0-9._]/g, '')">
+            <textarea id="authBioField" placeholder="اكتب نبذة بسيطة عنك..." rows="2"></textarea>
+            <button class="btn-publish" style="width:100%; padding:12px; font-size:15px;" onclick="handlePlatformAuth()">دخول المنصة</button>
+        </div>
+    </div>
 
     <div class="container">
         <header>
@@ -545,6 +561,7 @@
                 <h1 id="appLogoText">Fit</h1>
             </div>
             <div class="header-actions">
+                <button class="notif-btn" onclick="openNotifModal()" id="notifBtnElement" title="التنبيهات"></button>
                 <button class="admin-btn" id="adminPanelBtn" style="display:none;" onclick="openAdminModal()">الإدارة والبلاغات</button>
                 <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeToggleIconBtn"></button>
             </div>
@@ -632,6 +649,14 @@
                 <div><strong>حساب خاص (قفل الحساب)</strong></div>
                 <input type="checkbox" id="privateAccountCheck" onchange="updateSettings()">
             </div>
+            <!-- مكان ادعمنا في الإعدادات -->
+            <div class="settings-item" id="supportSettingsCard">
+                <div>
+                    <strong>ادعمنا</strong>
+                    <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">اضغط للانتقال إلى رابط دعم المنصة المعتمد</div>
+                </div>
+                <button class="btn-publish" style="background:var(--accent-blue); color:#fff;" onclick="openSupportLink()">انتقل للرابط</button>
+            </div>
             <div class="settings-item">
                 <button class="danger-btn" onclick="logOutUser()">تسجيل الخروج</button>
             </div>
@@ -641,6 +666,19 @@
         </div>
 
         <nav class="nav-bar" id="appBottomNavBar"></nav>
+    </div>
+
+    <!-- مودال التنبيهات علوي يسار -->
+    <div class="modal" id="notifModal">
+        <div class="modal-content">
+            <h3>التنبيهات والإشعارات</h3>
+            <div id="notifContainerBox" style="font-size:14px; color:var(--text-muted); padding:10px 0;">
+                لا توجد تنبيهات جديدة حالياً في حسابك.
+            </div>
+            <div class="modal-actions">
+                <button class="btn-publish" onclick="closeModal('notifModal')">إغلاق</button>
+            </div>
+        </div>
     </div>
 
     <div class="modal" id="reportModal">
@@ -707,6 +745,10 @@
 
             <input type="text" id="adminAppName" placeholder="تغيير اسم التطبيق الكلي">
             
+            <!-- إضافة ميزة تحكم الادمن برابط ادعمنا -->
+            <label style="font-size:12px; font-weight:bold; color:var(--text-muted);">رابط حقل "ادعمنا":</label>
+            <input type="text" id="adminSupportLinkField" placeholder="ضع رابط الدعم هنا (مثال: https://...)">
+
             <div class="upload-row">
                 <label>تغيير صورة اللوجو العلوي بجانب الاسم:</label>
                 <input type="file" id="adminLogoFile" accept="image/*">
@@ -747,7 +789,8 @@
             settings: `<svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>`,
             sun: `<svg viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0-5c.55 0 1 .45 1 1v2c0 .55-.45 1-1 1s-1-.45-1-1V3c0-.55.45-1 1-1zm0 14c.55 0 1 .45 1 1v2c0 .55-.45 1-1 1s-1-.45-1-1v-2c0-.55.45-1 1-1zM5.22 6.64c.39-.39 1.02-.39 1.41 0l1.41 1.41c.39.39.39 1.02 0 1.41s-1.02.39-1.41 0L5.22 8.05c-.39-.39-.39-1.02 0-1.41zm10.6c1.41 1.41 1.41 1.41 0 0l1.41-1.41c.39-.39 1.02-.39 1.41 0s.39 1.02 0 1.41l-1.41 1.41c-.39.39-1.02.39-1.41 0s-.39-1.02 0-1.41zM2 12c0-.55.45-1 1-1h2c0 .55-.45 1-1 1s-1-.45-1-1zm14 0c0-.55.45-1 1-1h2c.55 0 1 .45 1 1s-.45 1-1 1h-2c-.55 0-1-.45-1-1zM7.05 18.36c-.39-.39-.39-1.02 0-1.41l1.41-1.41c.39-.39 1.02-.39 1.41 0s.39 1.02 0 1.41l-1.41 1.41c-.39.39-1.02.39-1.41 0zm10.31-1.41c.39.39.39 1.02 0 1.41l-1.41 1.41c-.39.39-1.02.39-1.41 0s-.39-1.02 0-1.41l1.41-1.41c.4 0 1.02 0 1.41.01z"/></svg>`,
             moon: `<svg viewBox="0 0 24 24"><path d="M12.3 22c5.02 0 9.1-4.08 9.1-9.1 0-2.27-.83-4.34-2.2-5.94-.2-.23-.53-.25-.75-.04s-.24.53-.04.75c1.19 1.38 1.89 3.18 1.89 5.13 0 4.25-3.45 7.7-7.7 7.7-2.18 0-4.14-.91-5.55-2.38-.19-.2-.51-.21-.72-.02s-.22.51-.03.72C8.04 20.98 10.05 22 12.3 22z"/></svg>`,
-            camera: `<svg viewBox="0 0 24 24" style="width:18px;height:18px;display:inline-block;vertical-align:middle;"><path d="M4 4h3l2-2h6l2 2h3c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zm8 3c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 2c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3z"/></svg>`
+            camera: `<svg viewBox="0 0 24 24" style="width:18px;height:18px;display:inline-block;vertical-align:middle;"><path d="M4 4h3l2-2h6l2 2h3c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zm8 3c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 2c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3z"/></svg>`,
+            bell: `<svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1-1.5-1s-1.5.17-1.5 1v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>`
         };
 
         let currentSection = 'home';
@@ -756,8 +799,8 @@
         let activeChatTarget = null;
         let isUsernameValidGlobal = true;
 
-        let appSettings = JSON.parse(localStorage.getItem('f_settings')) || { theme: 'light', isPrivate: false, appName: 'Fit', appLogoIcon: '' };
-        let currentUser = JSON.parse(localStorage.getItem('f_user')) || { name: 'فارس', handle: 'frs', bio: 'مطور برمجيات وعاشق للتصميم البسيط والذكي وعالم ماينكرافت بدروك 💻', avatar: '', banner: '', isVerified: true, following: [], followers: [] };
+        let appSettings = JSON.parse(localStorage.getItem('f_settings')) || { theme: 'light', isPrivate: false, appName: 'Fit', appLogoIcon: '', supportLink: 'https://google.com' };
+        let currentUser = JSON.parse(localStorage.getItem('f_user')) || null; 
         
         let posts = [];
         let messages = [];
@@ -770,8 +813,59 @@
                 console.error("Firebase لم يكتمل تحميله بعد!");
                 return;
             }
-            initFirebaseListeners();
+            // فحص إجبارية وجود الحساب
+            checkUserAuthRequirement();
         }, 1200);
+
+        function checkUserAuthRequirement() {
+            if (!currentUser || !currentUser.handle) {
+                document.getElementById('authOverlayScreen').style.display = 'flex';
+            } else {
+                document.getElementById('authOverlayScreen').style.display = 'none';
+                initFirebaseListeners();
+            }
+        }
+
+        async function handlePlatformAuth() {
+            const name = document.getElementById('authNameField').value.trim();
+            const handle = document.getElementById('authHandleField').value.trim().toLowerCase();
+            const bio = document.getElementById('authBioField').value.trim();
+
+            if (!name || !handle) {
+                return alert("الرجاء ملء الاسم واليوزر كشرط أساسي لدخول فيت!");
+            }
+            if (handle.length < 3 || handle.length > 10) {
+                return alert("يجب أن يكون اليوزر بين 3 إلى 10 أحرف!");
+            }
+
+            // فحص من الفايربيس لمنع تكرار اليوزر أو دخول شخصين بنفس اليوزر
+            const { collection, getDocs, query, where, setDoc, doc, getDoc } = window.fsCollections;
+            
+            const userDocRef = doc(window.db, "platform_users", handle);
+            const userSnap = await getDoc(userDocRef);
+
+            if (userSnap.exists()) {
+                return alert("هذا الحساب أو اسم المستخدم محجوز ومسجل لشخص آخر في المنصة!");
+            }
+
+            // حجز اليوزر سحابياً باسم المستخدم الجديد لمنع تكراره قطعيًا
+            currentUser = {
+                name: name,
+                handle: handle,
+                bio: bio || "مستخدم فيت المحترف",
+                avatar: '',
+                banner: '',
+                isVerified: (handle === 'frs'),
+                following: [],
+                followers: []
+            };
+
+            await setDoc(userDocRef, { handle: handle, registeredAt: Date.now() });
+            localStorage.setItem('f_user', JSON.stringify(currentUser));
+            
+            document.getElementById('authOverlayScreen').style.display = 'none';
+            initFirebaseListeners();
+        }
 
         function initFirebaseListeners() {
             const { collection, onSnapshot, query, orderBy } = window.fsCollections;
@@ -781,7 +875,6 @@
                 return;
             }
 
-            // الاستماع اللحظي للتغريدات من جميع الهواتف
             const postsQuery = query(collection(window.db, "posts"), orderBy("id", "desc"));
             onSnapshot(postsQuery, (snapshot) => {
                 posts = [];
@@ -792,7 +885,6 @@
                 extractAndRenderTrendingHashtags();
             });
 
-            // الاستماع اللحظي للرسائل الخاصة من جميع الأجهزة
             const messagesQuery = query(collection(window.db, "messages"), orderBy("time", "asc"));
             onSnapshot(messagesQuery, (snapshot) => {
                 messages = [];
@@ -805,7 +897,6 @@
                 }
             });
 
-            // الاستماع اللحظي للبلاغات الواردة للوحة التحكم
             const reportsQuery = query(collection(window.db, "reports"), orderBy("id", "desc"));
             onSnapshot(reportsQuery, (snapshot) => {
                 reports = [];
@@ -837,6 +928,7 @@
 
         function buildStaticUIAreas() {
             document.getElementById('photoIconPlaceholder').innerHTML = SVGS.camera;
+            document.getElementById('notifBtnElement').innerHTML = SVGS.bell;
             
             const navBar = document.getElementById('appBottomNavBar');
             navBar.innerHTML = `
@@ -877,10 +969,18 @@
             document.getElementById('followersCount').innerText = currentUser.followers ? currentUser.followers.length : 0;
         }
 
-        // حصر رتبة ولوحة التحكم لشخص واحد فقط (حسابك frs) منعا للتداخل تماما
         function checkAdminVisibility() {
             const h = currentUser.handle.toLowerCase();
             document.getElementById('adminPanelBtn').style.display = (h === 'frs') ? 'inline-block' : 'none';
+        }
+
+        function openNotifModal() {
+            document.getElementById('notifModal').style.display = 'flex';
+        }
+
+        function openSupportLink() {
+            const link = appSettings.supportLink || "https://google.com";
+            window.open(link, '_blank');
         }
 
         function switchSection(section) {
@@ -1223,7 +1323,6 @@
             const newHandle = document.getElementById('editHandle').value.trim().toLowerCase();
             const newName = document.getElementById('editName').value.trim();
 
-            // فحص منع حجز أو تكرار يوزر يملكه شخص آخر مسجل في قاعدة البيانات
             if(newHandle !== currentUser.handle) {
                 const { collection, getDocs, query, where } = window.fsCollections;
                 const userCheckQuery = query(collection(window.db, "posts"), where("handle", "==", newHandle));
@@ -1353,6 +1452,7 @@
 
         function openAdminModal() {
             document.getElementById('adminAppName').value = appSettings.appName;
+            document.getElementById('adminSupportLinkField').value = appSettings.supportLink || '';
             document.getElementById('adminLogoFile').value = '';
             document.getElementById('adminVerifyUser').value = '';
             document.getElementById('adminBanUser').value = '';
@@ -1425,6 +1525,7 @@
 
         function saveAdminChanges() {
             appSettings.appName = document.getElementById('adminAppName').value.trim() || appSettings.appName;
+            appSettings.supportLink = document.getElementById('adminSupportLinkField').value.trim() || appSettings.supportLink;
             const logoFile = document.getElementById('adminLogoFile').files[0];
 
             if(logoFile) {
