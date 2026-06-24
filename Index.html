@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مترجم البرمجة باللغة الطبيعية</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #1e1e24;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        header h1 {
+            color: #4caf50;
+            margin: 0 0 10px 0;
+            font-size: 24px;
+        }
+        header p {
+            color: #a0a0a0;
+            margin: 0;
+            font-size: 14px;
+        }
+        .main-container {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+            min-height: 0;
+        }
+        .panel {
+            flex: 1;
+            background-color: #25252d;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #3d3d4a;
+        }
+        .panel-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #4caf50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        select, textarea {
+            width: 100%;
+            background-color: #1a1a21;
+            border: 1px solid #3d3d4a;
+            color: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        select {
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        textarea {
+            flex: 1;
+            resize: none;
+            line-height: 1.5;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #4caf50;
+        }
+        .btn-translate {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: background 0.2s;
+        }
+        .btn-translate:hover {
+            background-color: #45a049;
+        }
+        .code-container {
+            position: relative;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .code-editor {
+            flex: 1;
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #15151a;
+            color: #9cdcfe;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #3d3d4a;
+            white-space: pre-wrap;
+            overflow: auto;
+            direction: ltr;
+            text-align: left;
+        }
+        .preview-box {
+            background-color: #ffffff;
+            color: #000000;
+            flex: 1;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>مترجم الأفكار الذكي (AI Scripting IDE)</h1>
+        <p>اكتب فكرتك بالعامية أو الفصحى، وشاهد الكود والنتيجة الحية أمامك</p>
+    </header>
+
+    <div class="main-container">
+        
+        <!-- المدخلات -->
+        <div class="panel">
+            <div class="panel-title">1. صِف فكرتك بالعامية</div>
+            <label for="lang-select" style="margin-bottom: 5px; font-size: 13px; color: #a0a0a0;">لغة البرمجة المستهدفة:</label>
+            <select id="lang-select">
+                <option value="cpp">C++ (مع واجهة رسومية مقترحة)</option>
+                <option value="html">HTML / CSS / JS (معاينة حية)</option>
+                <option value="python">Python</option>
+            </select>
+            
+            <textarea id="user-input" placeholder="مثال: ضع عداد فوق يبدأ بصف، وضع زر بالوسط أخضر مكتوب عليه Play والكلام أبيض، إذا ضغطته يزيد العداد..."></textarea>
+            
+            <button class="btn-translate" onclick="processIdea()">ترجم الفكرة ونفذها 🚀</button>
+        </div>
+
+        <!-- محرر الأكواد -->
+        <div class="panel">
+            <div class="panel-title">2. محرر الأكواد (المخرجات عبر الذكاء الاصطناعي)</div>
+            <div class="code-container">
+                <div id="editor" class="code-editor" contenteditable="true" spellcheck="false">// الكود المترجم سيظهر هنا...</div>
+            </div>
+        </div>
+
+        <!-- المعاينة الحية -->
+        <div class="panel">
+            <div class="panel-title">3. المعاينة الحية والتفاعل (Live Preview)</div>
+            <div id="preview-area" class="preview-box">
+                <p style="color: #666; font-size: 14px; text-align: center;">عند اختيار لغة HTML، ستظهر المعاينة الحية التفاعلية هنا فوراً.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        async function processIdea() {
+            const input = document.getElementById('user-input').value;
+            const lang = document.getElementById('lang-select').value;
+            const editor = document.getElementById('editor');
+            const previewArea = document.getElementById('preview-area');
+            
+            if (!input.trim()) {
+                alert("الرجاء كتابة فكرتك أولاً!");
+                return;
+            }
+
+            editor.innerText = "جاري التفكير والترجمة عبر الذكاء الاصطناعي الحقيقي... ⏳";
+            previewArea.innerHTML = "جاري تجهيز المعاينة... ⏳";
+
+            // وضع المفتاح الخاص بك هنا مباشرة ومفعّل
+            const apiKey = "AQ.Ab8RN6JB7iba_lb0_9qi7ZIT9b5pN5_64l_fGMlOcdkGPkerXg"; 
+            
+            const systemPrompt = `أنت مترجم لغات برمجة ذكي ومحترف. وظيفتك تحويل الوصف البشري بالعامية أو الفصحى إلى كود برمجي صافي تماماً بلغة ${lang}.
+تنبيهات صارمة جداً:
+1. اعطني الكود البرمجي الصافي فقط المتوافق مع طلب المستخدم.
+2. لا تكتب أي مقدمات أو شروحات إطلاقاً مثل "تفضل الكود" أو "إليك الحل".
+3. لا تضع الكود داخل علامات الترقيم العلوية ماركداون (\`\`\`). اعطني الكود مباشرة كـ نص صافي لكي يسهل عرضه وتشفيله.`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `${systemPrompt}\n\nالوصف المطلوب تحويله: ${input}`
+                            }]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                let generatedCode = data.candidates[0].content.parts[0].text;
+
+                // تنظيف احتياطي لأي علامات ماركداون إضافية
+                generatedCode = generatedCode.replace(/```[a-zA-Z]*\n?/g, '').trim();
+
+                // عرض الكود في المحرر
+                editor.innerText = generatedCode;
+
+                // إذا كانت اللغة المادية المختارة هي HTML، نقوم بتشغيلها حياً بالمعاينة
+                if (lang === 'html') {
+                    previewArea.innerHTML = generatedCode;
+                    
+                    // إعادة تشغيل السكربتات المضمنة داخل الكود المولد لكي تعمل الأزرار التفاعلية حياً
+                    const scripts = previewArea.getElementsByTagName('script');
+                    for (let i = 0; i < scripts.length; i++) {
+                        eval(scripts[i].innerText);
+                    }
+                } else {
+                    previewArea.innerHTML = `<div style="color:#2196f3; padding:15px; font-weight:bold; text-align:center;">تم إنشاء كود لغة ${lang} بنجاح داخل المحرر المجاوز!<br><br><span style="font-size:12px; color:#555; font-weight:normal;">لتشغيل لغات مثل C++ أو Python، ستحتاج لبيئة مخصصة لها، ولكن الذكاء الاصطناعي صاغ لك البنية تماماً وبنجاح.</span></div>`;
+                }
+
+            } catch (error) {
+                editor.innerText = "حدث خطأ أثناء الاتصال بالذكاء الاصطناعي. تأكد من اتصال الإنترنت وجرب مجدداً.";
+                previewArea.innerHTML = "فشلت المعاينة بسبب خطأ بالاتصال.";
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
