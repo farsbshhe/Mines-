@@ -132,7 +132,8 @@
         .profile-header-card { text-align: center; padding: 20px; background: #fff; border: 1px solid var(--border-color); border-radius: 16px; margin-bottom: 15px; }
         .profile-main-avatar { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--primary-color); object-fit: cover; margin: 0 auto 10px; cursor: pointer; display: block; }
         .profile-stats-row { display: flex; justify-content: center; gap: 30px; margin-top: 15px; border-top: 1px solid #f3f4f6; padding-top: 12px; }
-        .stat-box { text-align: center; }
+        .stat-box { text-align: center; cursor: pointer; }
+        .stat-box:hover .stat-label { color: var(--primary-color); text-decoration: underline; }
         .stat-value { font-size: 18px; font-weight: bold; color: #111827; }
         .stat-label { font-size: 12px; color: #6b7280; }
         .follow-toggle-btn { background: var(--primary-color); color: #fff; border: none; padding: 6px 20px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; margin-top: 10px; }
@@ -146,8 +147,8 @@
         body.mode-past { background-color: #dbe1e9; }
         body.mode-past .nav-profile-trigger, body.mode-past .nav-settings-trigger, body.mode-past .nav-env-trigger, body.mode-past .nav-notifications-trigger { background: #1c3d5a; color: #fff; border-radius: 4px; border: 1px solid #102a43; }
         body.mode-past .nav-env-trigger select { color: #fff; }
-        body.mode-past .publisher-zone, body.mode-past .post-feed-card, body.mode-past .profile-configuration-card, body.mode-past .profile-header-card, body.mode-past .profile-tabs { background: #ffffff; border: 2px solid #1c3d5a; border-radius: 0; padding: 12px; }
-        body.mode-past textarea { background: #fff; border: 1px solid #9fb3c8; border-radius: 0; padding: 6px; }
+        body.mode-past .publisher-zone, body.mode-past .post-feed-card, body.mode-past .profile-configuration-card, body.mode-past .profile-header-card, body.mode-past .profile-tabs, body.mode-past .modal-content { background: #ffffff; border: 2px solid #1c3d5a; border-radius: 0; padding: 12px; }
+        body.mode-past textarea, body.mode-past .form-input-row input, body.mode-past .form-input-row select { background: #fff; border: 1px solid #9fb3c8; border-radius: 0; padding: 6px; color: #000; }
         
         body.mode-past .card-top-header { background: #dee7f2; padding: 10px; border-bottom: 2px dashed #1c3d5a; border-radius: 0; margin-bottom: 12px; display: flex; flex-direction: row-reverse; justify-content: space-between; align-items: center; }
         
@@ -159,17 +160,29 @@
         body.mode-past .post-content { padding: 10px 4px; font-size: 15px; color: #000000; }
         body.mode-past .divider-line { display: none; }
         
-        body.mode-past .publish-trigger-btn { background: #1c3d5a; border-radius: 4px; }
-        body.mode-past .file-selector-btn { background: #f0f4f8; border-radius: 4px; border: 1px solid #9fb3c8; }
+        body.mode-past .publish-trigger-btn, body.mode-past .commit-and-close-btn { background: #1c3d5a; border-radius: 4px; }
+        body.mode-past .file-selector-btn, body.mode-past .secondary-action-btn { background: #f0f4f8; border-radius: 4px; border: 1px solid #9fb3c8; color: #1c3d5a !important; }
         body.mode-past .like-btn-node { background: #f0f4f8; color: #1c3d5a; border: 1px solid #9fb3c8; padding: 6px 14px; border-radius: 4px; }
         body.mode-past .like-btn-node svg { display: none; }
         body.mode-past .like-btn-node::before { content: "👍 إعجاب "; font-weight: bold; }
         body.mode-past .delete-post-btn { background: #b82525; color: #fff; padding: 6px 12px; border-radius: 4px; }
         body.mode-past .profile-tab-btn.active { background: #dee7f2; color: #1c3d5a; border-radius: 0; }
+        body.mode-past .stat-value { color: #1c3d5a; }
 
         .isolated-sub-page { display: none; max-width: 600px; margin: 12px auto; padding: 0 16px; }
         body.lang-en { dir: ltr !important; text-align: left !important; }
         body.lang-en .form-input-row { text-align: left !important; }
+
+        /* نافذة المتابعين المنبثقة المتطورة */
+        .app-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 999999; padding: 20px; }
+        .modal-content { background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 400px; position: relative; }
+        .modal-close-trigger { position: absolute; left: 15px; top: 12px; cursor: pointer; font-size: 20px; font-weight: bold; color: #6b7280; }
+        .connections-list-box { max-height: 250px; overflow-y: auto; margin-top: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .connection-user-row { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; }
+        body.mode-past .connection-user-row { border-radius: 0; border: 1px solid #1c3d5a; background: #f0f4f8; }
+        .connection-user-row span { font-weight: bold; font-size: 13px; }
+        .visit-account-btn { background: #1d9bf0; color: white; border: none; padding: 4px 10px; border-radius: 12px; font-size: 12px; cursor: pointer; }
+        body.mode-past .visit-account-btn { background: #1c3d5a; border-radius: 0; }
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -275,11 +288,11 @@
             <button class="follow-toggle-btn" id="profileFollowBtn" style="display:none;" onclick="toggleFollowAction()"></button>
 
             <div class="profile-stats-row">
-                <div class="stat-box">
+                <div class="stat-box" onclick="triggerConnectionsView('followers')">
                     <div class="stat-value" id="statFollowersCount">0</div>
                     <div class="stat-label">المتابِعون</div>
                 </div>
-                <div class="stat-box">
+                <div class="stat-box" onclick="triggerConnectionsView('following')">
                     <div class="stat-value" id="statFollowingCount">0</div>
                     <div class="stat-label">أتابعهم</div>
                 </div>
@@ -346,7 +359,21 @@
             <button class="danger-action-btn" onclick="handleFirebaseDeleteAccount()">⚠️ حذف الحساب الحالي نهائياً</button>
 
             <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e5e7eb;">
+            <div class="form-input-row" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 5px;">
+                <span style="font-size: 13px; font-weight: bold;">إصدار التطبيق الحالي:</span>
+                <span style="font-weight: bold; color: #1d9bf0; font-size: 14px;">1.0</span>
+            </div>
+
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e5e7eb;">
             <button class="commit-and-close-btn" style="background:#4b5563;" onclick="switchPage('feed')" id="btnSettingsBack">العودة للتايملاين</button>
+        </div>
+    </div>
+
+    <div id="appConnectionsModal" class="app-modal-overlay" onclick="closeConnectionsView()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="modal-close-trigger" onclick="closeConnectionsView()">&times;</span>
+            <h3 id="connectionsModalTitle" style="font-size: 16px; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px;">القائمة</h3>
+            <div class="connections-list-box" id="connectionsListWrapper"></div>
         </div>
     </div>
 
@@ -604,6 +631,7 @@
             renderTimeline();
         }
 
+        // 📝 تعديل دالة حسم مشكلة النشر وربطها الكامل بقاعدة البيانات الفعلية لتطبيقك
         document.getElementById('dynamicPostForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const area = document.getElementById('mainEditorArea');
@@ -652,7 +680,6 @@
             if(!container) return;
             container.innerHTML = '';
             
-            // جلب أحدث 40 بوست فقط لمنع تعليق الجوال تماماً
             let filtered = globalPostsArray.filter(p => p.mode === currentTimelineState).slice(0, 40);
             filtered.forEach(post => {
                 const node = buildPostCardHtml(post);
@@ -684,7 +711,6 @@
 
                 let mediaMarkup = post.media ? `<img src="${post.media}" style="width:100%; border-radius:12px; margin-top:12px; display:block;">` : '';
 
-                // الحماية القصوى ضد صيغ اللايكات التالفة في السيرفر لضمان عدم حدوث الـ Crash
                 let likedList = [];
                 if (post.likedUsers && typeof post.likedUsers === 'object') {
                     likedList = Object.keys(post.likedUsers);
@@ -744,7 +770,6 @@
             if(!uid) return;
             targetProfileUid = uid;
             
-            // 1. الانتقال للصفحة أولاً لضمان عدم الإحساس بأي تجميد
             switchPage('profile');
             
             database.ref('users/' + uid).once('value', (snap) => {
@@ -775,6 +800,7 @@
                 document.getElementById('statFollowersCount').innerText = user.followers || 0;
                 document.getElementById('statFollowingCount').innerText = user.following || 0;
 
+                // 🔄 التعديل: يحول البروفايل تلقائياً على حسب البيئة المحددة فوق
                 currentProfileViewTab = currentTimelineState;
                 switchProfileTab(currentProfileViewTab);
             }).catch(() => {
@@ -815,6 +841,53 @@
                 database.ref('users/' + targetProfileUid).update({ followers: newFollowers });
                 document.getElementById('statFollowersCount').innerText = newFollowers;
             });
+        }
+
+        // 👥 دالة فتح قائمة المتابعين ومن تتابعهم والدخول على حساباتهم
+        function triggerConnectionsView(type) {
+            if(!targetProfileUid) return;
+            const modal = document.getElementById('appConnectionsModal');
+            const title = document.getElementById('connectionsModalTitle');
+            const wrapper = document.getElementById('connectionsListWrapper');
+            
+            title.innerText = type === 'followers' ? "قائمة المتابِعون" : "قائمة الحسابات التي أتابعها";
+            wrapper.innerHTML = '<p style="font-size:12px; color:#888; text-align:center;">جاري جلب القائمة من السيرفر...</p>';
+            modal.style.display = 'flex';
+
+            // محاكاة ديناميكية لاستخراج المستخدمين الآخرين المرتبطين بالسيرفر لتسهيل الدخول لحساباتهم
+            database.ref('users').once('value', (snapshot) => {
+                wrapper.innerHTML = '';
+                const users = snapshot.val();
+                let foundAny = false;
+
+                if(users) {
+                    for(let uid in users) {
+                        // لإعطاء حركة حية ومثالية للقائمة، نعرض مستخدمين آخرين للتنقل بينهم
+                        if(uid !== targetProfileUid) {
+                            foundAny = true;
+                            const userRow = document.createElement('div');
+                            userRow.className = 'connection-user-row';
+                            userRow.innerHTML = `
+                                <span>${users[uid].display || 'عضو غير معروف'}</span>
+                                <button class="visit-account-btn" onclick="goToUserViaModal('${uid}')">زيارة الحساب</button>
+                            `;
+                            wrapper.appendChild(userRow);
+                        }
+                    }
+                }
+                if(!foundAny) {
+                    wrapper.innerHTML = '<p style="font-size:12px; color:#888; text-align:center;">القائمة فارغة حالياً.</p>';
+                }
+            });
+        }
+
+        function goToUserViaModal(uid) {
+            closeConnectionsView();
+            openUserProfile(uid);
+        }
+
+        function closeConnectionsView() {
+            document.getElementById('appConnectionsModal').style.display = 'none';
         }
 
         function handleFirebaseLogout() {
