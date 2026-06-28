@@ -86,6 +86,7 @@
         /* الكروت والمنشورات */
         .publisher-zone, .post-feed-card, .profile-configuration-card {
             background: var(--card-bg); border-radius: 16px; padding: 16px; border: 1px solid var(--border-color);
+            margin-bottom: 10px;
         }
         textarea { 
             width: 100%; height: 80px; background: transparent; border: none; color: inherit; 
@@ -141,23 +142,20 @@
         .profile-tab-btn { flex: 1; text-align: center; padding: 12px; font-size: 13px; font-weight: bold; cursor: pointer; color: #4b5563; border: none; background: none; }
         .profile-tab-btn.active { background: #eff6ff; color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
 
-        /* 👑 سمات وتنسيق وضع المنتدى الكلاسيكي القديم - مطابِق تماماً لـ image.png */
+        /* 👑 سمات وتنسيق وضع المنتدى الكلاسيكي القديم */
         body.mode-past { background-color: #dbe1e9; }
         body.mode-past .nav-profile-trigger, body.mode-past .nav-settings-trigger, body.mode-past .nav-env-trigger, body.mode-past .nav-notifications-trigger { background: #1c3d5a; color: #fff; border-radius: 4px; border: 1px solid #102a43; }
         body.mode-past .nav-env-trigger select { color: #fff; }
         body.mode-past .publisher-zone, body.mode-past .post-feed-card, body.mode-past .profile-configuration-card, body.mode-past .profile-header-card, body.mode-past .profile-tabs { background: #ffffff; border: 2px solid #1c3d5a; border-radius: 0; padding: 12px; }
         body.mode-past textarea { background: #fff; border: 1px solid #9fb3c8; border-radius: 0; padding: 6px; }
         
-        /* تصميم الهيدر العلوي كصندوق بيانات الكاتب */
         body.mode-past .card-top-header { background: #dee7f2; padding: 10px; border-bottom: 2px dashed #1c3d5a; border-radius: 0; margin-bottom: 12px; display: flex; flex-direction: row-reverse; justify-content: space-between; align-items: center; }
         
-        /* جعل الصورة الرمزية مربعة رمادية وعلى اليسار/اليمين بحسب الاتجاه */
         body.mode-past .avatar-frame, body.mode-past .profile-main-avatar { border-radius: 0; border: 1px solid #7f8c8d; background: #cccccc; width: 48px; height: 48px; }
         body.mode-past .user-title-text { font-size: 15px; font-weight: bold; color: #000000 !important; text-decoration: none !important; }
         body.mode-past .user-handle-text { font-size: 12px; color: #486581; }
         body.mode-past .user-subtitle-stats { font-size: 12px; color: #486581; margin-top: 4px; }
         
-        /* المحتوى والفاصل */
         body.mode-past .post-content { padding: 10px 4px; font-size: 15px; color: #000000; }
         body.mode-past .divider-line { display: none; }
         
@@ -517,7 +515,7 @@
                 
                 const usernameRegex = /^[a-z0-9_]+$/;
                 if(!usernameRegex.test(newUsername)) {
-                    alert("خطأ: اليوزر لا يدعم اللغة العربية! يسمح فقط بالحروف الإنجليزية الصغيرة، الأرقام، والشرطة السفلية (_).");
+                    alert("خطأ: اليوزر يسمح فقط بالحروف الإنجليزية الصغيرة، الأرقام، والشرطة السفلية (_).");
                     return;
                 }
 
@@ -654,61 +652,73 @@
             if(!container) return;
             container.innerHTML = '';
             
-            let filtered = globalPostsArray.filter(p => p.mode === currentTimelineState);
+            // جلب أحدث 40 بوست فقط لمنع تعليق الجوال تماماً
+            let filtered = globalPostsArray.filter(p => p.mode === currentTimelineState).slice(0, 40);
             filtered.forEach(post => {
-                container.appendChild(buildPostCardHtml(post));
+                const node = buildPostCardHtml(post);
+                if(node) container.appendChild(node);
             });
         }
 
         function buildPostCardHtml(post) {
-            const card = document.createElement('div');
-            card.className = 'post-feed-card';
-            
-            const isPast = (post.mode === 'past');
-            let headerHTML = isPast ? `
-                <div class="avatar-frame" onclick="openUserProfile('${post.uid}')"><img src="${post.authorAvatar || 'https://i.ibb.co/rtgYtT7/image-7.png'}"></div>
-                <div style="text-align: right; flex:1;">
-                    <span class="user-title-text" onclick="openUserProfile('${post.uid}')">كاتب الموضوع: ${post.authorName}</span>
-                    <span class="user-handle-text">(${post.authorUser})</span>
-                    <div class="user-subtitle-stats">تاريخ التسجيل: 2004 | المشاركات: 142</div>
-                </div>
-            ` : `
-                <div class="avatar-frame" onclick="openUserProfile('${post.uid}')"><img src="${post.authorAvatar || 'https://i.ibb.co/rtgYtT7/image-7.png'}"></div>
-                <div style="text-align: right; flex:1;">
-                    <span class="user-title-text" onclick="openUserProfile('${post.uid}')">${post.authorName}</span> 
-                    <span class="user-handle-text">${post.authorUser}</span>
-                    <div class="user-subtitle-stats">${post.timestamp}</div>
-                </div>
-            `;
+            try {
+                const card = document.createElement('div');
+                card.className = 'post-feed-card';
+                
+                const isPast = (post.mode === 'past');
+                let headerHTML = isPast ? `
+                    <div class="avatar-frame" onclick="openUserProfile('${post.uid}')"><img src="${post.authorAvatar || 'https://i.ibb.co/rtgYtT7/image-7.png'}"></div>
+                    <div style="text-align: right; flex:1;">
+                        <span class="user-title-text" onclick="openUserProfile('${post.uid}')">كاتب الموضوع: ${post.authorName || 'عضو'}</span>
+                        <span class="user-handle-text">(${post.authorUser || '@user'})</span>
+                        <div class="user-subtitle-stats">المشاركات: نَشِط | اينتس كلاسيك</div>
+                    </div>
+                ` : `
+                    <div class="avatar-frame" onclick="openUserProfile('${post.uid}')"><img src="${post.authorAvatar || 'https://i.ibb.co/rtgYtT7/image-7.png'}"></div>
+                    <div style="text-align: right; flex:1;">
+                        <span class="user-title-text" onclick="openUserProfile('${post.uid}')">${post.authorName || 'عضو'}</span> 
+                        <span class="user-handle-text">${post.authorUser || '@user'}</span>
+                        <div class="user-subtitle-stats">${post.timestamp || ''}</div>
+                    </div>
+                `;
 
-            let mediaMarkup = post.media ? `<img src="${post.media}" style="width:100%; border-radius:12px; margin-top:12px; display:block;">` : '';
+                let mediaMarkup = post.media ? `<img src="${post.media}" style="width:100%; border-radius:12px; margin-top:12px; display:block;">` : '';
 
-            const likedList = post.likedUsers ? Object.keys(post.likedUsers) : [];
-            const hasLiked = likedList.includes(currentUserUid);
+                // الحماية القصوى ضد صيغ اللايكات التالفة في السيرفر لضمان عدم حدوث الـ Crash
+                let likedList = [];
+                if (post.likedUsers && typeof post.likedUsers === 'object') {
+                    likedList = Object.keys(post.likedUsers);
+                }
+                const hasLiked = currentUserUid ? likedList.includes(currentUserUid) : false;
 
-            card.innerHTML = `
-                <div class="card-top-header">${headerHTML}</div>
-                <div class="divider-line"></div>
-                <div class="post-content">${post.text}</div>
-                ${mediaMarkup}
-                <div class="divider-line"></div>
-                <div class="actions-footer-container">
-                    <button class="like-btn-node ${hasLiked ? 'activated' : ''}" onclick="handleLikeTrigger('${post.id}')">
-                        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                        <span class="like-counter-val">${post.likes || 0}</span>
-                    </button>
-                    ${post.uid === currentUserUid ? `<button class="delete-post-btn" onclick="deletePostItem('${post.id}')">${dictionary[currentLanguage].deleteText}</button>` : ''}
-                </div>
-            `;
-            return card;
+                card.innerHTML = `
+                    <div class="card-top-header">${headerHTML}</div>
+                    <div class="divider-line"></div>
+                    <div class="post-content">${post.text || ''}</div>
+                    ${mediaMarkup}
+                    <div class="divider-line"></div>
+                    <div class="actions-footer-container">
+                        <button class="like-btn-node ${hasLiked ? 'activated' : ''}" onclick="handleLikeTrigger('${post.id}')">
+                            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                            <span class="like-counter-val">${post.likes || 0}</span>
+                        </button>
+                        ${(currentUserUid && post.uid === currentUserUid) ? `<button class="delete-post-btn" onclick="deletePostItem('${post.id}')">${dictionary[currentLanguage].deleteText}</button>` : ''}
+                    </div>
+                `;
+                return card;
+            } catch(e) {
+                console.error("تخطى منشوراً تالفاً منعاً للكراش:", e);
+                return null;
+            }
         }
 
         function handleLikeTrigger(postId) {
+            if(!currentUserUid) return;
             const postRef = database.ref('posts/' + postId);
             postRef.once('value', (snap) => {
                 let post = snap.val();
                 if (!post) return;
-                if (!post.likedUsers) post.likedUsers = {};
+                if (!post.likedUsers || typeof post.likedUsers !== 'object') post.likedUsers = {};
 
                 if (post.likedUsers[currentUserUid]) {
                     delete post.likedUsers[currentUserUid];
@@ -731,7 +741,12 @@
         }
 
         function openUserProfile(uid) {
+            if(!uid) return;
             targetProfileUid = uid;
+            
+            // 1. الانتقال للصفحة أولاً لضمان عدم الإحساس بأي تجميد
+            switchPage('profile');
+            
             database.ref('users/' + uid).once('value', (snap) => {
                 let user = snap.val();
                 if(!user) {
@@ -744,15 +759,17 @@
                 }
                 
                 document.getElementById('profileCardImage').src = user.avatar || "https://i.ibb.co/rtgYtT7/image-7.png";
-                document.getElementById('profileCardTitle').innerText = user.display;
-                document.getElementById('profileCardHandle').innerText = user.username;
+                document.getElementById('profileCardTitle').innerText = user.display || "مستكشف الأزمنة";
+                document.getElementById('profileCardHandle').innerText = user.username || "@traveler";
                 
                 const followBtn = document.getElementById('profileFollowBtn');
                 if(uid === currentUserUid) {
-                    followBtn.style.display = 'none';
+                    if(followBtn) followBtn.style.display = 'none';
                 } else {
-                    followBtn.style.display = 'inline-block';
-                    followBtn.innerText = "🤝 متابعة الحساب";
+                    if(followBtn) {
+                        followBtn.style.display = 'inline-block';
+                        followBtn.innerText = "🤝 متابعة الحساب";
+                    }
                 }
 
                 document.getElementById('statFollowersCount').innerText = user.followers || 0;
@@ -760,9 +777,8 @@
 
                 currentProfileViewTab = currentTimelineState;
                 switchProfileTab(currentProfileViewTab);
-                switchPage('profile');
             }).catch(() => {
-                switchPage('profile');
+                console.log("خطأ غير متوقع أثناء جلب البروفايل");
             });
         }
 
@@ -782,11 +798,16 @@
             const view = document.getElementById('profileSubPostsView');
             if(!view) return;
             view.innerHTML = '';
+            
             let filtered = globalPostsArray.filter(p => p.uid === targetProfileUid && p.mode === currentProfileViewTab);
-            filtered.forEach(post => { view.appendChild(buildPostCardHtml(post)); });
+            filtered.forEach(post => { 
+                const node = buildPostCardHtml(post);
+                if(node) view.appendChild(node); 
+            });
         }
 
         function toggleFollowAction() {
+            if(!targetProfileUid) return;
             launchPushNotification("تمت المتابعة الفورية وحفظها بنجاح!", "🚀");
             database.ref('users/' + targetProfileUid).once('value', snap => {
                 let u = snap.val() || {};
@@ -819,21 +840,30 @@
 
         function changeAppLanguage(lang) {
             currentLanguage = lang;
-            document.getElementById('authLanguageSelect').value = lang;
-            document.getElementById('settingLanguageSelect').value = lang;
+            const authSel = document.getElementById('authLanguageSelect');
+            const setSel = document.getElementById('settingLanguageSelect');
+            if(authSel) authSel.value = lang;
+            if(setSel) setSel.value = lang;
+            
             if(lang === 'en') { document.body.classList.add('lang-en'); document.documentElement.dir = "ltr"; }
             else { document.body.classList.remove('lang-en'); document.documentElement.dir = "rtl"; }
             
             const d = dictionary[lang];
-            document.getElementById('authLogoText').innerText = d.authLogo;
-            document.getElementById('mainEditorArea').placeholder = d.writeText;
-            document.getElementById('fileBtnText').innerText = d.imgBtn;
-            document.querySelector('.nav-profile-trigger span').innerText = d.controlBtn;
-            document.querySelector('.nav-settings-trigger span').innerText = d.settingsBtn;
-            document.getElementById('settingTitle').innerText = d.settingTitle;
-            document.getElementById('lblSettingLang').innerText = d.settingLang;
-            document.getElementById('btnSettingsBack').innerText = d.settingBack;
-            document.getElementById('profileBackBtnText').innerText = (lang === 'ar' ? "العودة للرئيسية" : "Back to Main");
+            if(!d) return;
+            
+            if(document.getElementById('authLogoText')) document.getElementById('authLogoText').innerText = d.authLogo;
+            if(document.getElementById('mainEditorArea')) document.getElementById('mainEditorArea').placeholder = d.writeText;
+            if(document.getElementById('fileBtnText')) document.getElementById('fileBtnText').innerText = d.imgBtn;
+            
+            const profSpan = document.querySelector('.nav-profile-trigger span');
+            const settSpan = document.querySelector('.nav-settings-trigger span');
+            if(profSpan) profSpan.innerText = d.controlBtn;
+            if(settSpan) settSpan.innerText = d.settingsBtn;
+            
+            if(document.getElementById('settingTitle')) document.getElementById('settingTitle').innerText = d.settingTitle;
+            if(document.getElementById('lblSettingLang')) document.getElementById('lblSettingLang').innerText = d.settingLang;
+            if(document.getElementById('btnSettingsBack')) document.getElementById('btnSettingsBack').innerText = d.settingBack;
+            if(document.getElementById('profileBackBtnText')) document.getElementById('profileBackBtnText').innerText = (lang === 'ar' ? "العودة للرئيسية" : "Back to Main");
             toggleAuthMode(currentAuthMode);
         }
 
