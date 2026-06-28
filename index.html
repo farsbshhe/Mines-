@@ -216,7 +216,7 @@
             <form id="authMainForm" onsubmit="handleAuthSubmit(event)">
                 <div class="form-input-row" id="authNameRow" style="display: none;">
                     <label id="lblAuthName">الاسم الكامل (اسم العرض):</label>
-                    <input type="text" id="authNameInput" value="مستكشف الأزمنة">
+                    <input type="text" id="authNameInput" value="عضو اينتس">
                 </div>
                 <div class="form-input-row">
                     <label id="lblAuthEmail">البريد الإلكتروني:</label>
@@ -266,7 +266,7 @@
     <main class="feed-layout-wrapper" id="appTimelineMainFeed">
         <div class="publisher-zone">
             <form id="dynamicPostForm">
-                <textarea id="mainEditorArea" placeholder="وش قاعد يصير في تفكيرك الآن?" required></textarea>
+                <textarea id="mainEditorArea" placeholder="وش قاعد يصير في تفكيرك الآن؟" required></textarea>
                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
                     <button type="submit" class="publish-trigger-btn" id="publishBtnText">نشر التغريدة</button>
                     <label for="mediaAttachmentInput" class="file-selector-btn" id="fileBtnText">إرفاق صورة</label>
@@ -282,8 +282,8 @@
             <img src="https://i.ibb.co/rtgYtT7/image-7.png" class="profile-main-avatar" id="profileCardImage" onclick="triggerProfileImageUpload()">
             <input type="file" id="profileImageFileInput" accept="image/*" style="display:none;" onchange="handleProfileImageChange(event)">
             
-            <h3 id="profileCardTitle" style="font-size:18px; margin-bottom:2px;">مستكشف الأزمنة</h3>
-            <p id="profileCardHandle" style="font-size:13px; color:#6b7280; direction:ltr;">@traveler</p>
+            <h3 id="profileCardTitle" style="font-size:18px; margin-bottom:2px;">جاري التحميل...</h3>
+            <p id="profileCardHandle" style="font-size:13px; color:#6b7280; direction:ltr;">@username</p>
             
             <button class="follow-toggle-btn" id="profileFollowBtn" style="display:none;" onclick="toggleFollowAction()"></button>
 
@@ -631,7 +631,7 @@
             renderTimeline();
         }
 
-        // 📝 تعديل دالة حسم مشكلة النشر وربطها الكامل بقاعدة البيانات الفعلية لتطبيقك
+        // 🔥 تعديل دالة النشر الفوري وربطها الفعلي بقاعدة البيانات 
         document.getElementById('dynamicPostForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const area = document.getElementById('mainEditorArea');
@@ -776,16 +776,16 @@
                 let user = snap.val();
                 if(!user) {
                     user = {
-                        display: "مستكشف الأزمنة",
-                        username: "@traveler",
+                        display: "عضو اينتس",
+                        username: "@user",
                         avatar: "https://i.ibb.co/rtgYtT7/image-7.png",
                         followers: 0, following: 0
                     };
                 }
                 
                 document.getElementById('profileCardImage').src = user.avatar || "https://i.ibb.co/rtgYtT7/image-7.png";
-                document.getElementById('profileCardTitle').innerText = user.display || "مستكشف الأزمنة";
-                document.getElementById('profileCardHandle').innerText = user.username || "@traveler";
+                document.getElementById('profileCardTitle').innerText = user.display || "عضو اينتس";
+                document.getElementById('profileCardHandle').innerText = user.username || "@user";
                 
                 const followBtn = document.getElementById('profileFollowBtn');
                 if(uid === currentUserUid) {
@@ -800,7 +800,6 @@
                 document.getElementById('statFollowersCount').innerText = user.followers || 0;
                 document.getElementById('statFollowingCount').innerText = user.following || 0;
 
-                // 🔄 التعديل: يحول البروفايل تلقائياً على حسب البيئة المحددة فوق
                 currentProfileViewTab = currentTimelineState;
                 switchProfileTab(currentProfileViewTab);
             }).catch(() => {
@@ -843,7 +842,6 @@
             });
         }
 
-        // 👥 دالة فتح قائمة المتابعين ومن تتابعهم والدخول على حساباتهم
         function triggerConnectionsView(type) {
             if(!targetProfileUid) return;
             const modal = document.getElementById('appConnectionsModal');
@@ -854,7 +852,6 @@
             wrapper.innerHTML = '<p style="font-size:12px; color:#888; text-align:center;">جاري جلب القائمة من السيرفر...</p>';
             modal.style.display = 'flex';
 
-            // محاكاة ديناميكية لاستخراج المستخدمين الآخرين المرتبطين بالسيرفر لتسهيل الدخول لحساباتهم
             database.ref('users').once('value', (snapshot) => {
                 wrapper.innerHTML = '';
                 const users = snapshot.val();
@@ -862,7 +859,6 @@
 
                 if(users) {
                     for(let uid in users) {
-                        // لإعطاء حركة حية ومثالية للقائمة، نعرض مستخدمين آخرين للتنقل بينهم
                         if(uid !== targetProfileUid) {
                             foundAny = true;
                             const userRow = document.createElement('div');
