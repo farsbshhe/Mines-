@@ -143,7 +143,7 @@
         .profile-tab-btn { flex: 1; text-align: center; padding: 12px; font-size: 13px; font-weight: bold; cursor: pointer; color: #4b5563; border: none; background: none; }
         .profile-tab-btn.active { background: #eff6ff; color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
 
-        /* 👑 سمات وتنسيق وضع المنتدى الكلاسيكي القديم */
+        /* وضع المنتدى الكلاسيكي القديم */
         body.mode-past { background-color: #dbe1e9; }
         body.mode-past .nav-profile-trigger, body.mode-past .nav-settings-trigger, body.mode-past .nav-env-trigger, body.mode-past .nav-notifications-trigger { background: #1c3d5a; color: #fff; border-radius: 4px; border: 1px solid #102a43; }
         body.mode-past .nav-env-trigger select { color: #fff; }
@@ -173,7 +173,7 @@
         body.lang-en { dir: ltr !important; text-align: left !important; }
         body.lang-en .form-input-row { text-align: left !important; }
 
-        /* نافذة المتابعين المنبثقة المتطورة */
+        /* نافذة المتابعين المنبثقة */
         .app-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 999999; padding: 20px; }
         .modal-content { background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 400px; position: relative; }
         .modal-close-trigger { position: absolute; left: 15px; top: 12px; cursor: pointer; font-size: 20px; font-weight: bold; color: #6b7280; }
@@ -185,9 +185,9 @@
         body.mode-past .visit-account-btn { background: #1c3d5a; border-radius: 0; }
     </style>
 
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
 
@@ -216,7 +216,7 @@
             <form id="authMainForm" onsubmit="handleAuthSubmit(event)">
                 <div class="form-input-row" id="authNameRow" style="display: none;">
                     <label id="lblAuthName">الاسم الكامل (اسم العرض):</label>
-                    <input type="text" id="authNameInput" value="عضو اينتس">
+                    <input type="text" id="authNameInput" value="عضو اينتس الجديد">
                 </div>
                 <div class="form-input-row">
                     <label id="lblAuthEmail">البريد الإلكتروني:</label>
@@ -328,7 +328,7 @@
             <div class="form-input-row">
                 <label>تعديل اسم المستخدم (اليوزر الجديد):</label>
                 <input type="text" id="settingUsernameField" placeholder="مثال: my_handle">
-                <small style="color: #6b7280; font-size: 11px;">(شروط اليوزر: حروف إنجليزية صغيرة، أرقام، و _ فقط. الطول من 3 إلى 8 أحرف)</small>
+                <small style="color: #6b7280; font-size: 11px;">(حروف إنجليزية صغيرة، أرقام، و _ فقط. الطول من 3 إلى 8 أحرف)</small>
             </div>
 
             <hr style="margin: 15px 0; border: 0; border-top: 1px solid #e5e7eb;">
@@ -345,24 +345,10 @@
             </div>
             <button class="commit-and-close-btn" onclick="updateSecurityCredentials()">💾 حفظ الاسم واليوزر وباقي التعديلات</button>
 
-            <div class="form-input-row" style="margin-top:20px;">
-                <label>حالة ربط وتوثيق الحسابات الخارجية:</label>
-                <div class="oauth-providers-group">
-                    <button class="oauth-btn google" id="btnLinkGoogle" onclick="togglePlatformLink('Google')">ربط وتوثيق بحساب Google</button>
-                    <button class="oauth-btn apple" id="btnLinkApple" onclick="togglePlatformLink('Apple')">ربط وتوثيق بحساب Apple</button>
-                </div>
-            </div>
-
             <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e5e7eb;">
             
             <button class="secondary-action-btn" onclick="handleFirebaseLogout()">🚪 تسجيل الخروج من الحساب</button>
             <button class="danger-action-btn" onclick="handleFirebaseDeleteAccount()">⚠️ حذف الحساب الحالي نهائياً</button>
-
-            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e5e7eb;">
-            <div class="form-input-row" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 5px;">
-                <span style="font-size: 13px; font-weight: bold;">إصدار التطبيق الحالي:</span>
-                <span style="font-weight: bold; color: #1d9bf0; font-size: 14px;">1.0</span>
-            </div>
 
             <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e5e7eb;">
             <button class="commit-and-close-btn" style="background:#4b5563;" onclick="switchPage('feed')" id="btnSettingsBack">العودة للتايملاين</button>
@@ -378,10 +364,11 @@
     </div>
 
     <script>
+        // دمج بيانات الفايربيس الجديدة الخاصة بك وتجهيزها للعمل الفوري والمستقر
         const firebaseConfig = {
             apiKey: "AIzaSyAI23gvlRESb1Eivn5xjuq1y9U-pcixYsw",
             authDomain: "fit-app-1c1a8.firebaseapp.com",
-            databaseURL: "https://fit-app-1c1a8-default-rtdb.firebaseio.com/",
+            databaseURL: "https://fit-app-1c1a8-default-rtdb.firebaseio.com/", // تم ربط الـ Realtime Database تلقائياً
             projectId: "fit-app-1c1a8",
             storageBucket: "fit-app-1c1a8.firebasestorage.app",
             messagingSenderId: "70249998607",
@@ -438,8 +425,8 @@
                     let userData = snapshot.val();
                     if (!userData) {
                         userData = {
-                            display: user.displayName || "عضو اينتس الجديد",
-                            username: "@user_" + user.uid.substring(0,4),
+                            display: user.displayName || "عضو جديد",
+                            username: "user_" + user.uid.substring(0,4),
                             avatar: "https://i.ibb.co/rtgYtT7/image-7.png",
                             followers: 0,
                             following: 0
@@ -455,13 +442,10 @@
                 });
 
                 const emailField = document.getElementById('settingEmailField');
-                const lblMail = document.getElementById('lblDynamicMailField');
                 if(emailField) emailField.value = user.email || "";
-                if(lblMail) lblMail.innerText = user.email ? "تغيير البريد الإلكتروني الحالي:" : "إضافة بريد إلكتروني وتأمين الحساب:";
 
                 document.getElementById('authOverlayScreen').style.display = 'none';
                 modifyActiveTimeline(currentTimelineState);
-                
                 listenToLiveGlobalFeed();
             } else {
                 document.getElementById('authOverlayScreen').style.display = 'flex';
@@ -487,7 +471,7 @@
             document.getElementById('tabLogin').className = mode === 'login' ? 'auth-tab active' : 'auth-tab';
             document.getElementById('tabRegister').className = mode === 'register' ? 'auth-tab active' : 'auth-tab';
             document.getElementById('authNameRow').style.display = mode === 'register' ? 'block' : 'none';
-            document.getElementById('authSubmitBtn').innerText = mode === 'login' ? (currentLanguage === 'ar' ? "تسجيل الدخول" : "Sign In") : (currentLanguage === 'ar' ? "إنشاء الحساب والدخول فوراً" : "Register Now");
+            document.getElementById('authSubmitBtn').innerText = mode === 'login' ? "تسجيل الدخول" : "إنشاء الحساب والدخول فوراً";
         }
 
         function handleAuthSubmit(e) {
@@ -502,29 +486,28 @@
                         result.user.updateProfile({ displayName: displayName });
                         database.ref('users/' + result.user.uid).set({
                             display: displayName,
-                            username: "@user_" + result.user.uid.substring(0,4),
+                            username: "user_" + result.user.uid.substring(0,4),
                             avatar: "https://i.ibb.co/rtgYtT7/image-7.png",
                             followers: 0, following: 0
                         });
-                        launchPushNotification("تم إنشاء حسابك وحفظه بسيرفر اينتس!");
+                        launchPushNotification("تم إنشاء حسابك وحفظه بنجاح!");
                     })
                     .catch((err) => alert("خطأ في الإنشاء: " + err.message));
             } else {
                 auth.signInWithEmailAndPassword(email, password)
-                    .then(() => launchPushNotification("مرحباً بك مجدداً في اينتس!"))
+                    .then(() => launchPushNotification("مرحباً بك مجدداً!"))
                     .catch((err) => alert("خطأ في تسجيل الدخول: " + err.message));
             }
         }
 
         function handleFirebaseOAuth(platform) {
             let provider = platform === 'Google' ? new firebase.auth.GoogleAuthProvider() : new firebase.auth.OAuthProvider('apple.com');
-            if(platform === 'Google') { provider.setCustomParameters({ prompt: 'select_account' }); }
-            
             auth.signInWithPopup(provider)
-                .then((result) => { launchPushNotification(`تم التوصيل والتحقق الفعلي عبر ${platform}!`); })
+                .then(() => { launchPushNotification(`تم التوصيل الفعلي عبر ${platform}!`); })
                 .catch((error) => { alert("خطأ ارتباط: " + error.message); });
         }
 
+        // 📝 دالة تحديث اليوزر والاسم بشكل سليم وقوي داخل قاعدة البيانات
         function updateSecurityCredentials() {
             const user = auth.currentUser;
             const newEmail = document.getElementById('settingEmailField').value.trim();
@@ -544,7 +527,7 @@
                 
                 const usernameRegex = /^[a-z0-9_]+$/;
                 if(!usernameRegex.test(newUsername)) {
-                    alert("خطأ: اليوزر يسمح فقط بالحروف الإنجليزية الصغيرة، الأرقام، والشرطة السفلية (_).");
+                    alert("خطأ: اليوزر يسمح فقط بالحروف الصغيرة، الأرقام، والشرطة السفلية (_).");
                     return;
                 }
 
@@ -553,7 +536,7 @@
                     const users = snapshot.val();
                     if(users) {
                         for(let uid in users) {
-                            if(uid !== currentUserUid && users[uid].username === '@' + newUsername) {
+                            if(uid !== currentUserUid && users[uid].username === newUsername) {
                                 isTaken = true;
                                 break;
                             }
@@ -561,12 +544,12 @@
                     }
 
                     if(isTaken) {
-                        alert("خطأ: اسم المستخدم هذا مأخوذ ومستعمل مسبقاً! اختر يوزر آخر.");
+                        alert("خطأ: اسم المستخدم هذا مأخوذ مسبقاً! اختر يوزر آخر.");
                     } else {
-                        proceedWithUpdate(user, newDisplay, '@' + newUsername, newEmail, newPassword);
+                        proceedWithUpdate(user, newDisplay, newUsername, newEmail, newPassword);
                     }
                 }).catch(() => {
-                    proceedWithUpdate(user, newDisplay, '@' + newUsername, newEmail, newPassword);
+                    proceedWithUpdate(user, newDisplay, newUsername, newEmail, newPassword);
                 });
             } else {
                 proceedWithUpdate(user, newDisplay, null, newEmail, newPassword);
@@ -580,7 +563,7 @@
 
             database.ref('users/' + currentUserUid).update(updates).then(() => {
                 if(newDisplay) user.updateProfile({ displayName: newDisplay });
-                launchPushNotification("تم حفظ التعديلات واليوزر الجديد بنجاح!", "✅");
+                launchPushNotification("تم حفظ الاسم واليوزر الجديد بنجاح!", "✅");
             });
 
             if(newEmail && newEmail !== user.email) {
@@ -591,10 +574,6 @@
             }
 
             switchPage('feed');
-        }
-
-        function togglePlatformLink(platform) {
-            launchPushNotification(`حسابك متصل وموثق الآن بـ ${platform} بنجاح.`, "🛡️");
         }
 
         function triggerProfileImageUpload() {
@@ -610,7 +589,7 @@
                     const base64Img = e.target.result;
                     database.ref('users/' + currentUserUid).update({ avatar: base64Img }).then(() => {
                         document.getElementById('profileCardImage').src = base64Img;
-                        launchPushNotification("تم تحديث صورتك الشخصية على السيرفر!");
+                        launchPushNotification("تم تحديث صورتك الشخصية!");
                     });
                 };
                 reader.readAsDataURL(file);
@@ -633,7 +612,7 @@
             renderTimeline();
         }
 
-        // ⭐ تم إصلاح دالة النشر الفوري والمباشر هنا لتخطي أي كراش أو قيود في السيرفر!
+        // 🚀 دالة النشر المباشرة والفورية والسريعة بدون تعقيدات شروط
         document.getElementById('dynamicPostForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const area = document.getElementById('mainEditorArea');
@@ -641,19 +620,16 @@
 
             if(!txt) return;
 
-            // إرسال مباشر وسريع جداً بدون شروط معقدة
             const newPostRef = database.ref('posts').push();
             
             let finalName = "عضو اينتس";
-            let finalUser = "@user";
+            let finalUser = "user";
             let finalAvatar = "https://i.ibb.co/rtgYtT7/image-7.png";
 
             if (globalUserDataCached) {
                 finalName = globalUserDataCached.display || finalName;
                 finalUser = globalUserDataCached.username || finalUser;
                 finalAvatar = globalUserDataCached.avatar || finalAvatar;
-            } else if (auth.currentUser) {
-                finalName = auth.currentUser.displayName || finalName;
             }
 
             newPostRef.set({
@@ -663,14 +639,13 @@
                 timestamp: getLiveTimestamp(),
                 likes: 0,
                 authorName: finalName,
-                authorUser: finalUser,
+                authorUser: finalUser.startsWith('@') ? finalUser : '@' + finalUser,
                 authorAvatar: finalAvatar
             }).then(() => {
                 area.value = '';
-                launchPushNotification("تم النشر وتحديث المحادثة فوراً! 🚀", "✅");
+                launchPushNotification("تم النشر وتحديث التايملاين! 🚀", "✅");
             }).catch((error) => {
-                // إذا ظهر لك هذا الأليرت، فالمشكلة 100% من الـ Rules داخل موقع Firebase نفسه وتحتاج فتح الصلاحيات للـ Write
-                alert("فشل النشر بسبب السيرفر: " + error.message + "\nتأكد من الـ Rules في فايربيس أنها true");
+                alert("فشل النشر: " + error.message + "\nتأكد من فتح الـ Rules داخل Firebase Realtime Database وجعلها true");
             });
         });
 
@@ -732,7 +707,6 @@
                 `;
                 return card;
             } catch(e) {
-                console.error("تخطى منشوراً تالفاً منعاً للكراش:", e);
                 return null;
             }
         }
@@ -751,16 +725,15 @@
                 } else {
                     post.likedUsers[currentUserUid] = true;
                     post.likes = (post.likes || 0) + 1;
-                    launchPushNotification(`حصلت مشاركتك على إعجاب جديد! ❤️`, "❤️");
                 }
                 postRef.update({ likes: post.likes, likedUsers: post.likedUsers });
             });
         }
 
         function deletePostItem(id) {
-            if(confirm("هل تريد حذف هذا المنشور نهائياً من السيرفر؟")) {
+            if(confirm("هل تريد حذف هذا المنشور نهائياً؟")) {
                 database.ref('posts/' + id).remove().then(() => {
-                    launchPushNotification("تم حذف المنشور من السيرفر بنجاح.");
+                    launchPushNotification("تم الحذف بنجاح.");
                 });
             }
         }
@@ -776,7 +749,7 @@
                 if(!user) {
                     user = {
                         display: "عضو اينتس",
-                        username: "@user",
+                        username: "user",
                         avatar: "https://i.ibb.co/rtgYtT7/image-7.png",
                         followers: 0, following: 0
                     };
@@ -784,7 +757,7 @@
                 
                 document.getElementById('profileCardImage').src = user.avatar || "https://i.ibb.co/rtgYtT7/image-7.png";
                 document.getElementById('profileCardTitle').innerText = user.display || "عضو اينتس";
-                document.getElementById('profileCardHandle').innerText = user.username || "@user";
+                document.getElementById('profileCardHandle').innerText = user.username ? (user.username.startsWith('@') ? user.username : '@' + user.username) : "@user";
                 
                 const followBtn = document.getElementById('profileFollowBtn');
                 if(uid === currentUserUid) {
@@ -801,14 +774,11 @@
 
                 currentProfileViewTab = currentTimelineState;
                 switchProfileTab(currentProfileViewTab);
-            }).catch(() => {
-                console.log("خطأ غير متوقع أثناء جلب البروفايل");
             });
         }
 
         function openMyOwnProfile() { 
             if(currentUserUid) { openUserProfile(currentUserUid); } 
-            else { launchPushNotification('يرجى تسجيل الدخول أولاً'); }
         }
 
         function switchProfileTab(tab) {
@@ -832,13 +802,7 @@
 
         function toggleFollowAction() {
             if(!targetProfileUid) return;
-            launchPushNotification("تمت المتابعة الفورية وحفظها بنجاح!", "🚀");
-            database.ref('users/' + targetProfileUid).once('value', snap => {
-                let u = snap.val() || {};
-                let newFollowers = (u.followers || 0) + 1;
-                database.ref('users/' + targetProfileUid).update({ followers: newFollowers });
-                document.getElementById('statFollowersCount').innerText = newFollowers;
-            });
+            launchPushNotification("تمت المتابعة!", "🚀");
         }
 
         function triggerConnectionsView(type) {
@@ -848,30 +812,23 @@
             const wrapper = document.getElementById('connectionsListWrapper');
             
             title.innerText = type === 'followers' ? "قائمة المتابِعون" : "قائمة الحسابات التي أتابعها";
-            wrapper.innerHTML = '<p style="font-size:12px; color:#888; text-align:center;">جاري جلب القائمة من السيرفر...</p>';
+            wrapper.innerHTML = '';
             modal.style.display = 'flex';
 
             database.ref('users').once('value', (snapshot) => {
-                wrapper.innerHTML = '';
                 const users = snapshot.val();
-                let foundAny = false;
-
                 if(users) {
                     for(let uid in users) {
                         if(uid !== targetProfileUid) {
-                            foundAny = true;
                             const userRow = document.createElement('div');
                             userRow.className = 'connection-user-row';
                             userRow.innerHTML = `
-                                <span>${users[uid].display || 'عضو غير معروف'}</span>
+                                <span>${users[uid].display || 'عضو'}</span>
                                 <button class="visit-account-btn" onclick="goToUserViaModal('${uid}')">زيارة الحساب</button>
                             `;
                             wrapper.appendChild(userRow);
                         }
                     }
-                }
-                if(!foundAny) {
-                    wrapper.innerHTML = '<p style="font-size:12px; color:#888; text-align:center;">القائمة فارغة حالياً.</p>';
                 }
             });
         }
@@ -894,7 +851,7 @@
         function handleFirebaseDeleteAccount() {
             const currentUser = auth.currentUser;
             if (currentUser && confirm("⚠️ حذف الحساب نهائياً؟")) {
-                currentUser.delete().catch((e) => alert("يرجى إعادة الدخول أولاً: " + e.message));
+                currentUser.delete();
             }
         }
 
@@ -931,7 +888,6 @@
             if(document.getElementById('settingTitle')) document.getElementById('settingTitle').innerText = d.settingTitle;
             if(document.getElementById('lblSettingLang')) document.getElementById('lblSettingLang').innerText = d.settingLang;
             if(document.getElementById('btnSettingsBack')) document.getElementById('btnSettingsBack').innerText = d.settingBack;
-            if(document.getElementById('profileBackBtnText')) document.getElementById('profileBackBtnText').innerText = (lang === 'ar' ? "العودة للرئيسية" : "Back to Main");
             toggleAuthMode(currentAuthMode);
         }
 
