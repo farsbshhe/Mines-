@@ -30,7 +30,7 @@
             transition: all 0.2s ease;
         }
 
-        /* شاشة تسجيل الدخول */
+        /* شاشة تسجيل الدخول الإجبارية */
         #authOverlayScreen {
             position: fixed; top:0; left:0; width:100%; height:100%; 
             background: #ffffff; z-index: 99999; display: flex; 
@@ -56,23 +56,24 @@
         .auth-tab { flex:1; text-align:center; padding: 10px; cursor:pointer; font-weight:bold; color:#6b7280; }
         .auth-tab.active { color: #1d9bf0; border-bottom: 2px solid #1d9bf0; margin-bottom: -2px; }
 
-        /* بار التحكم العلوي */
+        /* بار التحكم العلوي المطور مع البيئة مباشرة */
         .top-navigation-bar {
             max-width: 600px; margin: 12px auto 0; padding: 0 16px;
             display: flex; justify-content: space-between; align-items: center; gap: 10px;
         }
-        .nav-buttons-group { display: flex; gap: 8px; }
-        .nav-profile-trigger, .nav-settings-trigger {
-            padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; 
+        .nav-buttons-group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+        .nav-profile-trigger, .nav-settings-trigger, .nav-env-trigger {
+            padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; 
             cursor: pointer; background: #fff; border: 1px solid #e5e7eb; color: #4b5563;
-            display: flex; align-items: center; gap: 6px;
+            display: flex; align-items: center; gap: 4px; outline: none;
         }
+        .nav-env-trigger select { border: none; background: transparent; font-size: 12px; font-weight: 600; color: #4b5563; cursor: pointer; outline: none; padding-left: 5px; }
         .app-top-left-logo { width: 38px; height: 38px; border-radius: 8px; object-fit: cover; border: 1px solid #e5e7eb; }
 
         /* التايملاين الرئيسي */
         .feed-layout-wrapper { max-width: 600px; margin: 12px auto 0; display: flex; flex-direction: column; gap: 14px; padding: 0 16px; }
 
-        /* كروت الحاضر والناشر */
+        /* الكروت والمنشورات */
         .publisher-zone, .post-feed-card, .profile-configuration-card {
             background: var(--card-bg); border-radius: 16px; padding: 16px; border: 1px solid var(--border-color);
         }
@@ -86,7 +87,7 @@
         
         .user-title-text { font-size: 14px; font-weight: bold; cursor: pointer; }
         .user-title-text:hover { color: var(--primary-color); text-decoration: underline; }
-        .user-handle-text { font-size: 12px; color: #6b7280; direction: ltr; display: inline-block; }
+        .user-handle-text { font-size: 12px; color: #6b7280; direction: ltr; display: inline-block; margin-right: 4px; }
         .user-subtitle-stats { font-size: 11px; color: #9ca3af; margin-top: 2px; }
         .post-content { font-size: 14.5px; line-height: 1.5; white-space: pre-wrap; text-align: justify; }
         .divider-line { display: none; }
@@ -94,39 +95,30 @@
         .publish-trigger-btn { background: #1d9bf0; color: #fff; border: none; padding: 8px 20px; border-radius: 24px; font-weight: bold; cursor: pointer; }
         .file-selector-btn { background: #f3f4f6; color: #4b5563; padding: 8px 16px; font-size: 13px; border-radius: 24px; cursor: pointer; }
 
-        /* أزرار التفاعل والحذف */
+        /* التفاعلات واللايكات والمتابعة */
         .actions-footer-container { margin-top: 12px; display: flex; justify-content: space-between; align-items: center; }
         .like-btn-node { background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; color: #6b7280; font-size: 13px; }
         .like-btn-node svg { width: 18px; height: 18px; fill: none; stroke: #6b7280; stroke-width: 2; }
         .like-btn-node.activated svg { fill: #ef4444; stroke: #ef4444; }
         .like-btn-node.activated { color: #ef4444; }
-        .delete-post-btn { background: none; border: none; color: #ef4444; font-size: 12px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 4px; }
+        .delete-post-btn { background: none; border: none; color: #ef4444; font-size: 12px; cursor: pointer; font-weight: bold; }
 
-        /* التعليقات */
-        .comments-block-area { background: #f9fafb; padding: 10px; margin-top: 12px; border-radius: 12px; }
-        .single-comment-node { padding: 6px 0; font-size: 13px; border-bottom: 1px solid #f3f4f6; color: #4b5563; }
-        .comment-box-flex { display: flex; gap: 8px; margin-top: 10px; }
-        .comment-box-flex input { flex: 1; padding: 8px 14px; border: 1px solid #e5e7eb; font-size: 13px; outline: none; border-radius: 20px; }
-        .comment-post-btn { background: #1d9bf0; color: #fff; border: none; padding: 6px 14px; font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 20px; }
-
-        /* أزرار قوقل وأبل */
+        /* مقدمو خدمات الحسابات الخارجية */
         .oauth-providers-group { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .oauth-btn { width: 100%; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; border: 1px solid #e5e7eb; background: #fff; }
         .oauth-btn.google { color: #4285F4; }
         .oauth-btn.apple { color: #000000; background: #f9fafb; }
-        .oauth-btn.linked { background: #e0f2fe; border-color: #7dd3fc; color: #0369a1; }
 
-        /* الحقول والأزرار القياسية */
+        /* النماذج والحقول */
         .form-input-row { text-align: right; margin-bottom: 14px; }
         .form-input-row label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 6px; }
         .form-input-row input, .form-input-row select { width: 100%; padding: 10px; font-size: 14px; border: 1px solid #e5e7eb; border-radius: 8px; outline: none; background: #fff; }
         .commit-and-close-btn { background: #1d9bf0; color: #fff; border: none; padding: 12px; font-weight: bold; cursor: pointer; width: 100%; border-radius: 24px; margin-top: 10px; }
-        
         .danger-action-btn { background: #ef4444 !important; color: #fff !important; border: none; padding: 12px; font-weight: bold; cursor: pointer; width: 100%; border-radius: 24px; margin-top: 10px; }
         .secondary-action-btn { background: #4b5563 !important; color: #fff !important; border: none; padding: 12px; font-weight: bold; cursor: pointer; width: 100%; border-radius: 24px; margin-top: 10px; }
 
-        /* تصميم صفحة ملف التعريف المتكاملة */
-        .profile-header-card { text-align: center; padding: 20px; background: #fff; border: 1px solid var(--border-color); border-radius: 16px; margin-bottom: 15px; position: relative; }
+        /* صفحة ملف التعريف والبروفايل */
+        .profile-header-card { text-align: center; padding: 20px; background: #fff; border: 1px solid var(--border-color); border-radius: 16px; margin-bottom: 15px; }
         .profile-main-avatar { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--primary-color); object-fit: cover; margin: 0 auto 10px; cursor: pointer; display: block; }
         .profile-stats-row { display: flex; justify-content: center; gap: 30px; margin-top: 15px; border-top: 1px solid #f3f4f6; padding-top: 12px; }
         .stat-box { text-align: center; }
@@ -139,9 +131,10 @@
         .profile-tab-btn { flex: 1; text-align: center; padding: 12px; font-size: 13px; font-weight: bold; cursor: pointer; color: #4b5563; border: none; background: none; }
         .profile-tab-btn.active { background: #eff6ff; color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
 
-        /* وضع المنتدى الكلاسيكي القديم */
+        /* سمات وتنسيق وضع المنتدى القديم الكلاسيكي */
         body.mode-past { background-color: #e1e7f0; }
-        body.mode-past .nav-profile-trigger, body.mode-past .nav-settings-trigger { background: #2563eb; color: #fff; border-radius: 4px; border: 1px solid #1d4ed8; }
+        body.mode-past .nav-profile-trigger, body.mode-past .nav-settings-trigger, body.mode-past .nav-env-trigger { background: #2563eb; color: #fff; border-radius: 4px; border: 1px solid #1d4ed8; }
+        body.mode-past .nav-env-trigger select { color: #fff; }
         body.mode-past .publisher-zone, body.mode-past .post-feed-card, body.mode-past .profile-configuration-card, body.mode-past .profile-header-card, body.mode-past .profile-tabs { background: #fff; border: 2px solid #2563eb; border-radius: 0; }
         body.mode-past textarea { background: #fff; border: 1px solid #cbd5e1; border-radius: 0; }
         body.mode-past .card-top-header { background: #eff6ff; padding: 10px; border-bottom: 1px solid #bfdbfe; border-radius: 0; margin-bottom: 8px; }
@@ -153,9 +146,6 @@
         body.mode-past .like-btn-node svg { display: none; }
         body.mode-past .like-btn-node::before { content: "إعجاب "; }
         body.mode-past .delete-post-btn { background: #ef4444; color: #fff; padding: 4px 10px; border-radius: 0; }
-        body.mode-past .comments-block-area { background: #fff; border: 1px dashed #2563eb; border-radius: 0; }
-        body.mode-past .comment-box-flex input { background: #fff; border: 1px solid #cbd5e1; border-radius: 0; }
-        body.mode-past .comment-post-btn { background: #2563eb; border-radius: 0; }
         body.mode-past .profile-tab-btn.active { background: #eff6ff; color: #2563eb; border-radius: 0; }
 
         .isolated-sub-page { display: none; max-width: 600px; margin: 12px auto; padding: 0 16px; }
@@ -221,6 +211,13 @@
             <button class="nav-settings-trigger" onclick="switchPage('settings')">
                 <span>⚙️ الإعدادات</span>
             </button>
+            <div class="nav-env-trigger">
+                <span>🌐 البيئة:</span>
+                <select id="platformModeSelect" onchange="modifyActiveTimeline(this.value)">
+                    <option value="present">العصرية</option>
+                    <option value="past">الكلاسيكية</option>
+                </select>
+            </div>
         </div>
         <img src="https://i.ibb.co/jkNnhyFL/image.png" class="app-top-left-logo" alt="Aintz Mini Logo">
     </div>
@@ -283,16 +280,13 @@
             </div>
 
             <div class="form-input-row">
-                <label style="color:var(--primary-color);">بيئة وتصميم التصفح الحالي:</label>
-                <select id="platformModeSelect" onchange="modifyActiveTimeline(this.value)">
-                    <option value="present">المنصة الحالية (التايملاين العصري)</option>
-                    <option value="past">الالتحاق بالمنتدى القديم (ستايل كلاسيكي)</option>
-                </select>
+                <label>تعديل اسم المستخدم (اليوزر الجديد):</label>
+                <input type="text" id="settingUsernameField" placeholder="مثال: @my_handle">
             </div>
 
             <hr style="margin: 15px 0; border: 0; border-top: 1px solid #e5e7eb;">
             
-            <h4 style="font-size:14px; margin-bottom:10px; color:#1f2937;" id="lblSecurityTitle">إدارة الأمن والتوثيق الحقيقي</h4>
+            <h4 style="font-size:14px; margin-bottom:10px; color:#1f2937;" id="lblSecurityTitle">إدارة الأمن والتوثيق</h4>
             
             <div class="form-input-row">
                 <label id="lblDynamicMailField">تعديل / إضافة بريد إلكتروني:</label>
@@ -302,7 +296,7 @@
                 <label>تحديث كلمة مرور الحساب:</label>
                 <input type="password" id="settingPasswordField" placeholder="اكتب كلمة المرور الجديدة">
             </div>
-            <button class="commit-and-close-btn" onclick="updateSecurityCredentials()">💾 حفظ تعديلات البيانات الأمنية</button>
+            <button class="commit-and-close-btn" onclick="updateSecurityCredentials()">💾 حفظ التعديلات واليوزر الجديد</button>
 
             <div class="form-input-row" style="margin-top:20px;">
                 <label>حالة ربط وتوثيق الحسابات الخارجية:</label>
@@ -322,8 +316,8 @@
         </div>
     </div>
 
-
     <script>
+        // تكوين الـ Firebase الافتراضي الخاص بك
         const firebaseConfig = {
             apiKey: "AIzaSyAI23gvlRESb1Eivn5xjuq1y9U-pcixYsw",
             authDomain: "fit-app-1c1a8.firebaseapp.com",
@@ -337,15 +331,16 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        let currentTimelineState = "present"; 
+        // استرجاع بيئة التصميم الأخيرة المفضلة للمستخدم تلقائياً بطلبك لكي لا تضيع بعد التحديث
+        let currentTimelineState = localStorage.getItem('AintzSavedTimelineMode') || "present"; 
         let currentAuthMode = "login";
         let currentLanguage = "ar";
         let targetProfileUid = null; 
         let currentProfileViewTab = "present";
 
-        // قاعدة البيانات المحلية المؤقتة لفرز وحفظ المنشورات والمتابعات وتكاملها
-        let globalPostsArray = [];
-        let mockUsersDB = {};
+        // قواعد البيانات المحلية للتخزين المتزامن والمستقر
+        let globalPostsArray = JSON.parse(localStorage.getItem('AintzGlobalPosts')) || [];
+        let mockUsersDB = JSON.parse(localStorage.getItem('AintzUsersDB')) || {};
         let currentUserUid = "local_ghost";
 
         let myPersonalProfile = {
@@ -354,7 +349,7 @@
             avatar: "https://i.ibb.co/rtgYtT7/image-7.png",
             followers: 0,
             following: 0,
-            followingList: new Set()
+            followingList: []
         };
 
         const dictionary = {
@@ -362,36 +357,46 @@
                 authLogo: "اينتس", login: "تسجيل الدخول", register: "إنشاء حساب جديد",
                 writeText: "وش قاعد يصير في تفكيرك الآن؟", btnTweet: "نشر التغريدة", btnTopic: "إضافة موضوع جديد",
                 imgBtn: "إرفاق صورة", controlBtn: "👤 ملف التعريف", settingsBtn: "⚙️ الإعدادات",
-                deleteText: "🗑️ حذف التغريدة", replyPlaceholder: "اكتب ردك هنا...", replyBtn: "رد",
-                oauthGoogle: "الربط السريع عبر سحابة Google", oauthApple: "الربط السريع عبر معرف Apple ID",
+                deleteText: "🗑️ حذف التغريدة", oauthGoogle: "الربط السريع عبر سحابة Google", oauthApple: "الربط السريع عبر معرف Apple ID",
                 settingTitle: "إعدادات المنصة المتقدمة", settingLang: "لغة الواجهة الحالية (Language):", settingBack: "العودة للتايملاين"
             },
             en: {
                 authLogo: "Aintz", login: "Login", register: "Register New Account",
                 writeText: "What is happening in your mind now?", btnTweet: "Post Tweet", btnTopic: "Post New Topic",
                 imgBtn: "Attach Image", controlBtn: "👤 Profile", settingsBtn: "⚙️ Settings",
-                deleteText: "🗑️ Delete Post", replyPlaceholder: "Write your reply here...", replyBtn: "Reply",
-                oauthGoogle: "Quick Connect via Google Cloud", oauthApple: "Quick Connect via Apple ID",
+                deleteText: "🗑️ Delete Post", oauthGoogle: "Quick Connect via Google Cloud", oauthApple: "Quick Connect via Apple ID",
                 settingTitle: "Advanced Platform Settings", settingLang: "Interface Language:", settingBack: "Back to Timeline"
             }
         };
 
-        // الاستماع لحالة الدخول وجلب البيانات الحقيقية وحفظها تلقائياً
+        // الاستماع الفوري لحالة المستخدم وجلب بياناته بدون تداخل
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUserUid = user.uid;
-                myPersonalProfile.display = user.displayName || "عضو اينتس الجديد";
-                myPersonalProfile.username = "@" + (user.email ? user.email.split('@')[0] : "user_" + user.uid.substring(0,4));
-                if(user.photoURL) { myPersonalProfile.avatar = user.photoURL; }
                 
-                // تحديث الحقول الأمنية في الإعدادات
+                if (!mockUsersDB[currentUserUid]) {
+                    mockUsersDB[currentUserUid] = {
+                        display: user.displayName || "عضو اينتس الجديد",
+                        username: "@" + (user.email ? user.email.split('@')[0] : "user_" + user.uid.substring(0,4)),
+                        avatar: user.photoURL || "https://i.ibb.co/rtgYtT7/image-7.png",
+                        followers: 0,
+                        following: 0,
+                        followingList: []
+                    };
+                }
+                
+                myPersonalProfile = mockUsersDB[currentUserUid];
+                
+                // تعبئة حقول الإعدادات الحالية
                 document.getElementById('settingEmailField').value = user.email || "";
+                document.getElementById('settingUsernameField').value = myPersonalProfile.username;
                 document.getElementById('lblDynamicMailField').innerText = user.email ? "تغيير البريد الإلكتروني الحالي:" : "إضافة بريد إلكتروني وتأمين الحساب:";
 
-                mockUsersDB[currentUserUid] = myPersonalProfile;
-
+                saveDBToLocalStorage();
                 document.getElementById('authOverlayScreen').style.display = 'none';
-                renderTimeline();
+                
+                // تطبيق البيئة المحفوظة فوراً عند الدخول
+                modifyActiveTimeline(currentTimelineState);
             } else {
                 document.getElementById('authOverlayScreen').style.display = 'flex';
             }
@@ -414,8 +419,8 @@
             if (currentAuthMode === 'register') {
                 auth.createUserWithEmailAndPassword(email, password)
                     .then((result) => {
-                        result.user.updateProfile({ displayName: displayName, photoURL: myPersonalProfile.avatar });
-                        alert("تم إنشاء حسابك وحفظه تلقائياً في السيرفر بنجاح!");
+                        result.user.updateProfile({ displayName: displayName });
+                        alert("تم إنشاء حسابك وحفظه في السيرفر بنجاح!");
                     })
                     .catch((err) => alert("خطأ في الإنشاء: " + err.message));
             } else {
@@ -433,27 +438,37 @@
                 .catch((error) => { alert("خطأ ارتباط: " + error.message); });
         }
 
-        // تحديث وإضافة البريد وكلمة المرور من لوحة الإعدادات
+        // تحديث وإضافة البريد وكلمة المرور وحل مشكلة تعديل اليوزرنيم
         function updateSecurityCredentials() {
             const user = auth.currentUser;
             const newEmail = document.getElementById('settingEmailField').value.trim();
             const newPassword = document.getElementById('settingPasswordField').value;
+            let newUsername = document.getElementById('settingUsernameField').value.trim();
 
             if(!user) return;
 
+            if (newUsername) {
+                if(!newUsername.startsWith('@')) { newUsername = '@' + newUsername; }
+                myPersonalProfile.username = newUsername;
+                mockUsersDB[currentUserUid].username = newUsername;
+            }
+
             if(newEmail && newEmail !== user.email) {
-                user.updateEmail(newEmail).then(() => { alert("تم تحديث البريد بنجاح!"); }).catch(err => alert(err.message));
+                user.updateEmail(newEmail).then(() => {}).catch(err => alert(err.message));
             }
             if(newPassword) {
-                user.updatePassword(newPassword).then(() => { alert("تم تحديث كلمة المرور بنجاح!"); }).catch(err => alert(err.message));
+                user.updatePassword(newPassword).then(() => {}).catch(err => alert(err.message));
             }
+
+            saveDBToLocalStorage();
+            alert("تم حفظ اليوزر الجديد وكافة البيانات وتحديث التايملاين!");
+            renderTimeline();
         }
 
         function togglePlatformLink(platform) {
-            alert(`حسابك متصل وموثق الآن بـ ${platform} بنجاح كعنصر أمان مستقر.`);
+            alert(`حسابك متصل وموثق الآن بـ ${platform} بنجاح.`);
         }
 
-        // رفع وتحديث الصورة الشخصية عند الضغط عليها
         function triggerProfileImageUpload() {
             if(targetProfileUid && targetProfileUid !== currentUserUid) return; 
             document.getElementById('profileImageFileInput').click();
@@ -464,33 +479,35 @@
             if (file) {
                 const blobUrl = URL.createObjectURL(file);
                 myPersonalProfile.avatar = blobUrl;
+                mockUsersDB[currentUserUid].avatar = blobUrl;
                 document.getElementById('profileCardImage').src = blobUrl;
                 
                 const user = auth.currentUser;
                 if(user) { user.updateProfile({ photoURL: blobUrl }); }
                 
+                saveDBToLocalStorage();
                 renderTimeline();
-                alert("تم تحديث صورتك الشخصية في كامل أرجاء المنصة!");
+                alert("تم تحديث صورتك الشخصية بنجاح!");
             }
         }
 
-        // دالة التبديل بين المنصة الحالية والمنتدى القديم (من الإعدادات)
+        // تطبيق البيئة الحالية مع تخزينها محلياً لضمان عدم ضياعها بعد الإغلاق
         function modifyActiveTimeline(target) {
             currentTimelineState = target;
+            localStorage.setItem('AintzSavedTimelineMode', target);
             document.getElementById('platformModeSelect').value = target;
             const publishBtn = document.getElementById('publishBtnText');
 
             if(target === 'past') {
                 document.body.classList.add("mode-past");
-                publishBtn.innerText = dictionary[currentLanguage].btnTopic;
+                if (publishBtn) publishBtn.innerText = dictionary[currentLanguage].btnTopic;
             } else {
                 document.body.classList.remove("mode-past");
-                publishBtn.innerText = dictionary[currentLanguage].btnTweet;
+                if (publishBtn) publishBtn.innerText = dictionary[currentLanguage].btnTweet;
             }
             renderTimeline();
         }
 
-        // معالجة ونشر التغريدات والمواضيع بشكل منفصل تماماً
         document.getElementById('dynamicPostForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const area = document.getElementById('mainEditorArea');
@@ -505,31 +522,32 @@
                 uid: currentUserUid,
                 text: txt,
                 media: imgBlobUrl,
-                mode: currentTimelineState, // حفظ نوع البيئة (حالية أو منتدى قديم) لتفريق المنشورات
+                mode: currentTimelineState, 
                 timestamp: getLiveTimestamp(),
                 likes: 0,
-                comments: []
+                likedUsersList: [] // لحفظ الحسابات التي أبدت إعجابها ومنع التلاعب
             };
 
             globalPostsArray.unshift(newPost);
             area.value = '';
             fileInput.value = '';
+            saveDBToLocalStorage();
             renderTimeline();
         });
 
         function renderTimeline() {
             const container = document.getElementById('timelinePostsContainer');
+            if(!container) return;
             container.innerHTML = '';
-            // تصفية وعرض منشورات البيئة المحددة فقط لمنع التداخل
+            
             let filtered = globalPostsArray.filter(p => p.mode === currentTimelineState);
-
             filtered.forEach(post => {
-                container.appendChild(buildPostCardHtml(post, false));
+                container.appendChild(buildPostCardHtml(post));
             });
         }
 
-        function buildPostCardHtml(post, isInsideProfileView) {
-            const author = mockUsersDB[post.uid] || myPersonalProfile;
+        function buildPostCardHtml(post) {
+            const author = mockUsersDB[post.uid] || { display: "عضو اينتس", username: "@user", avatar: "https://i.ibb.co/rtgYtT7/image-7.png" };
             const card = document.createElement('div');
             card.className = 'post-feed-card';
             
@@ -552,6 +570,10 @@
 
             let mediaMarkup = post.media ? `<img src="${post.media}" style="width:100%; border-radius:12px; margin-top:12px; display:block;">` : '';
 
+            // تمييز ما إذا كان المستخدم الحالي قد أعجب بالتغريدة مسبقاً
+            if(!post.likedUsersList) { post.likedUsersList = []; }
+            const hasLiked = post.likedUsersList.includes(currentUserUid);
+
             card.innerHTML = `
                 <div class="card-top-header">${headerHTML}</div>
                 <div class="divider-line"></div>
@@ -559,9 +581,9 @@
                 ${mediaMarkup}
                 <div class="divider-line"></div>
                 <div class="actions-footer-container">
-                    <button class="like-btn-node" onclick="this.classList.toggle('activated')">
+                    <button class="like-btn-node ${hasLiked ? 'activated' : ''}" onclick="handleLikeTrigger('${post.id}', this)">
                         <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                        <span>${post.likes}</span>
+                        <span class="like-counter-val">${post.likes}</span>
                     </button>
                     ${post.uid === currentUserUid ? `<button class="delete-post-btn" onclick="deletePostItem('${post.id}')">${dictionary[currentLanguage].deleteText}</button>` : ''}
                 </div>
@@ -569,13 +591,45 @@
             return card;
         }
 
+        // نظام منع اللايك لنفسك المتطور بطلبك
+        function handleLikeTrigger(postId, btnNode) {
+            let targetPost = globalPostsArray.find(p => p.id === postId);
+            if (!targetPost) return;
+
+            // شرط منع الإعجاب بالنفس
+            if (targetPost.uid === currentUserUid) {
+                alert("يا خوي ما تقدر تعطي لايك لتغريدتك أو موضوعك بنفسك! 🛑");
+                return;
+            }
+
+            if (!targetPost.likedUsersList) { targetPost.likedUsersList = []; }
+
+            const userIndex = targetPost.likedUsersList.indexOf(currentUserUid);
+            const counterSpan = btnNode.querySelector('.like-counter-val');
+
+            if (userIndex > -1) {
+                // إلغاء اللايك
+                targetPost.likedUsersList.splice(userIndex, 1);
+                targetPost.likes = Math.max(0, targetPost.likes - 1);
+                btnNode.classList.remove('activated');
+            } else {
+                // إضافة لايك
+                targetPost.likedUsersList.push(currentUserUid);
+                targetPost.likes += 1;
+                btnNode.classList.add('activated');
+            }
+
+            if(counterSpan) counterSpan.innerText = targetPost.likes;
+            saveDBToLocalStorage();
+        }
+
         function deletePostItem(id) {
             globalPostsArray = globalPostsArray.filter(p => p.id !== id);
+            saveDBToLocalStorage();
             renderTimeline();
             if(document.getElementById('appProfileSecondPage').style.display === 'block') { renderProfileSubPosts(); }
         }
 
-        // فتح وعرض ملف تعريف أي مستخدم ومتابعته عند الضغط على صورته
         function openUserProfile(uid) {
             targetProfileUid = uid;
             const user = mockUsersDB[uid] || myPersonalProfile;
@@ -584,7 +638,6 @@
             document.getElementById('profileCardTitle').innerText = user.display;
             document.getElementById('profileCardHandle').innerText = user.username;
             
-            // إظهار أو إخفاء زر المتابعة بناءً على صاحب الحساب
             const followBtn = document.getElementById('profileFollowBtn');
             if(uid === currentUserUid) {
                 followBtn.style.display = 'none';
@@ -612,42 +665,45 @@
 
         function renderProfileSubPosts() {
             const view = document.getElementById('profileSubPostsView');
+            if(!view) return;
             view.innerHTML = '';
             let filtered = globalPostsArray.filter(p => p.uid === targetProfileUid && p.mode === currentProfileViewTab);
-            filtered.forEach(post => { view.appendChild(buildPostCardHtml(post, true)); });
+            filtered.forEach(post => { view.appendChild(buildPostCardHtml(post)); });
         }
 
-        // نظام المتابعة الحي والمباشر للحسابات ومزامنة الأعداد
         function toggleFollowAction() {
-            let myAccount = mockUsersDB[currentUserUid] || myPersonalProfile;
+            let myAccount = mockUsersDB[currentUserUid];
             let targetAccount = mockUsersDB[targetProfileUid];
 
-            if(!targetAccount) return;
-            if(!myAccount.followingList) { myAccount.followingList = new Set(); }
+            if(!targetAccount || !myAccount) return;
+            if(!myAccount.followingList) { myAccount.followingList = []; }
 
-            if(myAccount.followingList.has(targetProfileUid)) {
-                myAccount.followingList.delete(targetProfileUid);
+            const followIdx = myAccount.followingList.indexOf(targetProfileUid);
+
+            if(followIdx > -1) {
+                myAccount.followingList.splice(followIdx, 1);
                 targetAccount.followers = Math.max(0, (targetAccount.followers || 1) - 1);
                 myAccount.following = Math.max(0, (myAccount.following || 1) - 1);
             } else {
-                myAccount.followingList.add(targetProfileUid);
+                myAccount.followingList.push(targetProfileUid);
                 targetAccount.followers = (targetAccount.followers || 0) + 1;
                 myAccount.following = (myAccount.following || 0) + 1;
             }
 
             document.getElementById('statFollowersCount').innerText = targetAccount.followers;
+            saveDBToLocalStorage();
             updateFollowBtnStyle();
         }
 
         function updateFollowBtnStyle() {
             const btn = document.getElementById('profileFollowBtn');
-            let myAccount = mockUsersDB[currentUserUid] || myPersonalProfile;
-            if(myAccount.followingList && myAccount.followingList.has(targetProfileUid)) {
+            let myAccount = mockUsersDB[currentUserUid];
+            if(myAccount && myAccount.followingList && myAccount.followingList.includes(targetProfileUid)) {
                 btn.className = "follow-toggle-btn unfollow";
                 btn.innerText = "إلغاء المتابعة Unfollow";
             } else {
                 btn.className = "follow-toggle-btn";
-                btn.innerText = "🤝 متابعة Account";
+                btn.innerText = "🤝 متابعة الحساب";
             }
         }
 
@@ -659,9 +715,14 @@
 
         function handleFirebaseDeleteAccount() {
             const currentUser = auth.currentUser;
-            if (currentUser && confirm("⚠️ حذف الحساب نهائياً؟ لا يمكن التراجع عن هذا الإجراء.")) {
-                currentUser.delete().catch((e) => alert("يرجى إعادة تسجيل الدخول أولاً لأسباب أمنية: " + e.message));
+            if (currentUser && confirm("⚠️ حذف الحساب نهائياً؟")) {
+                currentUser.delete().catch((e) => alert("يرجى إعادة الدخول أولاً: " + e.message));
             }
+        }
+
+        function saveDBToLocalStorage() {
+            localStorage.setItem('AintzGlobalPosts', JSON.stringify(globalPostsArray));
+            localStorage.setItem('AintzUsersDB', JSON.stringify(mockUsersDB));
         }
 
         function switchPage(page) {
@@ -669,6 +730,7 @@
             document.getElementById('appTopBar').style.display = page === 'feed' ? 'flex' : 'none';
             document.getElementById('appProfileSecondPage').style.display = page === 'profile' ? 'block' : 'none';
             document.getElementById('appSettingsPage').style.display = page === 'settings' ? 'block' : 'none';
+            if(page === 'feed') { renderTimeline(); }
         }
 
         function changeAppLanguage(lang) {
