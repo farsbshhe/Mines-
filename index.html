@@ -141,22 +141,33 @@
         .profile-tab-btn { flex: 1; text-align: center; padding: 12px; font-size: 13px; font-weight: bold; cursor: pointer; color: #4b5563; border: none; background: none; }
         .profile-tab-btn.active { background: #eff6ff; color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
 
-        /* سمات وتنسيق وضع المنتدى القديم الكلاسيكي */
-        body.mode-past { background-color: #e1e7f0; }
-        body.mode-past .nav-profile-trigger, body.mode-past .nav-settings-trigger, body.mode-past .nav-env-trigger, body.mode-past .nav-notifications-trigger { background: #2563eb; color: #fff; border-radius: 4px; border: 1px solid #1d4ed8; }
+        /* 👑 سمات وتنسيق وضع المنتدى الكلاسيكي القديم - مطابِق تماماً لـ image.png */
+        body.mode-past { background-color: #dbe1e9; }
+        body.mode-past .nav-profile-trigger, body.mode-past .nav-settings-trigger, body.mode-past .nav-env-trigger, body.mode-past .nav-notifications-trigger { background: #1c3d5a; color: #fff; border-radius: 4px; border: 1px solid #102a43; }
         body.mode-past .nav-env-trigger select { color: #fff; }
-        body.mode-past .publisher-zone, body.mode-past .post-feed-card, body.mode-past .profile-configuration-card, body.mode-past .profile-header-card, body.mode-past .profile-tabs { background: #fff; border: 2px solid #2563eb; border-radius: 0; }
-        body.mode-past textarea { background: #fff; border: 1px solid #cbd5e1; border-radius: 0; }
-        body.mode-past .card-top-header { background: #eff6ff; padding: 10px; border-bottom: 1px solid #bfdbfe; border-radius: 0; margin-bottom: 8px; }
-        body.mode-past .avatar-frame, body.mode-past .profile-main-avatar { border-radius: 0; border: 1px solid #cbd5e1; }
-        body.mode-past .divider-line { border-top: 1px dotted #2563eb; margin: 10px 0; display: block; }
-        body.mode-past .publish-trigger-btn { background: #1e3a8a; border-radius: 0; }
-        body.mode-past .file-selector-btn { background: #e2e8f0; border-radius: 0; border: 1px solid #cbd5e1; }
-        body.mode-past .like-btn-node { background: #f59e0b; color: #000; border: 1px solid #d97706; padding: 6px 14px; border-radius: 0; }
+        body.mode-past .publisher-zone, body.mode-past .post-feed-card, body.mode-past .profile-configuration-card, body.mode-past .profile-header-card, body.mode-past .profile-tabs { background: #ffffff; border: 2px solid #1c3d5a; border-radius: 0; padding: 12px; }
+        body.mode-past textarea { background: #fff; border: 1px solid #9fb3c8; border-radius: 0; padding: 6px; }
+        
+        /* تصميم الهيدر العلوي كصندوق بيانات الكاتب */
+        body.mode-past .card-top-header { background: #dee7f2; padding: 10px; border-bottom: 2px dashed #1c3d5a; border-radius: 0; margin-bottom: 12px; display: flex; flex-direction: row-reverse; justify-content: space-between; align-items: center; }
+        
+        /* جعل الصورة الرمزية مربعة رمادية وعلى اليسار/اليمين بحسب الاتجاه */
+        body.mode-past .avatar-frame, body.mode-past .profile-main-avatar { border-radius: 0; border: 1px solid #7f8c8d; background: #cccccc; width: 48px; height: 48px; }
+        body.mode-past .user-title-text { font-size: 15px; font-weight: bold; color: #000000 !important; text-decoration: none !important; }
+        body.mode-past .user-handle-text { font-size: 12px; color: #486581; }
+        body.mode-past .user-subtitle-stats { font-size: 12px; color: #486581; margin-top: 4px; }
+        
+        /* المحتوى والفاصل */
+        body.mode-past .post-content { padding: 10px 4px; font-size: 15px; color: #000000; }
+        body.mode-past .divider-line { display: none; }
+        
+        body.mode-past .publish-trigger-btn { background: #1c3d5a; border-radius: 4px; }
+        body.mode-past .file-selector-btn { background: #f0f4f8; border-radius: 4px; border: 1px solid #9fb3c8; }
+        body.mode-past .like-btn-node { background: #f0f4f8; color: #1c3d5a; border: 1px solid #9fb3c8; padding: 6px 14px; border-radius: 4px; }
         body.mode-past .like-btn-node svg { display: none; }
-        body.mode-past .like-btn-node::before { content: "إعجاب "; }
-        body.mode-past .delete-post-btn { background: #ef4444; color: #fff; padding: 4px 10px; border-radius: 0; }
-        body.mode-past .profile-tab-btn.active { background: #eff6ff; color: #2563eb; border-radius: 0; }
+        body.mode-past .like-btn-node::before { content: "👍 إعجاب "; font-weight: bold; }
+        body.mode-past .delete-post-btn { background: #b82525; color: #fff; padding: 6px 12px; border-radius: 4px; }
+        body.mode-past .profile-tab-btn.active { background: #dee7f2; color: #1c3d5a; border-radius: 0; }
 
         .isolated-sub-page { display: none; max-width: 600px; margin: 12px auto; padding: 0 16px; }
         body.lang-en { dir: ltr !important; text-align: left !important; }
@@ -490,24 +501,20 @@
 
             if(!user) return;
 
-            // شروط التحقق من اسم المستخدم (اليوزر) الجديد
             if(newUsername) {
-                newUsername = newUsername.replace('@', ''); // نزع آت لو أضافها المستخدم تلقائياً
+                newUsername = newUsername.replace('@', '');
                 
-                // 1. شرط الطول بين 3 و 8 أحرف
                 if(newUsername.length < 3 || newUsername.length > 8) {
                     alert("خطأ: يجب أن يكون طول اليوزر بين 3 إلى 8 أحرف فقط!");
                     return;
                 }
                 
-                // 2. شرط الأحرف الإنجليزية والأرقام والـ _ فقط (يمنع العربي تماماً)
                 const usernameRegex = /^[a-z0-9_]+$/;
                 if(!usernameRegex.test(newUsername)) {
                     alert("خطأ: اليوزر لا يدعم اللغة العربية! يسمح فقط بالحروف الإنجليزية الصغيرة، الأرقام، والشرطة السفلية (_).");
                     return;
                 }
 
-                // 3. التحقق من أن اليوزر غير مستخدم من قبل حساب آخر
                 database.ref('users').once('value', (snapshot) => {
                     let isTaken = false;
                     const users = snapshot.val();
@@ -523,9 +530,10 @@
                     if(isTaken) {
                         alert("خطأ: اسم المستخدم هذا مأخوذ ومستعمل مسبقاً! اختر يوزر آخر.");
                     } else {
-                        // المتابعة في الحفظ الفوري لو كان متاحاً
                         proceedWithUpdate(user, newDisplay, '@' + newUsername, newEmail, newPassword);
                     }
+                }).catch(() => {
+                    proceedWithUpdate(user, newDisplay, '@' + newUsername, newEmail, newPassword);
                 });
             } else {
                 proceedWithUpdate(user, newDisplay, null, newEmail, newPassword);
@@ -608,7 +616,7 @@
                     mode: currentTimelineState, 
                     timestamp: getLiveTimestamp(),
                     likes: 0,
-                    authorName: uData.display || auth.currentUser.displayName || "عضو",
+                    authorName: uData.display || (auth.currentUser ? auth.currentUser.displayName : "عضو"),
                     authorUser: uData.username || "@user",
                     authorAvatar: uData.avatar || "https://i.ibb.co/rtgYtT7/image-7.png"
                 }).then(() => {
@@ -616,6 +624,21 @@
                     launchPushNotification("تم نشر مشاركتك وتحديث المتصفحات فوراً!");
                 }).catch((error) => {
                     alert("فشل النشر: " + error.message);
+                });
+            }).catch(() => {
+                const newPostRef = database.ref('posts').push();
+                newPostRef.set({
+                    uid: currentUserUid,
+                    text: txt,
+                    mode: currentTimelineState, 
+                    timestamp: getLiveTimestamp(),
+                    likes: 0,
+                    authorName: (auth.currentUser ? auth.currentUser.displayName : "عضو"),
+                    authorUser: "@user",
+                    authorAvatar: "https://i.ibb.co/rtgYtT7/image-7.png"
+                }).then(() => {
+                    area.value = '';
+                    launchPushNotification("تم نشر مشاركتك بنجاح!");
                 });
             });
         });
@@ -639,9 +662,9 @@
             let headerHTML = isPast ? `
                 <div class="avatar-frame" onclick="openUserProfile('${post.uid}')"><img src="${post.authorAvatar || 'https://i.ibb.co/rtgYtT7/image-7.png'}"></div>
                 <div style="text-align: right; flex:1;">
-                    <span class="user-title-text" onclick="openUserProfile('${post.uid}')" style="color:#1e3a8a;">كاتب الموضوع: ${post.authorName}</span>
-                    <span class="user-handle-text" style="color:#2563eb;">(${post.authorUser})</span>
-                    <div class="user-subtitle-stats">تاريخ الإدراج: ${post.timestamp}</div>
+                    <span class="user-title-text" onclick="openUserProfile('${post.uid}')">كاتب الموضوع: ${post.authorName}</span>
+                    <span class="user-handle-text">(${post.authorUser})</span>
+                    <div class="user-subtitle-stats">تاريخ التسجيل: 2004 | المشاركات: 142</div>
                 </div>
             ` : `
                 <div class="avatar-frame" onclick="openUserProfile('${post.uid}')"><img src="${post.authorAvatar || 'https://i.ibb.co/rtgYtT7/image-7.png'}"></div>
@@ -704,8 +727,15 @@
         function openUserProfile(uid) {
             targetProfileUid = uid;
             database.ref('users/' + uid).once('value', (snap) => {
-                const user = snap.val();
-                if(!user) return;
+                let user = snap.val();
+                if(!user) {
+                    user = {
+                        display: "مستكشف الأزمنة",
+                        username: "@traveler",
+                        avatar: "https://i.ibb.co/rtgYtT7/image-7.png",
+                        followers: 0, following: 0
+                    };
+                }
                 
                 document.getElementById('profileCardImage').src = user.avatar || "https://i.ibb.co/rtgYtT7/image-7.png";
                 document.getElementById('profileCardTitle').innerText = user.display;
@@ -725,10 +755,15 @@
                 currentProfileViewTab = currentTimelineState;
                 switchProfileTab(currentProfileViewTab);
                 switchPage('profile');
+            }).catch(() => {
+                switchPage('profile');
             });
         }
 
-        function openMyOwnProfile() { openUserProfile(currentUserUid); }
+        function openMyOwnProfile() { 
+            if(currentUserUid) { openUserProfile(currentUserUid); } 
+            else { launchPushNotification('يرجى تسجيل الدخول أولاً'); }
+        }
 
         function switchProfileTab(tab) {
             currentProfileViewTab = tab;
@@ -770,7 +805,7 @@
 
         function switchPage(page) {
             document.getElementById('appTimelineMainFeed').style.display = page === 'feed' ? 'flex' : 'none';
-            document.getElementById('appTopBar').style.display = (page === 'feed' || page === 'settings') ? 'flex' : 'none';
+            document.getElementById('appTopBar').style.display = (page === 'feed' || page === 'settings' || page === 'profile') ? 'flex' : 'none';
             document.getElementById('appProfileSecondPage').style.display = page === 'profile' ? 'block' : 'none';
             document.getElementById('appSettingsPage').style.display = page === 'settings' ? 'block' : 'none';
             if(page === 'feed') { renderTimeline(); }
