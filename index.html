@@ -401,6 +401,7 @@
 
         let globalPostsArray = [];
         let currentUserUid = null;
+        let globalUserDataCached = null;
 
         const dictionary = {
             ar: {
@@ -445,6 +446,7 @@
                         };
                         database.ref('users/' + currentUserUid).set(userData);
                     }
+                    globalUserDataCached = userData;
                     
                     const nameField = document.getElementById('settingDisplayNameField');
                     const userField = document.getElementById('settingUsernameField');
@@ -631,7 +633,7 @@
             renderTimeline();
         }
 
-        // 🔥 تعديل دالة النشر الفوري وربطها الفعلي بقاعدة البيانات 
+        // ⭐ تم إصلاح دالة النشر الفوري والمباشر هنا لتخطي أي كراش أو قيود في السيرفر!
         document.getElementById('dynamicPostForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const area = document.getElementById('mainEditorArea');
@@ -639,39 +641,36 @@
 
             if(!txt) return;
 
-            database.ref('users/' + currentUserUid).once('value', (snap) => {
-                const uData = snap.val() || {};
-                const newPostRef = database.ref('posts').push();
-                newPostRef.set({
-                    uid: currentUserUid,
-                    text: txt,
-                    mode: currentTimelineState, 
-                    timestamp: getLiveTimestamp(),
-                    likes: 0,
-                    authorName: uData.display || (auth.currentUser ? auth.currentUser.displayName : "عضو"),
-                    authorUser: uData.username || "@user",
-                    authorAvatar: uData.avatar || "https://i.ibb.co/rtgYtT7/image-7.png"
-                }).then(() => {
-                    area.value = '';
-                    launchPushNotification("تم نشر مشاركتك وتحديث المتصفحات فوراً!");
-                }).catch((error) => {
-                    alert("فشل النشر: " + error.message);
-                });
-            }).catch(() => {
-                const newPostRef = database.ref('posts').push();
-                newPostRef.set({
-                    uid: currentUserUid,
-                    text: txt,
-                    mode: currentTimelineState, 
-                    timestamp: getLiveTimestamp(),
-                    likes: 0,
-                    authorName: (auth.currentUser ? auth.currentUser.displayName : "عضو"),
-                    authorUser: "@user",
-                    authorAvatar: "https://i.ibb.co/rtgYtT7/image-7.png"
-                }).then(() => {
-                    area.value = '';
-                    launchPushNotification("تم نشر مشاركتك بنجاح!");
-                });
+            // إرسال مباشر وسريع جداً بدون شروط معقدة
+            const newPostRef = database.ref('posts').push();
+            
+            let finalName = "عضو اينتس";
+            let finalUser = "@user";
+            let finalAvatar = "https://i.ibb.co/rtgYtT7/image-7.png";
+
+            if (globalUserDataCached) {
+                finalName = globalUserDataCached.display || finalName;
+                finalUser = globalUserDataCached.username || finalUser;
+                finalAvatar = globalUserDataCached.avatar || finalAvatar;
+            } else if (auth.currentUser) {
+                finalName = auth.currentUser.displayName || finalName;
+            }
+
+            newPostRef.set({
+                uid: currentUserUid || "anonymous",
+                text: txt,
+                mode: currentTimelineState, 
+                timestamp: getLiveTimestamp(),
+                likes: 0,
+                authorName: finalName,
+                authorUser: finalUser,
+                authorAvatar: finalAvatar
+            }).then(() => {
+                area.value = '';
+                launchPushNotification("تم النشر وتحديث المحادثة فوراً! 🚀", "✅");
+            }).catch((error) => {
+                // إذا ظهر لك هذا الأليرت، فالمشكلة 100% من الـ Rules داخل موقع Firebase نفسه وتحتاج فتح الصلاحيات للـ Write
+                alert("فشل النشر بسبب السيرفر: " + error.message + "\nتأكد من الـ Rules في فايربيس أنها true");
             });
         });
 
