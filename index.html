@@ -148,9 +148,7 @@
         
         .commit-and-close-btn { background: #1d9bf0; color: #fff; border: none; padding: 12px; font-weight: bold; cursor: pointer; width: 100%; border-radius: 24px; margin-top: 10px; }
 
-        /* ==========================================================================
-           قوالب وتنسيقات الـ المنتدى (الزمن القديم الكلاسيكي)
-           ========================================================================== */
+        /* قوالب وتنسيقات الـ المنتدى (الزمن القديم الكلاسيكي) */
         body.mode-past { background-color: #e1e7f0; }
         body.mode-past .nav-profile-trigger, body.mode-past .nav-settings-trigger { background: #2563eb; color: #fff; border-radius: 4px; border: 1px solid #1d4ed8; }
         body.mode-past .universal-header { border: 2px solid #2563eb; background: #fff; border-radius: 0; gap: 0; padding: 0; }
@@ -184,6 +182,9 @@
         body.lang-en .form-input-row { text-align: left !important; }
         body.lang-en .form-input-row label { text-align: left !important; }
     </style>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
 <body>
 
@@ -222,14 +223,14 @@
                     <input type="password" id="authPasswordInput" required placeholder="••••••••">
                 </div>
 
-                <button type="submit" class="commit-and-close-btn" id="authSubmitBtn">دخول غصب للمنصة</button>
+                <button type="submit" class="commit-and-close-btn" id="authSubmitBtn">تسجيل الدخول</button>
             </form>
 
             <div class="oauth-providers-group">
-                <button class="oauth-btn google" id="btnOauthGoogle" onclick="simulateOAuth('Google')">
+                <button class="oauth-btn google" id="btnOauthGoogle" onclick="handleFirebaseOAuth('Google')">
                     <span>الربط السريع عبر سحابة Google</span>
                 </button>
-                <button class="oauth-btn apple" id="btnOauthApple" onclick="simulateOAuth('Apple')">
+                <button class="oauth-btn apple" id="btnOauthApple" onclick="handleFirebaseOAuth('Apple')">
                     <span>الربط السريع عبر معرف Apple ID</span>
                 </button>
             </div>
@@ -262,7 +263,7 @@
         
         <div class="publisher-zone">
             <form id="dynamicPostForm">
-                <textarea id="mainEditorArea" placeholder="وش قاعد يصير في تفكيرك الآن؟" required></textarea>
+                <textarea id="mainEditorArea" placeholder="وش قاعد يصير في تفكيرك الآن?" required></textarea>
                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
                     <button type="submit" class="publish-trigger-btn" id="publishBtnText">نشر التغريدة</button>
                     <label for="mediaAttachmentInput" class="file-selector-btn" id="fileBtnText">إرفاق صورة</label>
@@ -331,11 +332,28 @@
 
 
     <script>
+        // ==========================================================================
+        // إعدادات الـ Firebase الخاصة بك
+        // استبدل الكائن أدناه ببيانات مشروعك الحقيقية من لوحة تحكم Firebase Console
+        // ==========================================================================
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        // بدء تهيئة Firebase
+        if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+            firebase.initializeApp(firebaseConfig);
+        }
+
         let currentTimelineState = "present"; 
         let currentAuthMode = "login";
         let currentLanguage = "ar";
 
-        // قاعدة بيانات الهوية الموحدة للمستخدم
         let userAccountData = {
             display: "مستكشف الأزمنة",
             username: "@traveler",
@@ -345,10 +363,9 @@
             appleLinked: false
         };
 
-        // نصوص اللغات المترجمة بالكامل لاسم التطبيق الثنائي والترجمة الكاملة لشاشة الدخول والداخل
         const dictionary = {
             ar: {
-                authLogo: "اينتس", login: "تسجيل الدخول", register: "إنشاء حساب جديد", entry: "دخول غصب للمنصة",
+                authLogo: "اينتس", login: "تسجيل الدخول", register: "إنشاء حساب جديد", entry: "تسجيل الدخول",
                 name: "الاسم الكامل (اسم العرض):", user: "اسم المستخدم (اليوزر @):", email: "البريد الإلكتروني:", pass: "كلمة المرور:",
                 writeText: "وش قاعد يصير في تفكيرك الآن؟", btnTweet: "نشر التغريدة", btnTopic: "إضافة موضوع جديد",
                 imgBtn: "إرفاق صورة", controlBtn: "لوحة تحكم العضو", settingsBtn: "⚙️ الإعدادات",
@@ -359,7 +376,7 @@
                 settingOauth: "حالة ربط الحسابات الخارجية:", settingBack: "العودة للتايملاين"
             },
             en: {
-                authLogo: "Aintz", login: "Login", register: "Register New Account", entry: "Force Login To Platform",
+                authLogo: "Aintz", login: "Login", register: "Register New Account", entry: "Sign In",
                 name: "Full Display Name:", user: "Username (Handle @):", email: "Email Address:", pass: "Password:",
                 writeText: "What is happening in your mind now?", btnTweet: "Post Tweet", btnTopic: "Post New Topic",
                 imgBtn: "Attach Image", controlBtn: "User Control Panel", settingsBtn: "⚙️ Settings",
@@ -378,7 +395,7 @@
             
             document.getElementById('authNameRow').style.display = mode === 'register' ? 'block' : 'none';
             document.getElementById('authUsernameRow').style.display = mode === 'register' ? 'block' : 'none';
-            document.getElementById('authSubmitBtn').innerText = mode === 'login' ? (currentLanguage === 'ar' ? "دخول غصب للمنصة" : "Force Login To Platform") : (currentLanguage === 'ar' ? "إنشاء الحساب والدخول فوراً" : "Register & Login Now");
+            document.getElementById('authSubmitBtn').innerText = mode === 'login' ? (currentLanguage === 'ar' ? "تسجيل الدخول" : "Sign In") : (currentLanguage === 'ar' ? "إنشاء الحساب والدخول فوراً" : "Register & Login Now");
         }
 
         function handleAuthSubmit(e) {
@@ -391,7 +408,6 @@
             userAccountData.email = document.getElementById('authEmailInput').value;
             userAccountData.password = document.getElementById('authPasswordInput').value;
 
-            // مزامنة البيانات في الحقول الأخرى تلقائياً
             document.getElementById('fieldProfileDisplayName').value = userAccountData.display;
             document.getElementById('fieldProfileHandle').value = userAccountData.username;
             document.getElementById('settingEmailField').value = userAccountData.email;
@@ -401,10 +417,45 @@
             injectDefaultPosts();
         }
 
-        function simulateOAuth(platform) {
-            alert(`تم محاكاة تسجيل الدخول الإجباري السريع بنجاح وتوثيق هويتك عبر سيرفرات: ${platform}`);
-            document.getElementById('authOverlayScreen').style.display = 'none';
-            injectDefaultPosts();
+        // دالة الـ OAuth الحقيقية المربوطة بالفيربيس ومضاف لها كود إجبار اختيار الحساب
+        function handleFirebaseOAuth(platform) {
+            if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+                // محاكاة عمل واجهة المستخدم إذا لم يتم وضع مفاتيح API الحقيقية بعد
+                alert(`[وضع المعاينة]: سيتم تشغيل نافذة اختيار حساب ${platform} الحقيقية بمجرد ربط الـ API Key الخاص بك في الكود.`);
+                document.getElementById('authOverlayScreen').style.display = 'none';
+                injectDefaultPosts();
+                return;
+            }
+
+            let provider;
+            if (platform === 'Google') {
+                provider = new firebase.auth.GoogleAuthProvider();
+                // إجبار قوقل على إظهار نافذة اختيار الحساب دائماً وعدم الدخول التلقائي
+                provider.setCustomParameters({ prompt: 'select_account' });
+            } else if (platform === 'Apple') {
+                provider = new firebase.auth.OAuthProvider('apple.com');
+                provider.addScope('email');
+                provider.addScope('name');
+            }
+
+            firebase.auth().signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    userAccountData.display = user.displayName || "مستخدم متصل";
+                    userAccountData.email = user.email;
+                    userAccountData.username = "@" + (user.email.split('@')[0]);
+
+                    document.getElementById('fieldProfileDisplayName').value = userAccountData.display;
+                    document.getElementById('fieldProfileHandle').value = userAccountData.username;
+
+                    document.getElementById('authOverlayScreen').style.display = 'none';
+                    injectDefaultPosts();
+                    alert(`أهلاً بك! تم تسجيل الدخول بنجاح عبر حسابك في ${platform}`);
+                })
+                .catch((error) => {
+                    console.error("خطأ أثناء تسجيل الدخول: ", error);
+                    alert("حدث خطأ أثناء الاتصال: " + error.message);
+                });
         }
 
         function togglePlatformLink(platform) {
@@ -423,8 +474,6 @@
 
         function changeAppLanguage(lang) {
             currentLanguage = lang;
-            
-            // مزامنة القائمتين (شاشة الدخول + الإعدادات الداخلة)
             document.getElementById('authLanguageSelect').value = lang;
             document.getElementById('settingLanguageSelect').value = lang;
 
@@ -436,19 +485,16 @@
                 document.documentElement.dir = "rtl";
             }
             
-            // تحديث الواجهات حياً وترجمة كافة عناصر النص لمنع التداخل والخلط
             const d = dictionary[lang];
             document.getElementById('authLogoText').innerText = d.authLogo;
             document.getElementById('tabLogin').innerText = d.login;
             document.getElementById('tabRegister').innerText = d.register;
             
-            // ترجمة تسميات حقول شاشة الدخول (حل مشكلة بقاء الحقول بالعربي في الإنجليزي)
             document.getElementById('lblAuthName').innerText = d.name;
             document.getElementById('lblAuthUser').innerText = d.user;
             document.getElementById('lblAuthEmail').innerText = d.email;
             document.getElementById('lblAuthPass').innerText = d.pass;
             
-            // أزرار قوقل وأبل والداخل
             document.querySelector('#btnOauthGoogle span').innerText = d.oauthGoogle;
             document.querySelector('#btnOauthApple span').innerText = d.oauthApple;
             
@@ -459,7 +505,6 @@
             document.getElementById('presentStyleTab').querySelector('span').innerText = d.currentStyle;
             document.getElementById('pastStyleTab').querySelector('span').innerText = d.oldStyle;
             
-            // ترجمة صفحة الإعدادات والبروفايل بالكامل
             document.getElementById('settingTitle').innerText = d.settingTitle;
             document.getElementById('lblSettingLang').innerText = d.settingLang;
             document.getElementById('lblSettingEmail').innerText = d.settingEmail;
