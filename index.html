@@ -72,7 +72,7 @@
             display: flex; justify-content: space-between; align-items: center; gap: 10px;
         }
         .nav-buttons-group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-        .nav-profile-trigger, .nav-settings-trigger, .nav-env-trigger {
+        .nav-profile-trigger, .nav-settings-trigger, .nav-env-trigger, .nav-notifications-trigger {
             padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; 
             cursor: pointer; background: #fff; border: 1px solid #e5e7eb; color: #4b5563;
             display: flex; align-items: center; gap: 4px; outline: none;
@@ -143,7 +143,7 @@
 
         /* سمات وتنسيق وضع المنتدى القديم الكلاسيكي */
         body.mode-past { background-color: #e1e7f0; }
-        body.mode-past .nav-profile-trigger, body.mode-past .nav-settings-trigger, body.mode-past .nav-env-trigger { background: #2563eb; color: #fff; border-radius: 4px; border: 1px solid #1d4ed8; }
+        body.mode-past .nav-profile-trigger, body.mode-past .nav-settings-trigger, body.mode-past .nav-env-trigger, body.mode-past .nav-notifications-trigger { background: #2563eb; color: #fff; border-radius: 4px; border: 1px solid #1d4ed8; }
         body.mode-past .nav-env-trigger select { color: #fff; }
         body.mode-past .publisher-zone, body.mode-past .post-feed-card, body.mode-past .profile-configuration-card, body.mode-past .profile-header-card, body.mode-past .profile-tabs { background: #fff; border: 2px solid #2563eb; border-radius: 0; }
         body.mode-past textarea { background: #fff; border: 1px solid #cbd5e1; border-radius: 0; }
@@ -224,6 +224,9 @@
             <button class="nav-profile-trigger" onclick="openMyOwnProfile()">
                 <span>👤 ملف التعريف</span>
             </button>
+            <button class="nav-notifications-trigger" onclick="launchPushNotification('لا توجد تنبيهات جديدة حالياً', '🔔')">
+                <span>🔔 التنبيهات</span>
+            </button>
             <button class="nav-settings-trigger" onclick="switchPage('settings')">
                 <span>⚙️ الإعدادات</span>
             </button>
@@ -302,7 +305,8 @@
 
             <div class="form-input-row">
                 <label>تعديل اسم المستخدم (اليوزر الجديد):</label>
-                <input type="text" id="settingUsernameField" placeholder="مثال: @my_handle">
+                <input type="text" id="settingUsernameField" placeholder="مثال: my_handle">
+                <small style="color: #6b7280; font-size: 11px;">(شروط اليوزر: حروف إنجليزية صغيرة، أرقام، و _ فقط. الطول من 3 إلى 8 أحرف)</small>
             </div>
 
             <hr style="margin: 15px 0; border: 0; border-top: 1px solid #e5e7eb;">
@@ -338,7 +342,6 @@
     </div>
 
     <script>
-        // تكوين الـ Firebase الخاص بك المرتبط بقواعد البيانات المتزامنة
         const firebaseConfig = {
             apiKey: "AIzaSyAI23gvlRESb1Eivn5xjuq1y9U-pcixYsw",
             authDomain: "fit-app-1c1a8.firebaseapp.com",
@@ -352,7 +355,7 @@
         
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
-        const database = firebase.database(); // تفعيل نظام السيرفر المتزامن فورياً
+        const database = firebase.database();
 
         let currentTimelineState = localStorage.getItem('AintzSavedTimelineMode') || "present"; 
         let currentAuthMode = "login";
@@ -380,7 +383,6 @@
             }
         };
 
-        // دالة عرض التنبيهات الفورية العلوية
         function launchPushNotification(text, icon = "🔔") {
             const toast = document.getElementById('appNotificationToast');
             document.getElementById('notificationIcon').innerText = icon;
@@ -389,18 +391,16 @@
             setTimeout(() => { toast.classList.remove('show'); }, 3500);
         }
 
-        // الاستماع الفوري لحالة المستخدم وجلب بياناته ومزامنته سحابياً
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUserUid = user.uid;
                 
-                // ربط ومزامنة البروفايل مباشرة مع الـ Realtime Database
                 database.ref('users/' + currentUserUid).on('value', (snapshot) => {
                     let userData = snapshot.val();
                     if (!userData) {
                         userData = {
                             display: user.displayName || "عضو اينتس الجديد",
-                            username: "@" + (user.email ? user.email.split('@')[0] : "user_" + user.uid.substring(0,4)),
+                            username: "@user_" + user.uid.substring(0,4),
                             avatar: "https://i.ibb.co/rtgYtT7/image-7.png",
                             followers: 0,
                             following: 0
@@ -409,7 +409,7 @@
                     }
                     
                     document.getElementById('settingDisplayNameField').value = userData.display || "";
-                    document.getElementById('settingUsernameField').value = userData.username || "";
+                    document.getElementById('settingUsernameField').value = (userData.username || "").replace('@', '');
                 });
 
                 document.getElementById('settingEmailField').value = user.email || "";
@@ -418,7 +418,6 @@
                 document.getElementById('authOverlayScreen').style.display = 'none';
                 modifyActiveTimeline(currentTimelineState);
                 
-                // الاستماع الفوري والحي للمنشورات من السيرفر لمزامنة الكروم وسفاري معًا تلقائيًا
                 listenToLiveGlobalFeed();
             } else {
                 document.getElementById('authOverlayScreen').style.display = 'flex';
@@ -459,7 +458,7 @@
                         result.user.updateProfile({ displayName: displayName });
                         database.ref('users/' + result.user.uid).set({
                             display: displayName,
-                            username: "@" + email.split('@')[0],
+                            username: "@user_" + result.user.uid.substring(0,4),
                             avatar: "https://i.ibb.co/rtgYtT7/image-7.png",
                             followers: 0, following: 0
                         });
@@ -482,27 +481,65 @@
                 .catch((error) => { alert("خطأ ارتباط: " + error.message); });
         }
 
-        // تحديث وإضافة البريد وكلمة المرور وتعديل الاسم واليوزر معاً وحفظهم في السيرفر
         function updateSecurityCredentials() {
             const user = auth.currentUser;
             const newEmail = document.getElementById('settingEmailField').value.trim();
             const newPassword = document.getElementById('settingPasswordField').value;
             const newDisplay = document.getElementById('settingDisplayNameField').value.trim();
-            let newUsername = document.getElementById('settingUsernameField').value.trim();
+            let newUsername = document.getElementById('settingUsernameField').value.trim().toLowerCase();
 
             if(!user) return;
 
+            // شروط التحقق من اسم المستخدم (اليوزر) الجديد
+            if(newUsername) {
+                newUsername = newUsername.replace('@', ''); // نزع آت لو أضافها المستخدم تلقائياً
+                
+                // 1. شرط الطول بين 3 و 8 أحرف
+                if(newUsername.length < 3 || newUsername.length > 8) {
+                    alert("خطأ: يجب أن يكون طول اليوزر بين 3 إلى 8 أحرف فقط!");
+                    return;
+                }
+                
+                // 2. شرط الأحرف الإنجليزية والأرقام والـ _ فقط (يمنع العربي تماماً)
+                const usernameRegex = /^[a-z0-9_]+$/;
+                if(!usernameRegex.test(newUsername)) {
+                    alert("خطأ: اليوزر لا يدعم اللغة العربية! يسمح فقط بالحروف الإنجليزية الصغيرة، الأرقام، والشرطة السفلية (_).");
+                    return;
+                }
+
+                // 3. التحقق من أن اليوزر غير مستخدم من قبل حساب آخر
+                database.ref('users').once('value', (snapshot) => {
+                    let isTaken = false;
+                    const users = snapshot.val();
+                    if(users) {
+                        for(let uid in users) {
+                            if(uid !== currentUserUid && users[uid].username === '@' + newUsername) {
+                                isTaken = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if(isTaken) {
+                        alert("خطأ: اسم المستخدم هذا مأخوذ ومستعمل مسبقاً! اختر يوزر آخر.");
+                    } else {
+                        // المتابعة في الحفظ الفوري لو كان متاحاً
+                        proceedWithUpdate(user, newDisplay, '@' + newUsername, newEmail, newPassword);
+                    }
+                });
+            } else {
+                proceedWithUpdate(user, newDisplay, null, newEmail, newPassword);
+            }
+        }
+
+        function proceedWithUpdate(user, newDisplay, finalUsername, newEmail, newPassword) {
             let updates = {};
             if(newDisplay) updates.display = newDisplay;
-            if(newUsername) {
-                if(!newUsername.startsWith('@')) { newUsername = '@' + newUsername; }
-                updates.username = newUsername;
-            }
+            if(finalUsername) updates.username = finalUsername;
 
-            // تحديث السيرفر بالاسم واليوزر الجديدين معًا فورًا
             database.ref('users/' + currentUserUid).update(updates).then(() => {
                 if(newDisplay) user.updateProfile({ displayName: newDisplay });
-                launchPushNotification("تم حفظ الاسم الكامل واليوزر الجديدين سحابياً بنجاح!", "✅");
+                launchPushNotification("تم حفظ التعديلات واليوزر الجديد بنجاح!", "✅");
             });
 
             if(newEmail && newEmail !== user.email) {
@@ -539,7 +576,6 @@
             }
         }
 
-        // تطبيق البيئة الحالية مع تخزينها محلياً لضمان عدم ضياعها بعد الإغلاق
         function modifyActiveTimeline(target) {
             currentTimelineState = target;
             localStorage.setItem('AintzSavedTimelineMode', target);
@@ -572,12 +608,14 @@
                     mode: currentTimelineState, 
                     timestamp: getLiveTimestamp(),
                     likes: 0,
-                    authorName: uData.display || "عضو",
+                    authorName: uData.display || auth.currentUser.displayName || "عضو",
                     authorUser: uData.username || "@user",
                     authorAvatar: uData.avatar || "https://i.ibb.co/rtgYtT7/image-7.png"
                 }).then(() => {
                     area.value = '';
                     launchPushNotification("تم نشر مشاركتك وتحديث المتصفحات فوراً!");
+                }).catch((error) => {
+                    alert("فشل النشر: " + error.message);
                 });
             });
         });
@@ -636,7 +674,6 @@
             return card;
         }
 
-        // ميزة إتاحة الإعجاب واللايك للنفس بشكل طبيعي 100% مع إطلاق تنبيه فوري
         function handleLikeTrigger(postId) {
             const postRef = database.ref('posts/' + postId);
             postRef.once('value', (snap) => {
@@ -650,8 +687,6 @@
                 } else {
                     post.likedUsers[currentUserUid] = true;
                     post.likes = (post.likes || 0) + 1;
-                    
-                    // إطلاق التنبيه الفوري باللايك (يعمل حتى لو كان للمستخدم نفسه)
                     launchPushNotification(`حصلت مشاركتك على إعجاب جديد! ❤️`, "❤️");
                 }
                 postRef.update({ likes: post.likes, likedUsers: post.likedUsers });
@@ -735,7 +770,7 @@
 
         function switchPage(page) {
             document.getElementById('appTimelineMainFeed').style.display = page === 'feed' ? 'flex' : 'none';
-            document.getElementById('appTopBar').style.display = page === 'feed' ? 'flex' : 'none';
+            document.getElementById('appTopBar').style.display = (page === 'feed' || page === 'settings') ? 'flex' : 'none';
             document.getElementById('appProfileSecondPage').style.display = page === 'profile' ? 'block' : 'none';
             document.getElementById('appSettingsPage').style.display = page === 'settings' ? 'block' : 'none';
             if(page === 'feed') { renderTimeline(); }
