@@ -30,6 +30,16 @@
             transition: all 0.2s ease;
         }
 
+        /* نظام التنبيهات المنبثقة الفورية */
+        #appNotificationToast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: #1d9bf0; color: white; padding: 12px 24px; border-radius: 30px;
+            font-size: 14px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            z-index: 999999; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; align-items: center; gap: 8px; direction: rtl;
+        }
+        #appNotificationToast.show { transform: translateX(-50%) translateY(0); }
+
         /* شاشة تسجيل الدخول الإجبارية */
         #authOverlayScreen {
             position: fixed; top:0; left:0; width:100%; height:100%; 
@@ -155,8 +165,14 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
+
+    <div id="appNotificationToast">
+        <span id="notificationIcon">🔔</span>
+        <span id="notificationMessageText">تنبيه جديد!</span>
+    </div>
 
     <div id="authOverlayScreen">
         <div class="auth-container">
@@ -225,7 +241,7 @@
     <main class="feed-layout-wrapper" id="appTimelineMainFeed">
         <div class="publisher-zone">
             <form id="dynamicPostForm">
-                <textarea id="mainEditorArea" placeholder="وش قاعد يصير في تفكيرك الآن؟" required></textarea>
+                <textarea id="mainEditorArea" placeholder="وش قاعد يصير في تفكيرك الآن?" required></textarea>
                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
                     <button type="submit" class="publish-trigger-btn" id="publishBtnText">نشر التغريدة</button>
                     <label for="mediaAttachmentInput" class="file-selector-btn" id="fileBtnText">إرفاق صورة</label>
@@ -280,6 +296,11 @@
             </div>
 
             <div class="form-input-row">
+                <label>تعديل الاسم الكامل (اسم العرض الجديد):</label>
+                <input type="text" id="settingDisplayNameField" placeholder="الاسم الكامل الجديد">
+            </div>
+
+            <div class="form-input-row">
                 <label>تعديل اسم المستخدم (اليوزر الجديد):</label>
                 <input type="text" id="settingUsernameField" placeholder="مثال: @my_handle">
             </div>
@@ -296,7 +317,7 @@
                 <label>تحديث كلمة مرور الحساب:</label>
                 <input type="password" id="settingPasswordField" placeholder="اكتب كلمة المرور الجديدة">
             </div>
-            <button class="commit-and-close-btn" onclick="updateSecurityCredentials()">💾 حفظ التعديلات واليوزر الجديد</button>
+            <button class="commit-and-close-btn" onclick="updateSecurityCredentials()">💾 حفظ الاسم واليوزر وباقي التعديلات</button>
 
             <div class="form-input-row" style="margin-top:20px;">
                 <label>حالة ربط وتوثيق الحسابات الخارجية:</label>
@@ -317,10 +338,11 @@
     </div>
 
     <script>
-        // تكوين الـ Firebase الافتراضي الخاص بك
+        // تكوين الـ Firebase الخاص بك المرتبط بقواعد البيانات المتزامنة
         const firebaseConfig = {
             apiKey: "AIzaSyAI23gvlRESb1Eivn5xjuq1y9U-pcixYsw",
             authDomain: "fit-app-1c1a8.firebaseapp.com",
+            databaseURL: "https://fit-app-1c1a8-default-rtdb.firebaseio.com/",
             projectId: "fit-app-1c1a8",
             storageBucket: "fit-app-1c1a8.firebasestorage.app",
             messagingSenderId: "70249998607",
@@ -330,27 +352,16 @@
         
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+        const database = firebase.database(); // تفعيل نظام السيرفر المتزامن فورياً
 
-        // استرجاع بيئة التصميم الأخيرة المفضلة للمستخدم تلقائياً بطلبك لكي لا تضيع بعد التحديث
         let currentTimelineState = localStorage.getItem('AintzSavedTimelineMode') || "present"; 
         let currentAuthMode = "login";
         let currentLanguage = "ar";
         let targetProfileUid = null; 
         let currentProfileViewTab = "present";
 
-        // قواعد البيانات المحلية للتخزين المتزامن والمستقر
-        let globalPostsArray = JSON.parse(localStorage.getItem('AintzGlobalPosts')) || [];
-        let mockUsersDB = JSON.parse(localStorage.getItem('AintzUsersDB')) || {};
-        let currentUserUid = "local_ghost";
-
-        let myPersonalProfile = {
-            display: "مستكشف الأزمنة",
-            username: "@traveler",
-            avatar: "https://i.ibb.co/rtgYtT7/image-7.png",
-            followers: 0,
-            following: 0,
-            followingList: []
-        };
+        let globalPostsArray = [];
+        let currentUserUid = null;
 
         const dictionary = {
             ar: {
@@ -369,38 +380,64 @@
             }
         };
 
-        // الاستماع الفوري لحالة المستخدم وجلب بياناته بدون تداخل
+        // دالة عرض التنبيهات الفورية العلوية
+        function launchPushNotification(text, icon = "🔔") {
+            const toast = document.getElementById('appNotificationToast');
+            document.getElementById('notificationIcon').innerText = icon;
+            document.getElementById('notificationMessageText').innerText = text;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 3500);
+        }
+
+        // الاستماع الفوري لحالة المستخدم وجلب بياناته ومزامنته سحابياً
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUserUid = user.uid;
                 
-                if (!mockUsersDB[currentUserUid]) {
-                    mockUsersDB[currentUserUid] = {
-                        display: user.displayName || "عضو اينتس الجديد",
-                        username: "@" + (user.email ? user.email.split('@')[0] : "user_" + user.uid.substring(0,4)),
-                        avatar: user.photoURL || "https://i.ibb.co/rtgYtT7/image-7.png",
-                        followers: 0,
-                        following: 0,
-                        followingList: []
-                    };
-                }
-                
-                myPersonalProfile = mockUsersDB[currentUserUid];
-                
-                // تعبئة حقول الإعدادات الحالية
+                // ربط ومزامنة البروفايل مباشرة مع الـ Realtime Database
+                database.ref('users/' + currentUserUid).on('value', (snapshot) => {
+                    let userData = snapshot.val();
+                    if (!userData) {
+                        userData = {
+                            display: user.displayName || "عضو اينتس الجديد",
+                            username: "@" + (user.email ? user.email.split('@')[0] : "user_" + user.uid.substring(0,4)),
+                            avatar: "https://i.ibb.co/rtgYtT7/image-7.png",
+                            followers: 0,
+                            following: 0
+                        };
+                        database.ref('users/' + currentUserUid).set(userData);
+                    }
+                    
+                    document.getElementById('settingDisplayNameField').value = userData.display || "";
+                    document.getElementById('settingUsernameField').value = userData.username || "";
+                });
+
                 document.getElementById('settingEmailField').value = user.email || "";
-                document.getElementById('settingUsernameField').value = myPersonalProfile.username;
                 document.getElementById('lblDynamicMailField').innerText = user.email ? "تغيير البريد الإلكتروني الحالي:" : "إضافة بريد إلكتروني وتأمين الحساب:";
 
-                saveDBToLocalStorage();
                 document.getElementById('authOverlayScreen').style.display = 'none';
-                
-                // تطبيق البيئة المحفوظة فوراً عند الدخول
                 modifyActiveTimeline(currentTimelineState);
+                
+                // الاستماع الفوري والحي للمنشورات من السيرفر لمزامنة الكروم وسفاري معًا تلقائيًا
+                listenToLiveGlobalFeed();
             } else {
                 document.getElementById('authOverlayScreen').style.display = 'flex';
             }
         });
+
+        function listenToLiveGlobalFeed() {
+            database.ref('posts').on('value', (snapshot) => {
+                const data = snapshot.val();
+                globalPostsArray = [];
+                if (data) {
+                    for (let id in data) {
+                        globalPostsArray.unshift({ id, ...data[id] });
+                    }
+                }
+                renderTimeline();
+                if(document.getElementById('appProfileSecondPage').style.display === 'block') { renderProfileSubPosts(); }
+            });
+        }
 
         function toggleAuthMode(mode) {
             currentAuthMode = mode;
@@ -420,11 +457,18 @@
                 auth.createUserWithEmailAndPassword(email, password)
                     .then((result) => {
                         result.user.updateProfile({ displayName: displayName });
-                        alert("تم إنشاء حسابك وحفظه في السيرفر بنجاح!");
+                        database.ref('users/' + result.user.uid).set({
+                            display: displayName,
+                            username: "@" + email.split('@')[0],
+                            avatar: "https://i.ibb.co/rtgYtT7/image-7.png",
+                            followers: 0, following: 0
+                        });
+                        launchPushNotification("تم إنشاء حسابك وحفظه بسيرفر اينتس!");
                     })
                     .catch((err) => alert("خطأ في الإنشاء: " + err.message));
             } else {
                 auth.signInWithEmailAndPassword(email, password)
+                    .then(() => launchPushNotification("مرحباً بك مجدداً في اينتس!"))
                     .catch((err) => alert("خطأ في تسجيل الدخول: " + err.message));
             }
         }
@@ -434,39 +478,45 @@
             if(platform === 'Google') { provider.setCustomParameters({ prompt: 'select_account' }); }
             
             auth.signInWithPopup(provider)
-                .then((result) => { alert(`تم التوصيل والتحقق الفعلي عبر ${platform}!`); })
+                .then((result) => { launchPushNotification(`تم التوصيل والتحقق الفعلي عبر ${platform}!`); })
                 .catch((error) => { alert("خطأ ارتباط: " + error.message); });
         }
 
-        // تحديث وإضافة البريد وكلمة المرور وحل مشكلة تعديل اليوزرنيم
+        // تحديث وإضافة البريد وكلمة المرور وتعديل الاسم واليوزر معاً وحفظهم في السيرفر
         function updateSecurityCredentials() {
             const user = auth.currentUser;
             const newEmail = document.getElementById('settingEmailField').value.trim();
             const newPassword = document.getElementById('settingPasswordField').value;
+            const newDisplay = document.getElementById('settingDisplayNameField').value.trim();
             let newUsername = document.getElementById('settingUsernameField').value.trim();
 
             if(!user) return;
 
-            if (newUsername) {
+            let updates = {};
+            if(newDisplay) updates.display = newDisplay;
+            if(newUsername) {
                 if(!newUsername.startsWith('@')) { newUsername = '@' + newUsername; }
-                myPersonalProfile.username = newUsername;
-                mockUsersDB[currentUserUid].username = newUsername;
+                updates.username = newUsername;
             }
+
+            // تحديث السيرفر بالاسم واليوزر الجديدين معًا فورًا
+            database.ref('users/' + currentUserUid).update(updates).then(() => {
+                if(newDisplay) user.updateProfile({ displayName: newDisplay });
+                launchPushNotification("تم حفظ الاسم الكامل واليوزر الجديدين سحابياً بنجاح!", "✅");
+            });
 
             if(newEmail && newEmail !== user.email) {
-                user.updateEmail(newEmail).then(() => {}).catch(err => alert(err.message));
+                user.updateEmail(newEmail).catch(err => alert(err.message));
             }
             if(newPassword) {
-                user.updatePassword(newPassword).then(() => {}).catch(err => alert(err.message));
+                user.updatePassword(newPassword).catch(err => alert(err.message));
             }
 
-            saveDBToLocalStorage();
-            alert("تم حفظ اليوزر الجديد وكافة البيانات وتحديث التايملاين!");
-            renderTimeline();
+            switchPage('feed');
         }
 
         function togglePlatformLink(platform) {
-            alert(`حسابك متصل وموثق الآن بـ ${platform} بنجاح.`);
+            launchPushNotification(`حسابك متصل وموثق الآن بـ ${platform} بنجاح.`, "🛡️");
         }
 
         function triggerProfileImageUpload() {
@@ -477,17 +527,15 @@
         function handleProfileImageChange(event) {
             const file = event.target.files[0];
             if (file) {
-                const blobUrl = URL.createObjectURL(file);
-                myPersonalProfile.avatar = blobUrl;
-                mockUsersDB[currentUserUid].avatar = blobUrl;
-                document.getElementById('profileCardImage').src = blobUrl;
-                
-                const user = auth.currentUser;
-                if(user) { user.updateProfile({ photoURL: blobUrl }); }
-                
-                saveDBToLocalStorage();
-                renderTimeline();
-                alert("تم تحديث صورتك الشخصية بنجاح!");
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64Img = e.target.result;
+                    database.ref('users/' + currentUserUid).update({ avatar: base64Img }).then(() => {
+                        document.getElementById('profileCardImage').src = base64Img;
+                        launchPushNotification("تم تحديث صورتك الشخصية على السيرفر!");
+                    });
+                };
+                reader.readAsDataURL(file);
             }
         }
 
@@ -511,28 +559,27 @@
         document.getElementById('dynamicPostForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const area = document.getElementById('mainEditorArea');
-            const fileInput = document.getElementById('mediaAttachmentInput');
             let txt = area.value.trim();
-            let imgBlobUrl = fileInput.files[0] ? URL.createObjectURL(fileInput.files[0]) : '';
 
-            if(!txt && !imgBlobUrl) return;
+            if(!txt) return;
 
-            let newPost = {
-                id: 'id_' + Date.now(),
-                uid: currentUserUid,
-                text: txt,
-                media: imgBlobUrl,
-                mode: currentTimelineState, 
-                timestamp: getLiveTimestamp(),
-                likes: 0,
-                likedUsersList: [] // لحفظ الحسابات التي أبدت إعجابها ومنع التلاعب
-            };
-
-            globalPostsArray.unshift(newPost);
-            area.value = '';
-            fileInput.value = '';
-            saveDBToLocalStorage();
-            renderTimeline();
+            database.ref('users/' + currentUserUid).once('value', (snap) => {
+                const uData = snap.val() || {};
+                const newPostRef = database.ref('posts').push();
+                newPostRef.set({
+                    uid: currentUserUid,
+                    text: txt,
+                    mode: currentTimelineState, 
+                    timestamp: getLiveTimestamp(),
+                    likes: 0,
+                    authorName: uData.display || "عضو",
+                    authorUser: uData.username || "@user",
+                    authorAvatar: uData.avatar || "https://i.ibb.co/rtgYtT7/image-7.png"
+                }).then(() => {
+                    area.value = '';
+                    launchPushNotification("تم نشر مشاركتك وتحديث المتصفحات فوراً!");
+                });
+            });
         });
 
         function renderTimeline() {
@@ -547,32 +594,30 @@
         }
 
         function buildPostCardHtml(post) {
-            const author = mockUsersDB[post.uid] || { display: "عضو اينتس", username: "@user", avatar: "https://i.ibb.co/rtgYtT7/image-7.png" };
             const card = document.createElement('div');
             card.className = 'post-feed-card';
             
             const isPast = (post.mode === 'past');
             let headerHTML = isPast ? `
-                <div class="avatar-frame" onclick="openUserProfile('${post.uid}')"><img src="${author.avatar}"></div>
+                <div class="avatar-frame" onclick="openUserProfile('${post.uid}')"><img src="${post.authorAvatar || 'https://i.ibb.co/rtgYtT7/image-7.png'}"></div>
                 <div style="text-align: right; flex:1;">
-                    <span class="user-title-text" onclick="openUserProfile('${post.uid}')" style="color:#1e3a8a;">كاتب الموضوع: ${author.display}</span>
-                    <span class="user-handle-text" style="color:#2563eb;">(${author.username})</span>
+                    <span class="user-title-text" onclick="openUserProfile('${post.uid}')" style="color:#1e3a8a;">كاتب الموضوع: ${post.authorName}</span>
+                    <span class="user-handle-text" style="color:#2563eb;">(${post.authorUser})</span>
                     <div class="user-subtitle-stats">تاريخ الإدراج: ${post.timestamp}</div>
                 </div>
             ` : `
-                <div class="avatar-frame" onclick="openUserProfile('${post.uid}')"><img src="${author.avatar}"></div>
+                <div class="avatar-frame" onclick="openUserProfile('${post.uid}')"><img src="${post.authorAvatar || 'https://i.ibb.co/rtgYtT7/image-7.png'}"></div>
                 <div style="text-align: right; flex:1;">
-                    <span class="user-title-text" onclick="openUserProfile('${post.uid}')">${author.display}</span> 
-                    <span class="user-handle-text">${author.username}</span>
+                    <span class="user-title-text" onclick="openUserProfile('${post.uid}')">${post.authorName}</span> 
+                    <span class="user-handle-text">${post.authorUser}</span>
                     <div class="user-subtitle-stats">${post.timestamp}</div>
                 </div>
             `;
 
             let mediaMarkup = post.media ? `<img src="${post.media}" style="width:100%; border-radius:12px; margin-top:12px; display:block;">` : '';
 
-            // تمييز ما إذا كان المستخدم الحالي قد أعجب بالتغريدة مسبقاً
-            if(!post.likedUsersList) { post.likedUsersList = []; }
-            const hasLiked = post.likedUsersList.includes(currentUserUid);
+            const likedList = post.likedUsers ? Object.keys(post.likedUsers) : [];
+            const hasLiked = likedList.includes(currentUserUid);
 
             card.innerHTML = `
                 <div class="card-top-header">${headerHTML}</div>
@@ -581,9 +626,9 @@
                 ${mediaMarkup}
                 <div class="divider-line"></div>
                 <div class="actions-footer-container">
-                    <button class="like-btn-node ${hasLiked ? 'activated' : ''}" onclick="handleLikeTrigger('${post.id}', this)">
+                    <button class="like-btn-node ${hasLiked ? 'activated' : ''}" onclick="handleLikeTrigger('${post.id}')">
                         <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                        <span class="like-counter-val">${post.likes}</span>
+                        <span class="like-counter-val">${post.likes || 0}</span>
                     </button>
                     ${post.uid === currentUserUid ? `<button class="delete-post-btn" onclick="deletePostItem('${post.id}')">${dictionary[currentLanguage].deleteText}</button>` : ''}
                 </div>
@@ -591,67 +636,61 @@
             return card;
         }
 
-        // نظام منع اللايك لنفسك المتطور بطلبك
-        function handleLikeTrigger(postId, btnNode) {
-            let targetPost = globalPostsArray.find(p => p.id === postId);
-            if (!targetPost) return;
+        // ميزة إتاحة الإعجاب واللايك للنفس بشكل طبيعي 100% مع إطلاق تنبيه فوري
+        function handleLikeTrigger(postId) {
+            const postRef = database.ref('posts/' + postId);
+            postRef.once('value', (snap) => {
+                let post = snap.val();
+                if (!post) return;
+                if (!post.likedUsers) post.likedUsers = {};
 
-            // شرط منع الإعجاب بالنفس
-            if (targetPost.uid === currentUserUid) {
-                alert("يا خوي ما تقدر تعطي لايك لتغريدتك أو موضوعك بنفسك! 🛑");
-                return;
-            }
-
-            if (!targetPost.likedUsersList) { targetPost.likedUsersList = []; }
-
-            const userIndex = targetPost.likedUsersList.indexOf(currentUserUid);
-            const counterSpan = btnNode.querySelector('.like-counter-val');
-
-            if (userIndex > -1) {
-                // إلغاء اللايك
-                targetPost.likedUsersList.splice(userIndex, 1);
-                targetPost.likes = Math.max(0, targetPost.likes - 1);
-                btnNode.classList.remove('activated');
-            } else {
-                // إضافة لايك
-                targetPost.likedUsersList.push(currentUserUid);
-                targetPost.likes += 1;
-                btnNode.classList.add('activated');
-            }
-
-            if(counterSpan) counterSpan.innerText = targetPost.likes;
-            saveDBToLocalStorage();
+                if (post.likedUsers[currentUserUid]) {
+                    delete post.likedUsers[currentUserUid];
+                    post.likes = Math.max(0, (post.likes || 1) - 1);
+                } else {
+                    post.likedUsers[currentUserUid] = true;
+                    post.likes = (post.likes || 0) + 1;
+                    
+                    // إطلاق التنبيه الفوري باللايك (يعمل حتى لو كان للمستخدم نفسه)
+                    launchPushNotification(`حصلت مشاركتك على إعجاب جديد! ❤️`, "❤️");
+                }
+                postRef.update({ likes: post.likes, likedUsers: post.likedUsers });
+            });
         }
 
         function deletePostItem(id) {
-            globalPostsArray = globalPostsArray.filter(p => p.id !== id);
-            saveDBToLocalStorage();
-            renderTimeline();
-            if(document.getElementById('appProfileSecondPage').style.display === 'block') { renderProfileSubPosts(); }
+            if(confirm("هل تريد حذف هذا المنشور نهائياً من السيرفر؟")) {
+                database.ref('posts/' + id).remove().then(() => {
+                    launchPushNotification("تم حذف المنشور من السيرفر بنجاح.");
+                });
+            }
         }
 
         function openUserProfile(uid) {
             targetProfileUid = uid;
-            const user = mockUsersDB[uid] || myPersonalProfile;
-            
-            document.getElementById('profileCardImage').src = user.avatar;
-            document.getElementById('profileCardTitle').innerText = user.display;
-            document.getElementById('profileCardHandle').innerText = user.username;
-            
-            const followBtn = document.getElementById('profileFollowBtn');
-            if(uid === currentUserUid) {
-                followBtn.style.display = 'none';
-            } else {
-                followBtn.style.display = 'inline-block';
-                updateFollowBtnStyle();
-            }
+            database.ref('users/' + uid).once('value', (snap) => {
+                const user = snap.val();
+                if(!user) return;
+                
+                document.getElementById('profileCardImage').src = user.avatar || "https://i.ibb.co/rtgYtT7/image-7.png";
+                document.getElementById('profileCardTitle').innerText = user.display;
+                document.getElementById('profileCardHandle').innerText = user.username;
+                
+                const followBtn = document.getElementById('profileFollowBtn');
+                if(uid === currentUserUid) {
+                    followBtn.style.display = 'none';
+                } else {
+                    followBtn.style.display = 'inline-block';
+                    followBtn.innerText = "🤝 متابعة الحساب";
+                }
 
-            document.getElementById('statFollowersCount').innerText = user.followers || 0;
-            document.getElementById('statFollowingCount').innerText = user.following || 0;
+                document.getElementById('statFollowersCount').innerText = user.followers || 0;
+                document.getElementById('statFollowingCount').innerText = user.following || 0;
 
-            currentProfileViewTab = currentTimelineState;
-            switchProfileTab(currentProfileViewTab);
-            switchPage('profile');
+                currentProfileViewTab = currentTimelineState;
+                switchProfileTab(currentProfileViewTab);
+                switchPage('profile');
+            });
         }
 
         function openMyOwnProfile() { openUserProfile(currentUserUid); }
@@ -672,39 +711,13 @@
         }
 
         function toggleFollowAction() {
-            let myAccount = mockUsersDB[currentUserUid];
-            let targetAccount = mockUsersDB[targetProfileUid];
-
-            if(!targetAccount || !myAccount) return;
-            if(!myAccount.followingList) { myAccount.followingList = []; }
-
-            const followIdx = myAccount.followingList.indexOf(targetProfileUid);
-
-            if(followIdx > -1) {
-                myAccount.followingList.splice(followIdx, 1);
-                targetAccount.followers = Math.max(0, (targetAccount.followers || 1) - 1);
-                myAccount.following = Math.max(0, (myAccount.following || 1) - 1);
-            } else {
-                myAccount.followingList.push(targetProfileUid);
-                targetAccount.followers = (targetAccount.followers || 0) + 1;
-                myAccount.following = (myAccount.following || 0) + 1;
-            }
-
-            document.getElementById('statFollowersCount').innerText = targetAccount.followers;
-            saveDBToLocalStorage();
-            updateFollowBtnStyle();
-        }
-
-        function updateFollowBtnStyle() {
-            const btn = document.getElementById('profileFollowBtn');
-            let myAccount = mockUsersDB[currentUserUid];
-            if(myAccount && myAccount.followingList && myAccount.followingList.includes(targetProfileUid)) {
-                btn.className = "follow-toggle-btn unfollow";
-                btn.innerText = "إلغاء المتابعة Unfollow";
-            } else {
-                btn.className = "follow-toggle-btn";
-                btn.innerText = "🤝 متابعة الحساب";
-            }
+            launchPushNotification("تمت المتابعة الفورية وحفظها بنجاح!", "🚀");
+            database.ref('users/' + targetProfileUid).once('value', snap => {
+                let u = snap.val() || {};
+                let newFollowers = (u.followers || 0) + 1;
+                database.ref('users/' + targetProfileUid).update({ followers: newFollowers });
+                document.getElementById('statFollowersCount').innerText = newFollowers;
+            });
         }
 
         function handleFirebaseLogout() {
@@ -718,11 +731,6 @@
             if (currentUser && confirm("⚠️ حذف الحساب نهائياً؟")) {
                 currentUser.delete().catch((e) => alert("يرجى إعادة الدخول أولاً: " + e.message));
             }
-        }
-
-        function saveDBToLocalStorage() {
-            localStorage.setItem('AintzGlobalPosts', JSON.stringify(globalPostsArray));
-            localStorage.setItem('AintzUsersDB', JSON.stringify(mockUsersDB));
         }
 
         function switchPage(page) {
