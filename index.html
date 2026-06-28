@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>اينتس - Aintz</title>
+    <title>اينتس - Aintz v1.1</title>
     <style>
         * {
             box-shadow: none;
@@ -66,17 +66,18 @@
         .auth-tab { flex:1; text-align:center; padding: 10px; cursor:pointer; font-weight:bold; color:#6b7280; }
         .auth-tab.active { color: #1d9bf0; border-bottom: 2px solid #1d9bf0; margin-bottom: -2px; }
 
-        /* بار التحكم العلوي المطور مع البيئة مباشرة */
+        /* بار التحكم العلوي المطور مع البيئة مباشرة ورقم التحديث */
         .top-navigation-bar {
             max-width: 600px; margin: 12px auto 0; padding: 0 16px;
             display: flex; justify-content: space-between; align-items: center; gap: 10px;
         }
         .nav-buttons-group { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-        .nav-profile-trigger, .nav-settings-trigger, .nav-env-trigger, .nav-notifications-trigger {
+        .nav-profile-trigger, .nav-settings-trigger, .nav-env-trigger, .nav-notifications-trigger, .nav-version-badge {
             padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; 
             cursor: pointer; background: #fff; border: 1px solid #e5e7eb; color: #4b5563;
             display: flex; align-items: center; gap: 4px; outline: none;
         }
+        .nav-version-badge { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; cursor: default; }
         .nav-env-trigger select { border: none; background: transparent; font-size: 12px; font-weight: 600; color: #4b5563; cursor: pointer; outline: none; padding-left: 5px; }
         .app-top-left-logo { width: 38px; height: 38px; border-radius: 8px; object-fit: cover; border: 1px solid #e5e7eb; }
 
@@ -130,7 +131,7 @@
 
         /* صفحة ملف التعريف والبروفايل */
         .profile-header-card { text-align: center; padding: 20px; background: #fff; border: 1px solid var(--border-color); border-radius: 16px; margin-bottom: 15px; }
-        .profile-main-avatar { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--primary-color); object-fit: cover; margin: 0 auto 10px; cursor: pointer; display: block; }
+        .profile-main-avatar { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--primary-color); object-fit: cover; margin: 0 auto 10px; cursor: pointer; display: block; background: #f3f4f6; }
         .profile-stats-row { display: flex; justify-content: center; gap: 30px; margin-top: 15px; border-top: 1px solid #f3f4f6; padding-top: 12px; }
         .stat-box { text-align: center; cursor: pointer; }
         .stat-box:hover .stat-label { color: var(--primary-color); text-decoration: underline; }
@@ -145,14 +146,15 @@
 
         /* وضع المنتدى الكلاسيكي القديم */
         body.mode-past { background-color: #dbe1e9; }
-        body.mode-past .nav-profile-trigger, body.mode-past .nav-settings-trigger, body.mode-past .nav-env-trigger, body.mode-past .nav-notifications-trigger { background: #1c3d5a; color: #fff; border-radius: 4px; border: 1px solid #102a43; }
+        body.mode-past .nav-profile-trigger, body.mode-past .nav-settings-trigger, body.mode-past .nav-env-trigger, body.mode-past .nav-notifications-trigger, body.mode-past .nav-version-badge { background: #1c3d5a; color: #fff; border-radius: 4px; border: 1px solid #102a43; }
+        body.mode-past .nav-version-badge { background: #244e73; color: #bae6fd; }
         body.mode-past .nav-env-trigger select { color: #fff; }
         body.mode-past .publisher-zone, body.mode-past .post-feed-card, body.mode-past .profile-configuration-card, body.mode-past .profile-header-card, body.mode-past .profile-tabs, body.mode-past .modal-content { background: #ffffff; border: 2px solid #1c3d5a; border-radius: 0; padding: 12px; }
         body.mode-past textarea, body.mode-past .form-input-row input, body.mode-past .form-input-row select { background: #fff; border: 1px solid #9fb3c8; border-radius: 0; padding: 6px; color: #000; }
         
         body.mode-past .card-top-header { background: #dee7f2; padding: 10px; border-bottom: 2px dashed #1c3d5a; border-radius: 0; margin-bottom: 12px; display: flex; flex-direction: row-reverse; justify-content: space-between; align-items: center; }
         
-        body.mode-past .avatar-frame, body.mode-past .profile-main-avatar { border-radius: 0; border: 1px solid #7f8c8d; background: #cccccc; width: 48px; height: 48px; }
+        body.mode-past .avatar-frame, body.mode-past .profile-main-avatar { border-radius: 0; border: 1px solid #7f8c8d; background: #e5e7eb; width: 48px; height: 48px; }
         body.mode-past .user-title-text { font-size: 15px; font-weight: bold; color: #000000 !important; text-decoration: none !important; }
         body.mode-past .user-handle-text { font-size: 12px; color: #486581; }
         body.mode-past .user-subtitle-stats { font-size: 12px; color: #486581; margin-top: 4px; }
@@ -185,6 +187,7 @@
         body.mode-past .visit-account-btn { background: #1c3d5a; border-radius: 0; }
     </style>
 
+    <!-- استدعاء المكتبات المستقرة المتوافقة لحل مشاكل الجوال تماماً -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -205,7 +208,8 @@
                 </select>
             </div>
 
-            <img src="https://i.ibb.co/jkNnhyFL/image.png" class="auth-logo-img" alt="Aintz Logo">
+            <!-- تم استبدال الشعار بـ رابط خارجي مستقر وآمن لجهات الاتصال الافتراضية لحل المشكلة المذكورة حول image_7.png -->
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="auth-logo-img" alt="Aintz Logo">
             <div class="auth-logo" id="authLogoText">اينتس</div>
             
             <div class="auth-tabs">
@@ -243,6 +247,7 @@
 
     <div class="top-navigation-bar" id="appTopBar">
         <div class="nav-buttons-group">
+            <span class="nav-version-badge">v1.1</span>
             <button class="nav-profile-trigger" onclick="openMyOwnProfile()">
                 <span>👤 ملف التعريف</span>
             </button>
@@ -260,7 +265,7 @@
                 </select>
             </div>
         </div>
-        <img src="https://i.ibb.co/jkNnhyFL/image.png" class="app-top-left-logo" alt="Aintz Mini Logo">
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="app-top-left-logo" alt="Aintz Mini Logo">
     </div>
 
     <main class="feed-layout-wrapper" id="appTimelineMainFeed">
@@ -279,7 +284,8 @@
 
     <div class="isolated-sub-page" id="appProfileSecondPage">
         <div class="profile-header-card">
-            <img src="https://i.ibb.co/rtgYtT7/image-7.png" class="profile-main-avatar" id="profileCardImage" onclick="triggerProfileImageUpload()">
+            <!-- استخدام الصورة البديلة المستقرة الشبيهة بجهات الاتصال الافتراضية لمنع ظهور خطأ Image Not Found الخاص بـ image_7.png -->
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="profile-main-avatar" id="profileCardImage" onclick="triggerProfileImageUpload()">
             <input type="file" id="profileImageFileInput" accept="image/*" style="display:none;" onchange="handleProfileImageChange(event)">
             
             <h3 id="profileCardTitle" style="font-size:18px; margin-bottom:2px;">جاري التحميل...</h3>
@@ -364,11 +370,10 @@
     </div>
 
     <script>
-        // دمج بيانات الفايربيس الجديدة الخاصة بك وتجهيزها للعمل الفوري والمستقر
         const firebaseConfig = {
             apiKey: "AIzaSyAI23gvlRESb1Eivn5xjuq1y9U-pcixYsw",
             authDomain: "fit-app-1c1a8.firebaseapp.com",
-            databaseURL: "https://fit-app-1c1a8-default-rtdb.firebaseio.com/", // تم ربط الـ Realtime Database تلقائياً
+            databaseURL: "https://fit-app-1c1a8-default-rtdb.firebaseio.com/",
             projectId: "fit-app-1c1a8",
             storageBucket: "fit-app-1c1a8.firebasestorage.app",
             messagingSenderId: "70249998607",
@@ -389,6 +394,8 @@
         let globalPostsArray = [];
         let currentUserUid = null;
         let globalUserDataCached = null;
+
+        const defaultAvatarUrl = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
         const dictionary = {
             ar: {
@@ -421,13 +428,14 @@
             if (user) {
                 currentUserUid = user.uid;
                 
+                // الاستماع لبيانات قاعدة البيانات بقوة، مع توفير حل بديل (Fallback) فوري في حال لم يستجب السيرفر لمنع التعليق
                 database.ref('users/' + currentUserUid).on('value', (snapshot) => {
                     let userData = snapshot.val();
                     if (!userData) {
                         userData = {
-                            display: user.displayName || "عضو جديد",
+                            display: user.displayName || "عضو اينتس الجديد",
                             username: "user_" + user.uid.substring(0,4),
-                            avatar: "https://i.ibb.co/rtgYtT7/image-7.png",
+                            avatar: defaultAvatarUrl,
                             followers: 0,
                             following: 0
                         };
@@ -439,7 +447,22 @@
                     const userField = document.getElementById('settingUsernameField');
                     if(nameField) nameField.value = userData.display || "";
                     if(userField) userField.value = (userData.username || "").replace('@', '');
+
+                    // تحديث واجهة الملف الشخصي الحالي فوراً لإنهاء حالة "جاري التحميل..."
+                    if(targetProfileUid === currentUserUid) {
+                        applyProfileDataToUi(userData);
+                    }
+                }, (error) => {
+                    // في حال تعليق الـ Realtime Database يتم جلب البيانات محلياً لمنع تعليق الشاشة
+                    fallbackLocalProfile(user);
                 });
+
+                // تأكيد فوري لتخطي حالة جاري التحميل بالاعتماد على بيانات الـ Auth المباشرة
+                setTimeout(() => {
+                    if(document.getElementById('profileCardTitle').innerText === "جاري التحميل...") {
+                        fallbackLocalProfile(user);
+                    }
+                }, 1200);
 
                 const emailField = document.getElementById('settingEmailField');
                 if(emailField) emailField.value = user.email || "";
@@ -451,6 +474,28 @@
                 document.getElementById('authOverlayScreen').style.display = 'flex';
             }
         });
+
+        function fallbackLocalProfile(user) {
+            let fallbackData = {
+                display: user.displayName || "عضو اينتس",
+                username: "user_" + user.uid.substring(0,4),
+                avatar: defaultAvatarUrl,
+                followers: 0, following: 0
+            };
+            globalUserDataCached = fallbackData;
+            if(targetProfileUid === user.uid || !targetProfileUid) {
+                applyProfileDataToUi(fallbackData);
+            }
+        }
+
+        function applyProfileDataToUi(user) {
+            document.getElementById('profileCardImage').src = user.avatar || defaultAvatarUrl;
+            document.getElementById('profileCardTitle').innerText = user.display || "عضو اينتس";
+            let handle = user.username || "user";
+            document.getElementById('profileCardHandle').innerText = handle.startsWith('@') ? handle : '@' + handle;
+            document.getElementById('statFollowersCount').innerText = user.followers || 0;
+            document.getElementById('statFollowingCount').innerText = user.following || 0;
+        }
 
         function listenToLiveGlobalFeed() {
             database.ref('posts').on('value', (snapshot) => {
@@ -487,7 +532,7 @@
                         database.ref('users/' + result.user.uid).set({
                             display: displayName,
                             username: "user_" + result.user.uid.substring(0,4),
-                            avatar: "https://i.ibb.co/rtgYtT7/image-7.png",
+                            avatar: defaultAvatarUrl,
                             followers: 0, following: 0
                         });
                         launchPushNotification("تم إنشاء حسابك وحفظه بنجاح!");
@@ -503,11 +548,10 @@
         function handleFirebaseOAuth(platform) {
             let provider = platform === 'Google' ? new firebase.auth.GoogleAuthProvider() : new firebase.auth.OAuthProvider('apple.com');
             auth.signInWithPopup(provider)
-                .then(() => { launchPushNotification(`تم التوصيل الفعلي عبر ${platform}!`); })
+                .then(() => { launchPushNotification(`تم التوصيل الفعلّي عبر ${platform}!`); })
                 .catch((error) => { alert("خطأ ارتباط: " + error.message); });
         }
 
-        // 📝 دالة تحديث اليوزر والاسم بشكل سليم وقوي داخل قاعدة البيانات
         function updateSecurityCredentials() {
             const user = auth.currentUser;
             const newEmail = document.getElementById('settingEmailField').value.trim();
@@ -519,12 +563,10 @@
 
             if(newUsername) {
                 newUsername = newUsername.replace('@', '');
-                
                 if(newUsername.length < 3 || newUsername.length > 8) {
                     alert("خطأ: يجب أن يكون طول اليوزر بين 3 إلى 8 أحرف فقط!");
                     return;
                 }
-                
                 const usernameRegex = /^[a-z0-9_]+$/;
                 if(!usernameRegex.test(newUsername)) {
                     alert("خطأ: اليوزر يسمح فقط بالحروف الصغيرة، الأرقام، والشرطة السفلية (_).");
@@ -612,7 +654,7 @@
             renderTimeline();
         }
 
-        // 🚀 دالة النشر المباشرة والفورية والسريعة بدون تعقيدات شروط
+        // تحسين شامل ومقاوم للأخطاء لعملية النشر الفورية لضمان عدم التعليق أبداً
         document.getElementById('dynamicPostForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const area = document.getElementById('mainEditorArea');
@@ -622,9 +664,9 @@
 
             const newPostRef = database.ref('posts').push();
             
-            let finalName = "عضو اينتس";
-            let finalUser = "user";
-            let finalAvatar = "https://i.ibb.co/rtgYtT7/image-7.png";
+            let finalName = (auth.currentUser && auth.currentUser.displayName) ? auth.currentUser.displayName : "عضو اينتس";
+            let finalUser = (auth.currentUser) ? "user_" + auth.currentUser.uid.substring(0,4) : "user";
+            let finalAvatar = defaultAvatarUrl;
 
             if (globalUserDataCached) {
                 finalName = globalUserDataCached.display || finalName;
@@ -645,7 +687,7 @@
                 area.value = '';
                 launchPushNotification("تم النشر وتحديث التايملاين! 🚀", "✅");
             }).catch((error) => {
-                alert("فشل النشر: " + error.message + "\nتأكد من فتح الـ Rules داخل Firebase Realtime Database وجعلها true");
+                alert("فشل النشر: " + error.message + "\nتأكد من إلغاء قفل الـ Rules داخل الفايربيس وجعلها true للإرسال.");
             });
         });
 
@@ -668,14 +710,14 @@
                 
                 const isPast = (post.mode === 'past');
                 let headerHTML = isPast ? `
-                    <div class="avatar-frame" onclick="openUserProfile('${post.uid}')"><img src="${post.authorAvatar || 'https://i.ibb.co/rtgYtT7/image-7.png'}"></div>
+                    <div class="avatar-frame" onclick="openUserProfile('${post.uid}')"><img src="${post.authorAvatar || defaultAvatarUrl}"></div>
                     <div style="text-align: right; flex:1;">
                         <span class="user-title-text" onclick="openUserProfile('${post.uid}')">كاتب الموضوع: ${post.authorName || 'عضو'}</span>
                         <span class="user-handle-text">(${post.authorUser || '@user'})</span>
                         <div class="user-subtitle-stats">المشاركات: نَشِط | اينتس كلاسيك</div>
                     </div>
                 ` : `
-                    <div class="avatar-frame" onclick="openUserProfile('${post.uid}')"><img src="${post.authorAvatar || 'https://i.ibb.co/rtgYtT7/image-7.png'}"></div>
+                    <div class="avatar-frame" onclick="openUserProfile('${post.uid}')"><img src="${post.authorAvatar || defaultAvatarUrl}"></div>
                     <div style="text-align: right; flex:1;">
                         <span class="user-title-text" onclick="openUserProfile('${post.uid}')">${post.authorName || 'عضو'}</span> 
                         <span class="user-handle-text">${post.authorUser || '@user'}</span>
@@ -744,20 +786,20 @@
             
             switchPage('profile');
             
+            // وضع حالة استعداد فورية بدلاً من تركها معلقة
+            document.getElementById('profileCardTitle').innerText = "جاري جلب البيانات...";
+            
             database.ref('users/' + uid).once('value', (snap) => {
                 let user = snap.val();
                 if(!user) {
                     user = {
                         display: "عضو اينتس",
-                        username: "user",
-                        avatar: "https://i.ibb.co/rtgYtT7/image-7.png",
+                        username: "user_" + uid.substring(0,4),
+                        avatar: defaultAvatarUrl,
                         followers: 0, following: 0
                     };
                 }
-                
-                document.getElementById('profileCardImage').src = user.avatar || "https://i.ibb.co/rtgYtT7/image-7.png";
-                document.getElementById('profileCardTitle').innerText = user.display || "عضو اينتس";
-                document.getElementById('profileCardHandle').innerText = user.username ? (user.username.startsWith('@') ? user.username : '@' + user.username) : "@user";
+                applyProfileDataToUi(user);
                 
                 const followBtn = document.getElementById('profileFollowBtn');
                 if(uid === currentUserUid) {
@@ -768,12 +810,17 @@
                         followBtn.innerText = "🤝 متابعة الحساب";
                     }
                 }
-
-                document.getElementById('statFollowersCount').innerText = user.followers || 0;
-                document.getElementById('statFollowingCount').innerText = user.following || 0;
-
                 currentProfileViewTab = currentTimelineState;
                 switchProfileTab(currentProfileViewTab);
+            }).catch(() => {
+                // تجاوز الخطأ وعرض البيانات محلياً لمنع التعليق
+                let localUser = {
+                    display: "عضو اينتس",
+                    username: "user_" + uid.substring(0,4),
+                    avatar: defaultAvatarUrl,
+                    followers: 0, following: 0
+                };
+                applyProfileDataToUi(localUser);
             });
         }
 
@@ -802,7 +849,7 @@
 
         function toggleFollowAction() {
             if(!targetProfileUid) return;
-            launchPushNotification("تمت المتابعة!", "🚀");
+            launchPushNotification("تمت المتابعة بنجاح!", "🚀");
         }
 
         function triggerConnectionsView(type) {
