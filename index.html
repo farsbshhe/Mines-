@@ -396,10 +396,12 @@
 
         function launchPushNotification(text, icon = "🔔") {
             const toast = document.getElementById('appNotificationToast');
-            document.getElementById('notificationIcon').innerText = icon;
-            document.getElementById('notificationMessageText').innerText = text;
-            toast.classList.add('show');
-            setTimeout(() => { toast.classList.remove('show'); }, 3500);
+            if(toast) {
+                document.getElementById('notificationIcon').innerText = icon;
+                document.getElementById('notificationMessageText').innerText = text;
+                toast.classList.add('show');
+                setTimeout(() => { toast.classList.remove('show'); }, 3500);
+            }
         }
 
         auth.onAuthStateChanged((user) => {
@@ -419,12 +421,16 @@
                         database.ref('users/' + currentUserUid).set(userData);
                     }
                     
-                    document.getElementById('settingDisplayNameField').value = userData.display || "";
-                    document.getElementById('settingUsernameField').value = (userData.username || "").replace('@', '');
+                    const nameField = document.getElementById('settingDisplayNameField');
+                    const userField = document.getElementById('settingUsernameField');
+                    if(nameField) nameField.value = userData.display || "";
+                    if(userField) userField.value = (userData.username || "").replace('@', '');
                 });
 
-                document.getElementById('settingEmailField').value = user.email || "";
-                document.getElementById('lblDynamicMailField').innerText = user.email ? "تغيير البريد الإلكتروني الحالي:" : "إضافة بريد إلكتروني وتأمين الحساب:";
+                const emailField = document.getElementById('settingEmailField');
+                const lblMail = document.getElementById('lblDynamicMailField');
+                if(emailField) emailField.value = user.email || "";
+                if(lblMail) lblMail.innerText = user.email ? "تغيير البريد الإلكتروني الحالي:" : "إضافة بريد إلكتروني وتأمين الحساب:";
 
                 document.getElementById('authOverlayScreen').style.display = 'none';
                 modifyActiveTimeline(currentTimelineState);
